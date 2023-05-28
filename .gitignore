@@ -1,0 +1,3 @@
+**/*.cmd 
+**/plantuml.jar 
+figures/hierarchy.txt 
