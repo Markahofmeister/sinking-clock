@@ -1,0 +1,60 @@
+@startuml
+[ROOT]
+component media {
+  component mi [
+    Photos & Videos
+    of project & process
+  ]
+}
+component figures {
+  component fi [
+    Contains subdirectories for
+    digital figures
+  ]
+}
+component flowcharts {
+  component flowi [
+    High-Level software
+    process abstractions
+  ]
+}
+component pinouts-datasheets as pd {
+  component pdi [
+    Pinouts for ICs and microcontrollers,
+    datasheets for electrical/mechanical components
+  ]
+}
+component "system-diagrams" as sd{
+  component sdi [
+    High-level diagrams of
+    physical systems & subsystems
+  ]
+}
+component fab {
+  component fabi [
+    Files involved with mechanical
+    design & fabrication
+  ]
+}
+component software {
+  component si [
+    source code & supporting
+    libraries (if applicable)
+  ]
+}
+component electrical {
+  component ei [
+    Schematics, PCB footprints,
+    and libararies (if applicable)
+  ]
+}
+[ROOT] -down-> media
+[ROOT] -down-> figures
+[ROOT] -down-> fab
+[ROOT] -down-> software
+[ROOT] -down-> electrical
+figures -down-> flowcharts
+figures -down-> pd
+figures -down-> sd
+
+@enduml
