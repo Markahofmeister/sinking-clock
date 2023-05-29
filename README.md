@@ -9,13 +9,13 @@
 
 ## System Diagram
 
-![](figures/system-diagrams/system-diagram-v1)
+![](figures/system-diagrams/system-diagram-v1.png)
 
 ## State Machine 
 
-![](figures/system-diagrams/state-machine-v1) 
+![](figures/system-diagrams/state-machine-v1.png) 
 
 ## Exploded Mechanical View
 	
-![](fab/exploded-view-v)
+![](fab/exploded-view-v1.png)
 ![](fab/exploded-view-animation-v)
