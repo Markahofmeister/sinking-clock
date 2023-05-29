@@ -1,1 +1,1 @@
-java -jar plantunl.jar flowcharts
+java -jar plantuml.jar flowcharts

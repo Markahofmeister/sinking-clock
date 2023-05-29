@@ -9,11 +9,11 @@
 
 ## System Diagram
 
-![](figures/system-diagrams/system-diagram-v)
+![](figures/system-diagrams/system-diagram-v1)
 
-## Flowchart 
+## State Machine 
 
-![](figures/system-diagrams/flowchart-v) 
+![](figures/system-diagrams/state-machine-v1) 
 
 ## Exploded Mechanical View
 	
