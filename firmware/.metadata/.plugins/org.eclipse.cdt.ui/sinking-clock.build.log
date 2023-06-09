@@ -1,0 +1,10 @@
+18:40:54 **** Incremental Build of configuration Debug for project sinking-clock ****
+make -j8 all 
+arm-none-eabi-size   sinking-clock.elf 
+   text	   data	    bss	    dec	    hex	filename
+  10480	     20	   1804	  12304	   3010	sinking-clock.elf
+Finished building: default.size.stdout
+ 
+
+18:40:54 Build Finished. 0 errors, 0 warnings. (took 336ms)
+
