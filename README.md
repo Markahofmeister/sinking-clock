@@ -11,9 +11,19 @@
 
 ![](figures/system-diagrams/system-diagram-v1.png)
 
-## State Machine 
-
-![](figures/system-diagrams/state-machine-v1.png) 
+## Flowcharts
+### Main Thread
+![](figures/flowcharts/state-machine_main-thread-v1.png) 
+### Interrupts
+<!---
+<a href="url"><img src="https://github.com/Markahofmeister/sinking-clock/figures/flowcharts/state-machine_RTC-interrupt-v1.png" width=50%></a>
+-->
+![](figures/flowcharts/state-machine_RTC-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_display-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_alarm-ENABLE-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_alarm-SET-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_hour-SET-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_minute-SET-button-interrupt-v1.png) 
 
 ## Exploded Mechanical View
 	
