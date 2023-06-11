@@ -1,0 +1,28 @@
+@startuml
+
+|#lightgray|"Main ISR Thread"|
+  #Red:Alarm SET Button Interrupt;
+|#pink|Timer Interrupt|
+  :Load Timer 1 channel 1 to create 500ms 
+counter;
+    if ( ) then ( )
+|#lightgray|"Main ISR Thread"|
+  partition "Alarm SET Button ISR" {
+  repeat
+    :Display Current Alarm Time;
+  repeat while (Alarm SET Button = LOW?)
+  }
+|#pink|Timer Interrupt|
+  else 
+    :Timer Interrupt;
+    :Toggle Display;
+    :Display Current Alarm Time;
+
+|#lightgray|"Main ISR Thread"|
+   endif
+  :Turn on display;
+  :Get current RTC time;
+  :Send current RTC time to 7-seg display;
+
+stop
+@enduml

@@ -1,1 +1,2 @@
-java -jar plantuml.jar flowcharts
+java -jar plantuml.jar state-machine_*.txt
+

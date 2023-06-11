@@ -1,0 +1,14 @@
+@startuml
+#Red:Display Button Interrupt;
+partition "Display Button ISR" {
+switch(display toggle counter)
+  case(0)
+    :display LED PWM = 0% duty cycle;
+  case(1)
+    :display LED PWM = 50% duty cycle;
+  case(2)
+    :display LED PWM = 100% duty cycle;
+endswitch
+stop
+}
+@enduml

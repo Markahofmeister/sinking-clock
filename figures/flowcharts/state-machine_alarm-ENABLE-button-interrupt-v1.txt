@@ -1,0 +1,8 @@
+@startuml
+#Red:Alarm ENABLE Button Interrupt;
+partition "Alarm ENABLE Button ISR" {
+:Toggle alarm enable bool;
+:Toggle alarm LED;
+stop
+}
+@enduml

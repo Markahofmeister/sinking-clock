@@ -1,0 +1,31 @@
+@startuml
+#Red:RTC Interrupt;
+partition "RTC ISR" {
+:Get current clock time;
+:Send current clock time to 7-segment display;
+
+if (is P.M.?) then (yes)
+   :P.M. LED ON;
+else(no)
+   :P.M. LED OFF;
+endif
+
+if(Alarm is ON) then (yes) 
+   if(Time = alarm?) then (yes)
+      partition "Buzzer Beeping"{
+          repeat 
+          :Toggle Buzzer;
+          :Delay 500ms;
+          repeat while (snooze button not pressed?)
+          }
+      :Turn Buzzer off;
+      :Turn alarm LED off;
+      stop
+   else(no)
+      stop
+   endif
+else(no)
+   stop
+endif
+}
+@enduml
