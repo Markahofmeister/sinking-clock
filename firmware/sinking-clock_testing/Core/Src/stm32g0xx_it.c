@@ -150,9 +150,12 @@ void EXTI0_1_IRQHandler(void)
 
 
   /* USER CODE END EXTI0_1_IRQn 0 */
-
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
-
+  HAL_GPIO_EXTI_IRQHandler(Display_Button_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Alarm_Enable_Button_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Alarm_Set_Button_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Hour_Set_Button_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Minute_Set_Button_Pin);
+  HAL_GPIO_EXTI_IRQHandler(Snooze_Button_Pin);
   /* USER CODE BEGIN EXTI0_1_IRQn 1 */
 
   //NOT the interrupt part for GPIO pin 1 (I think)

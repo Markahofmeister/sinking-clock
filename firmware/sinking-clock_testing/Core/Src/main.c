@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -44,6 +45,28 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+/*
+ * Declare variables to map button presses to GPIOs
+ */
+const uint16_t displayButtonPin = GPIO_PIN_0;
+const uint16_t alarmEnableButtonPin = GPIO_PIN_1;
+const uint16_t alarmSetButtonPin = GPIO_PIN_4;
+const uint16_t hourSetButtonPin = GPIO_PIN_5;
+const uint16_t minuteSetButtonPin = GPIO_PIN_12;
+const uint16_t snoozeButtonPin = GPIO_PIN_11;
+
+/*
+ * Declare variables to map interrupts from button GPIOs to LED outputs.
+ * Some of these are port B;
+ */
+
+const uint16_t displayLEDPin = GPIO_PIN_7;			//Port B
+const uint16_t alarmEnableLEDPin = GPIO_PIN_6;		//Port B
+const uint16_t alarmSetLEDPin = GPIO_PIN_1;			//Port B
+const uint16_t hourSetLEDPin = GPIO_PIN_10;			//Port A
+const uint16_t minuteSetLEDPin = GPIO_PIN_9;		//Port A
+const uint16_t snoozeButtonLEDPin = GPIO_PIN_0;		//Port B
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -51,6 +74,18 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
+
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
 
 /* USER CODE END PFP */
 
@@ -96,13 +131,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /*uint8_t pinState = 1;
-	  pinState = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1);
-	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, pinState);
-	  HAL_Delay(100);*/
 
-	  //HAL_GPIO_EXTI_Falling_Callback(GPIO_PIN_1);
-	  //HAL_Delay(500);
 
     /* USER CODE END WHILE */
 
@@ -202,9 +231,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, Minute_Set_LED_Pin|Hour_Set_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -215,17 +248,26 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(T_NRST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  /*Configure GPIO pins : Display_Button_Pin Alarm_Enable_Button_Pin Alarm_Set_Button_Pin Hour_Set_Button_Pin
+                           Snooze_Button_Pin Minute_Set_Button_Pin */
+  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Enable_Button_Pin|Alarm_Set_Button_Pin|Hour_Set_Button_Pin
+                          |Snooze_Button_Pin|Minute_Set_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Snooze_LED_Pin Alarm_Set_LED_Pin Alarm_Enable_LED_Pin Display_LED_Pin */
+  GPIO_InitStruct.Pin = Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  /*Configure GPIO pins : Minute_Set_LED_Pin Hour_Set_LED_Pin */
+  GPIO_InitStruct.Pin = Minute_Set_LED_Pin|Hour_Set_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
@@ -249,11 +291,55 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
-  if(GPIO_Pin == GPIO_PIN_1) {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
-  } else {
-      __NOP();
-  }
+//	switch(GPIO_Pin) {
+//		case displayButtonPin:
+//			HAL_GPIO_TogglePin(GPIOB, displayLEDPin);
+//		break;
+//		case alarmEnableButtonPin:
+//			HAL_GPIO_TogglePin(GPIOB, alarmEnableLEDPin);
+//		break;
+//		case alarmSetButtonPin:
+//			HAL_GPIO_TogglePin(GPIOB, alarmSetLEDPin);
+//		break;
+//		case hourSetButtonPin:
+//			HAL_GPIO_TogglePin(GPIOA, hourSetLEDPin);
+//		break;
+//		case minuteSetButtonPin:
+//			HAL_GPIO_TogglePin(GPIOA, minuteSetLEDPin);
+//		break;
+//		case snoozeButtonPin:
+//			HAL_GPIO_TogglePin(GPIOB, snoozeButtonLEDPin);
+//		break;
+//		default:
+//			__NOP();
+//		break;
+	if(GPIO_Pin == displayButtonPin) {
+		HAL_GPIO_TogglePin(GPIOB, displayLEDPin);
+	}
+	else if(GPIO_Pin == alarmEnableButtonPin) {
+		HAL_GPIO_TogglePin(GPIOB, alarmEnableLEDPin);
+	}
+	else if(GPIO_Pin == alarmSetButtonPin) {
+		HAL_GPIO_TogglePin(GPIOB, alarmSetLEDPin);
+	}
+	else if(GPIO_Pin == hourSetButtonPin) {
+		HAL_GPIO_TogglePin(GPIOA, hourSetLEDPin);
+	}
+	else if(GPIO_Pin == minuteSetButtonPin) {
+		HAL_GPIO_TogglePin(GPIOA, minuteSetLEDPin);
+	}
+	else if(GPIO_Pin == snoozeButtonPin) {
+		HAL_GPIO_TogglePin(GPIOB, snoozeButtonLEDPin);
+	}
+	else {
+		__NOP();
+	}
+//  if(GPIO_Pin == GPIO_PIN_1) {
+//    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
+//    printf("ISR Entered\n");
+//  } else {
+//      __NOP();
+//  }
 }
 
 /* USER CODE END 4 */
