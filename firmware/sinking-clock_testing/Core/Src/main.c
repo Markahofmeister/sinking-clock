@@ -41,6 +41,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+RTC_HandleTypeDef hrtc;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -66,6 +68,7 @@ const uint16_t alarmSetLEDPin = GPIO_PIN_1;			//Port B
 const uint16_t hourSetLEDPin = GPIO_PIN_10;			//Port A
 const uint16_t minuteSetLEDPin = GPIO_PIN_9;		//Port A
 const uint16_t snoozeButtonLEDPin = GPIO_PIN_0;		//Port B
+const uint16_t RTCInterruptLEDPin = GPIO_PIN_6;		//Port A
 
 /* USER CODE END PV */
 
@@ -73,6 +76,7 @@ const uint16_t snoozeButtonLEDPin = GPIO_PIN_0;		//Port B
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
 
 #ifdef __GNUC__
@@ -123,6 +127,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -156,10 +161,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -178,6 +184,94 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief RTC Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_RTC_Init(void)
+{
+
+  /* USER CODE BEGIN RTC_Init 0 */
+
+  /* USER CODE END RTC_Init 0 */
+
+  RTC_TimeTypeDef sTime = {0};
+  RTC_DateTypeDef sDate = {0};
+  RTC_AlarmTypeDef sAlarm = {0};
+
+  /* USER CODE BEGIN RTC_Init 1 */
+
+  /* USER CODE END RTC_Init 1 */
+
+  /** Initialize RTC Only
+  */
+  hrtc.Instance = RTC;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_12;
+  hrtc.Init.AsynchPrediv = 127;
+  hrtc.Init.SynchPrediv = 255;
+  hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+  hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+  hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+  hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+  hrtc.Init.OutPutPullUp = RTC_OUTPUT_PULLUP_NONE;
+  if (HAL_RTC_Init(&hrtc) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /* USER CODE BEGIN Check_RTC_BKUP */
+
+  /* USER CODE END Check_RTC_BKUP */
+
+  /** Initialize RTC and set the Time and Date
+  */
+  sTime.Hours = 0x1;
+  sTime.Minutes = 0x0;
+  sTime.Seconds = 0x0;
+  sTime.SubSeconds = 0x0;
+  sTime.TimeFormat = RTC_HOURFORMAT12_AM;
+  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+  sDate.Month = RTC_MONTH_JANUARY;
+  sDate.Date = 0x1;
+  sDate.Year = 0x0;
+
+  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Enable the Alarm A
+  */
+  sAlarm.AlarmTime.Hours = 0x1;
+  sAlarm.AlarmTime.Minutes = 0x0;
+  sAlarm.AlarmTime.Seconds = 0x1;
+  sAlarm.AlarmTime.SubSeconds = 0x0;
+  sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
+                              |RTC_ALARMMASK_MINUTES;
+  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+  sAlarm.AlarmDateWeekDay = 0x1;
+  sAlarm.Alarm = RTC_ALARM_A;
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN RTC_Init 2 */
+
+  /* USER CODE END RTC_Init 2 */
+
 }
 
 /**
@@ -234,10 +328,10 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, RTC_Interrupt_LED_Pin|Minute_Set_LED_Pin|Hour_Set_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Minute_Set_LED_Pin|Hour_Set_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -256,19 +350,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : RTC_Interrupt_LED_Pin Minute_Set_LED_Pin Hour_Set_LED_Pin */
+  GPIO_InitStruct.Pin = RTC_Interrupt_LED_Pin|Minute_Set_LED_Pin|Hour_Set_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   /*Configure GPIO pins : Snooze_LED_Pin Alarm_Set_LED_Pin Alarm_Enable_LED_Pin Display_LED_Pin */
   GPIO_InitStruct.Pin = Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : Minute_Set_LED_Pin Hour_Set_LED_Pin */
-  GPIO_InitStruct.Pin = Minute_Set_LED_Pin|Hour_Set_LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
@@ -284,35 +378,23 @@ static void MX_GPIO_Init(void)
   HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
 
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
+  // Initialize all output pins to low
+	HAL_GPIO_WritePin(GPIOB, displayLEDPin, 0);
+	HAL_GPIO_WritePin(GPIOB, alarmEnableLEDPin, 0);
+	HAL_GPIO_WritePin(GPIOB, alarmSetLEDPin, 0);
+	HAL_GPIO_WritePin(GPIOA, hourSetLEDPin, 0);
+	HAL_GPIO_WritePin(GPIOA, minuteSetLEDPin, 0);
+	HAL_GPIO_WritePin(GPIOB, snoozeButtonLEDPin, 0);
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
-//	switch(GPIO_Pin) {
-//		case displayButtonPin:
-//			HAL_GPIO_TogglePin(GPIOB, displayLEDPin);
-//		break;
-//		case alarmEnableButtonPin:
-//			HAL_GPIO_TogglePin(GPIOB, alarmEnableLEDPin);
-//		break;
-//		case alarmSetButtonPin:
-//			HAL_GPIO_TogglePin(GPIOB, alarmSetLEDPin);
-//		break;
-//		case hourSetButtonPin:
-//			HAL_GPIO_TogglePin(GPIOA, hourSetLEDPin);
-//		break;
-//		case minuteSetButtonPin:
-//			HAL_GPIO_TogglePin(GPIOA, minuteSetLEDPin);
-//		break;
-//		case snoozeButtonPin:
-//			HAL_GPIO_TogglePin(GPIOB, snoozeButtonLEDPin);
-//		break;
-//		default:
-//			__NOP();
-//		break;
 	if(GPIO_Pin == displayButtonPin) {
 		HAL_GPIO_TogglePin(GPIOB, displayLEDPin);
 	}
@@ -340,6 +422,20 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 //  } else {
 //      __NOP();
 //  }
+}
+
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
+
+  RTC_AlarmTypeDef sAlarm;
+  HAL_RTC_GetAlarm(hrtc,&sAlarm,RTC_ALARM_A,FORMAT_BIN);
+
+  if(sAlarm.AlarmTime.Seconds>58) {
+    sAlarm.AlarmTime.Seconds=0;
+  } else {
+    sAlarm.AlarmTime.Seconds=sAlarm.AlarmTime.Seconds+1;
+  }
+    while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
+    HAL_GPIO_TogglePin(GPIOA, RTCInterruptLEDPin);
 }
 
 /* USER CODE END 4 */

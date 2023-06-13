@@ -72,8 +72,12 @@ void Error_Handler(void);
 #define T_VCP_RX_GPIO_Port GPIOA
 #define Alarm_Set_Button_Pin GPIO_PIN_4
 #define Alarm_Set_Button_GPIO_Port GPIOA
+#define Alarm_Set_Button_EXTI_IRQn EXTI4_15_IRQn
 #define Hour_Set_Button_Pin GPIO_PIN_5
 #define Hour_Set_Button_GPIO_Port GPIOA
+#define Hour_Set_Button_EXTI_IRQn EXTI4_15_IRQn
+#define RTC_Interrupt_LED_Pin GPIO_PIN_6
+#define RTC_Interrupt_LED_GPIO_Port GPIOA
 #define Snooze_LED_Pin GPIO_PIN_0
 #define Snooze_LED_GPIO_Port GPIOB
 #define Alarm_Set_LED_Pin GPIO_PIN_1
@@ -86,8 +90,10 @@ void Error_Handler(void);
 #define Hour_Set_LED_GPIO_Port GPIOA
 #define Snooze_Button_Pin GPIO_PIN_11
 #define Snooze_Button_GPIO_Port GPIOA
+#define Snooze_Button_EXTI_IRQn EXTI4_15_IRQn
 #define Minute_Set_Button_Pin GPIO_PIN_12
 #define Minute_Set_Button_GPIO_Port GPIOA
+#define Minute_Set_Button_EXTI_IRQn EXTI4_15_IRQn
 #define T_JTMS_Pin GPIO_PIN_13
 #define T_JTMS_GPIO_Port GPIOA
 #define T_JTCK_Pin GPIO_PIN_14
