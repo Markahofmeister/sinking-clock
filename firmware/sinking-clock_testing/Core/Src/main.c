@@ -429,6 +429,14 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
   RTC_AlarmTypeDef sAlarm;
   HAL_RTC_GetAlarm(hrtc,&sAlarm,RTC_ALARM_A,FORMAT_BIN);
 
+  printf("Enter alarm interrupt");
+  printf("\n");
+
+  RTC_TimeTypeDef currTime;
+  RTC_DateTypeDef currDate;
+  HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);
+
   if(sAlarm.AlarmTime.Seconds>58) {
     sAlarm.AlarmTime.Seconds=0;
   } else {
