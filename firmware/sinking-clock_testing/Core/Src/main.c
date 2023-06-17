@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include <string.h>
 
 /* USER CODE END Includes */
 
@@ -72,6 +73,35 @@ const uint16_t minuteSetLEDPin = GPIO_PIN_9;		//Port A
 const uint16_t snoozeButtonLEDPin = GPIO_PIN_0;		//Port B
 const uint16_t RTCInterruptLEDPin = GPIO_PIN_6;		//Port A
 
+/*
+ * Seven-segment display I2C peripheral address, configuration register addresses,
+ * and configuration register data
+ */
+
+uint8_t sevSeg_addr = 0x70;				//MAX5868 I2C address
+
+const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
+const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
+//Data buffer to send over I2C
+uint8_t sevSeg_decodeBuffer[10] = {sevSeg_decodeReg, sevSeg_decodeData};
+
+uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
+// Internsity register takes 0bXX000000 to 0bXX111111 for 1/64 step intensity increments
+
+const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
+const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
+const uint8_t sevSeg_SD_OFF = 0x00;			//Display OFF - only mess with bit 0
+//Data buffer to send over I2C
+uint8_t sevSeg_SD_ONBuff = {sevSeg_SDReg, sevSeg_SD_ON};
+uint8_t sevSeg_SD_OFFBuff = {sevSeg_SDReg, sevSeg_SD_OFF};
+
+const uint8_t sevSeg_testReg = 0x07;			//Address for display test
+const uint8_t sevSeg_testOFF = 0x00;			//Display test OFF
+const uint8_t sevSeg_testON = 0x01;			//Display test ON
+//Data buffer to send over I2C
+uint8_t sevSeg_testOFFBuff = {sevSeg_testReg, sevSeg_testOFF};
+uint8_t sevSeg_testONBuff = {sevSeg_testReg, sevSeg_testON};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,6 +111,8 @@ static void MX_USART2_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
+
+static void sevSeg_I2C1_Init(void);
 
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -118,6 +150,8 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
+  sevSeg_I2C1_Init();			//Initialize 7-segment display to test mode
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -140,7 +174,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
+	  //printf("Serial Test\r\n");
+	  //HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -206,7 +241,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x00303D5B;
+  hi2c1.Init.Timing = 0x0010061A;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -496,6 +531,51 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
   }
     while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
     HAL_GPIO_TogglePin(GPIOA, RTCInterruptLEDPin);
+}
+
+static void sevSeg_I2C1_Init(void) {
+
+
+	/*
+	 * Master TX format:
+	 * HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, 		--> config struct (declared up top)
+	 * 						   uint16_t DevAddress, 			--> peripheral address
+	 * 						   uint8_t *pData,					--> pointer to buffer of data to be sent
+     *                         uint16_t Size, 					--> Size of data
+     *                         uint32_t Timeout);				--> timeout until return
+	 */
+
+	HAL_StatusTypeDef HalRet;
+
+	//Set display to decode hex data inputs
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr << 1), sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Not OK :( \n\r");
+	} else{
+		printf("HAL OK :)");
+	}
+
+	//Disable shutdown mode
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr << 1), sevSeg_SD_OFFBuff, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Not OK :( \n\r");
+	} else {
+		printf("HAL OK :)");
+	}
+
+	//Set to test mode
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr << 1), sevSeg_testONBuff, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Not OK :( \n\r");
+	} else {
+		printf("HAL OK :)");
+	}
+
+	return;
+
 }
 
 /* USER CODE END 4 */
