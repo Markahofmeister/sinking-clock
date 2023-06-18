@@ -78,7 +78,7 @@ const uint16_t RTCInterruptLEDPin = GPIO_PIN_6;		//Port A
  * and configuration register data
  */
 
-uint8_t sevSeg_addr = 0x70;				//MAX5868 I2C address
+uint8_t sevSeg_addr = (0x38 << 1);			//MAX5868 I2C address. 0x038 shifted left for the R/W' bit
 
 const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
 const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
@@ -86,7 +86,7 @@ const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segme
 uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
 
 uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
-// Internsity register takes 0bXX000000 to 0bXX111111 for 1/64 step intensity increments
+// Intensity register takes 0bXX000000 to 0bXX111111 for 1/64 step intensity increments
 
 const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
 const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
@@ -101,6 +101,13 @@ const uint8_t sevSeg_testON = 0x01;			//Display test ON
 //Data buffer to send over I2C
 uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
 uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
+
+
+const uint8_t sevSeg_digit0Reg = 0x20;
+const uint8_t sevSeg_digit1Reg = 0x21;
+const uint8_t sevSeg_digit2Reg = 0x22;
+const uint8_t sevSeg_digit3Reg = 0x23;
+
 
 /* USER CODE END PV */
 
@@ -181,6 +188,25 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
+			  	  	  	  	  	  0x05, 0x06, 0x07, 0x08, 0x09};
+	  uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, 0x00};
+
+	  for (uint i = 0; i < 10; i++) {
+
+		sevSeg_digit0Buff[1] = dispDigits[i];
+
+		HAL_StatusTypeDef HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+
+		if(HalRet != HAL_OK) {		//check HAL
+			printf("HAL Error - TX digit data\n\r");
+		} else {
+			printf("Digit incremented and displayed\n\r");
+		}
+
+		HAL_Delay(1000);
+
+	  }
 
 //	  HAL_RTC_GetTime(hrtc, &currTimeMain, RTC_FORMAT_BIN);
 //	  HAL_RTC_GetDate(hrtc, &currDateMain, RTC_FORMAT_BIN);
@@ -557,30 +583,50 @@ static void sevSeg_I2C1_Init(void) {
 	HAL_StatusTypeDef HalRet;
 
 	//Set display to decode hex data inputs
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
-		printf("HAL Not OK :( \n\r");
+		printf("HAL Error - TX decode mode\n\r");
 	} else{
-		printf("HAL OK :)");
+		printf("Display set to decode mode\n\r");
 	}
 
 	//Disable shutdown mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
-		printf("HAL Not OK :( \n\r");
+		printf("HAL Error - TX disable shutdown mode\n\r");
 	} else {
-		printf("HAL OK :)");
+		printf("Display shutdown mode disabled\n\r");
 	}
 
 	//Set to test mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_testONBuff, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
-		printf("HAL Not OK :( \n\r");
+		printf("HAL Error - TX test mode ON data\n\r");
 	} else {
-		printf("HAL OK :)");
+		printf("Test mode enabled - all LEDs on\n\r");
+	}
+
+//	uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 0b00100000};	//intensity = 32/64
+//	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+//
+//	if(HalRet != HAL_OK) {		//check HAL
+//		printf("HAL Error - TX intensity level data\n\r");
+//	} else {
+//		printf("Intensity Set\n\r");
+//	}
+
+	HAL_Delay(500);
+
+	//Set to test mode
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX test mode OFF data\n\r");
+	} else {
+		printf("Test mode disabled - all LEDs off\n\r");
 	}
 
 	return;
