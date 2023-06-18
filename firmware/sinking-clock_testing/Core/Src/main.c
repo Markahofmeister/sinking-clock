@@ -150,8 +150,6 @@ int main(void)
 
   /* USER CODE BEGIN Init */
 
-  sevSeg_I2C1_Init();			//Initialize 7-segment display to test mode
-
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -168,14 +166,25 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
+  sevSeg_I2C1_Init();			//Initialize 7-segment display to test mode
+
+//  RTC_TimeTypeDef currTimeMain;
+//  RTC_DateTypeDef currDateMain;
+//  HAL_RTC_GetTime(hrtc, &currTimeMain, RTC_HourFormat_12);
+//  HAL_RTC_GetDate(hrtc, &currDateMain, RTC_FORMAT_BIN);
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //printf("Serial Test\r\n");
-	  //HAL_Delay(100);
+
+//	  HAL_RTC_GetTime(hrtc, &currTimeMain, RTC_FORMAT_BIN);
+//	  HAL_RTC_GetDate(hrtc, &currDateMain, RTC_FORMAT_BIN);
+
 
     /* USER CODE END WHILE */
 
@@ -548,7 +557,7 @@ static void sevSeg_I2C1_Init(void) {
 	HAL_StatusTypeDef HalRet;
 
 	//Set display to decode hex data inputs
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr << 1), sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
 		printf("HAL Not OK :( \n\r");
@@ -557,7 +566,7 @@ static void sevSeg_I2C1_Init(void) {
 	}
 
 	//Disable shutdown mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr << 1), sevSeg_SD_OFFBuff, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_SD_OFFBuff, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
 		printf("HAL Not OK :( \n\r");
@@ -566,7 +575,7 @@ static void sevSeg_I2C1_Init(void) {
 	}
 
 	//Set to test mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr << 1), sevSeg_testONBuff, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_testONBuff, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
 		printf("HAL Not OK :( \n\r");
