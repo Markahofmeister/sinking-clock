@@ -188,6 +188,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+//		uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 0b00111111};	//intensity
+//		HAL_StatusTypeDef HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+//
+//		if(HalRet != HAL_OK) {		//check HAL
+//			printf("HAL Error - TX intensity level data\n\r");
+//		} else {
+//			printf("Intensity Set\n\r");
+//		}
+
 	  uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
 			  	  	  	  	  	  0x05, 0x06, 0x07, 0x08, 0x09};
 	  uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, 0x00};
@@ -196,7 +206,7 @@ int main(void)
 
 		sevSeg_digit0Buff[1] = dispDigits[i];
 
-		HAL_StatusTypeDef HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
 
 		if(HalRet != HAL_OK) {		//check HAL
 			printf("HAL Error - TX digit data\n\r");
