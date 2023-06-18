@@ -83,7 +83,7 @@ uint8_t sevSeg_addr = 0x70;				//MAX5868 I2C address
 const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
 const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
 //Data buffer to send over I2C
-uint8_t sevSeg_decodeBuffer[10] = {sevSeg_decodeReg, sevSeg_decodeData};
+uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
 
 uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
 // Internsity register takes 0bXX000000 to 0bXX111111 for 1/64 step intensity increments
@@ -92,15 +92,15 @@ const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
 const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
 const uint8_t sevSeg_SD_OFF = 0x00;			//Display OFF - only mess with bit 0
 //Data buffer to send over I2C
-uint8_t sevSeg_SD_ONBuff = {sevSeg_SDReg, sevSeg_SD_ON};
-uint8_t sevSeg_SD_OFFBuff = {sevSeg_SDReg, sevSeg_SD_OFF};
+uint8_t sevSeg_SD_ONBuff[10] = {sevSeg_SDReg, sevSeg_SD_ON};
+uint8_t sevSeg_SD_OFFBuff[10] = {sevSeg_SDReg, sevSeg_SD_OFF};
 
 const uint8_t sevSeg_testReg = 0x07;			//Address for display test
 const uint8_t sevSeg_testOFF = 0x00;			//Display test OFF
 const uint8_t sevSeg_testON = 0x01;			//Display test ON
 //Data buffer to send over I2C
-uint8_t sevSeg_testOFFBuff = {sevSeg_testReg, sevSeg_testOFF};
-uint8_t sevSeg_testONBuff = {sevSeg_testReg, sevSeg_testON};
+uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
+uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
 
 /* USER CODE END PV */
 
@@ -566,7 +566,7 @@ static void sevSeg_I2C1_Init(void) {
 	}
 
 	//Disable shutdown mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_SD_OFFBuff, 2, HAL_MAX_DELAY);
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, (sevSeg_addr), sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
 
 	if(HalRet != HAL_OK) {		//check HAL
 		printf("HAL Not OK :( \n\r");
