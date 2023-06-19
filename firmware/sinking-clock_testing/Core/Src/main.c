@@ -189,34 +189,25 @@ int main(void)
   while (1)
   {
 
-//		uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 0b00111111};	//intensity
-//		HAL_StatusTypeDef HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+//	  uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
+//			  	  	  	  	  	  0x05, 0x06, 0x07, 0x08, 0x09};
+//	  uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, 0x00};
+//
+//	  for (uint i = 0; i < 10; i++) {
+//
+//		sevSeg_digit0Buff[1] = dispDigits[i];
+//
+//		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
 //
 //		if(HalRet != HAL_OK) {		//check HAL
-//			printf("HAL Error - TX intensity level data\n\r");
+//			printf("HAL Error - TX digit data\n\r");
 //		} else {
-//			printf("Intensity Set\n\r");
+//			printf("Digit incremented and displayed\n\r");
 //		}
+//
+//		HAL_Delay(1000);
 
-	  uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
-			  	  	  	  	  	  0x05, 0x06, 0x07, 0x08, 0x09};
-	  uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, 0x00};
-
-	  for (uint i = 0; i < 10; i++) {
-
-		sevSeg_digit0Buff[1] = dispDigits[i];
-
-		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
-
-		if(HalRet != HAL_OK) {		//check HAL
-			printf("HAL Error - TX digit data\n\r");
-		} else {
-			printf("Digit incremented and displayed\n\r");
-		}
-
-		HAL_Delay(1000);
-
-	  }
+//	  }
 
 //	  HAL_RTC_GetTime(hrtc, &currTimeMain, RTC_FORMAT_BIN);
 //	  HAL_RTC_GetDate(hrtc, &currDateMain, RTC_FORMAT_BIN);
@@ -561,13 +552,12 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
   RTC_AlarmTypeDef sAlarm;
   HAL_RTC_GetAlarm(hrtc,&sAlarm,RTC_ALARM_A,FORMAT_BIN);
 
-  printf("Enter alarm interrupt");
-  printf("\n");
+  printf("Enter alarm interrupt\n\r");
 
   RTC_TimeTypeDef currTime;
   RTC_DateTypeDef currDate;
   HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
-  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);
+  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);		//get date is necessary, else RTC will not update time
 
   if(sAlarm.AlarmTime.Seconds>58) {
     sAlarm.AlarmTime.Seconds=0;
@@ -576,6 +566,9 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
   }
     while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
     HAL_GPIO_TogglePin(GPIOA, RTCInterruptLEDPin);
+
+  printf("Current time: %d : %d : %d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+
 }
 
 static void sevSeg_I2C1_Init(void) {
