@@ -9,7 +9,7 @@
 
 ## System Diagram
 
-![](figures/system-diagrams/system-diagram-v1.png)
+![](figures/system-diagrams/system-diagram-v2.png)
 
 ## Flowcharts
 ### Main Thread

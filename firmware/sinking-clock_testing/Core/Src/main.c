@@ -80,6 +80,8 @@ const uint16_t RTCInterruptLEDPin = GPIO_PIN_6;		//Port A
 
 uint8_t sevSeg_addr = (0x38 << 1);			//MAX5868 I2C address. 0x038 shifted left for the R/W' bit
 
+
+
 const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
 const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
 //Data buffer to send over I2C
@@ -107,6 +109,11 @@ const uint8_t sevSeg_digit0Reg = 0x20;
 const uint8_t sevSeg_digit1Reg = 0x21;
 const uint8_t sevSeg_digit2Reg = 0x22;
 const uint8_t sevSeg_digit3Reg = 0x23;
+
+/*
+ * Cap touch I2C peripheral data
+ */
+const uint8_t capTouch_addr = (0x37 << 1);
 
 
 /* USER CODE END PV */
