@@ -33,7 +33,6 @@ firmware/.metadata/
 # Misc
 *.map
 *.m
-*.png
 
 # Eclipse CDT project files
 .cproject
@@ -51,4 +50,4 @@ firmware/.metadata/
 /lib
 
 
-# ### Altium Files ### 
+# ### Altium Files ###
