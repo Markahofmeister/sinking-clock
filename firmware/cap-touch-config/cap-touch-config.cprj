@@ -16,7 +16,44 @@
       <guardEnabled>false</guardEnabled>
       <shieldEnabled>false</shieldEnabled>
       <fmeaEnabled>true</fmeaEnabled>
-      <CSButtons />
+      <CSButtons>
+        <Item>
+          <proximity>false</proximity>
+          <proximityWakeup>false</proximityWakeup>
+          <proximityTouchThreshold>512</proximityTouchThreshold>
+          <proximityResolution>16</proximityResolution>
+          <proximityPositiveThreshold>30</proximityPositiveThreshold>
+          <proximityNegativeThreshold>30</proximityNegativeThreshold>
+          <enabled>true</enabled>
+          <name>Button</name>
+          <pin>7</pin>
+          <sensitivity>S_100fF</sensitivity>
+          <fingerThreshold>128</fingerThreshold>
+          <flankingSensorSuppression>false</flankingSensorSuppression>
+          <minSNR>0</minSNR>
+          <maxSNR>15</maxSNR>
+          <minCp>0</minCp>
+          <maxCp>255</maxCp>
+        </Item>
+        <Item>
+          <proximity>false</proximity>
+          <proximityWakeup>false</proximityWakeup>
+          <proximityTouchThreshold>512</proximityTouchThreshold>
+          <proximityResolution>16</proximityResolution>
+          <proximityPositiveThreshold>30</proximityPositiveThreshold>
+          <proximityNegativeThreshold>30</proximityNegativeThreshold>
+          <enabled>true</enabled>
+          <name>GPO</name>
+          <pin>6</pin>
+          <sensitivity>S_100fF</sensitivity>
+          <fingerThreshold>128</fingerThreshold>
+          <flankingSensorSuppression>false</flankingSensorSuppression>
+          <minSNR>0</minSNR>
+          <maxSNR>15</maxSNR>
+          <minCp>0</minCp>
+          <maxCp>255</maxCp>
+        </Item>
+      </CSButtons>
       <Sliders />
       <emcImmunity>false</emcImmunity>
       <adaptiveThreshold>true</adaptiveThreshold>
@@ -31,12 +68,22 @@
       <driveMode>OPENDRAINLOW</driveMode>
       <gpoActiveState>false</gpoActiveState>
       <enableLedBrightness>false</enableLedBrightness>
-      <pin0Function>DISABLED</pin0Function>
+      <pin0Function>CAPSENSE</pin0Function>
       <pin1Function>DISABLED</pin1Function>
       <gpioHostControl>false</gpioHostControl>
       <timeout>10</timeout>
       <disableVreg>false</disableVreg>
-      <CY8CMBR31XXLEDGPOConfig />
+      <CY8CMBR31XXLEDGPOConfig>
+        <Item>
+          <name>LED1</name>
+          <pin>6</pin>
+          <onBrightness>15</onBrightness>
+          <offBrightness>0</offBrightness>
+          <toggle>false</toggle>
+          <delayOff>false</delayOff>
+          <enabled>false</enabled>
+        </Item>
+      </CY8CMBR31XXLEDGPOConfig>
     </GlobalConfig>
   </Configurations>
 </CSCTPrj>

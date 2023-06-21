@@ -34,34 +34,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := sinking-clock
+BUILD_ARTIFACT_NAME := sinking-clock_master_NUCLEO
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-sinking-clock.elf \
+sinking-clock_master_NUCLEO.elf \
 
 MAP_FILES += \
-sinking-clock.map \
+sinking-clock_master_NUCLEO.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-sinking-clock.list \
+sinking-clock_master_NUCLEO.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: sinking-clock.elf secondary-outputs
+main-build: sinking-clock_master_NUCLEO.elf secondary-outputs
 
 # Tool invocations
-sinking-clock.elf sinking-clock.map: $(OBJS) $(USER_OBJS) C:\Lab\sinking-clock\firmware\sinking-clock\STM32G031K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "sinking-clock.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Lab\sinking-clock\firmware\sinking-clock\STM32G031K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sinking-clock.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+sinking-clock_master_NUCLEO.elf sinking-clock_master_NUCLEO.map: $(OBJS) $(USER_OBJS) C:\Lab\sinking-clock\firmware\sinking-clock\STM32G031K8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "sinking-clock_master_NUCLEO.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Lab\sinking-clock\firmware\sinking-clock\STM32G031K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="sinking-clock_master_NUCLEO.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -70,14 +70,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-sinking-clock.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "sinking-clock.list"
+sinking-clock_master_NUCLEO.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "sinking-clock_master_NUCLEO.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) default.size.stdout sinking-clock.elf sinking-clock.list sinking-clock.map
+	-$(RM) default.size.stdout sinking-clock_master_NUCLEO.elf sinking-clock_master_NUCLEO.list sinking-clock_master_NUCLEO.map
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
