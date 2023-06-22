@@ -26,7 +26,7 @@ void callISR(uint16_t GPIO_Pin);
  * @param
  * @retval
  */
-uint8_t displayToggle = 1;		// flag to track current state of display
+
 void displayISR();
 
 /*

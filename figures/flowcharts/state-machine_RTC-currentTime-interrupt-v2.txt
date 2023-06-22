@@ -1,0 +1,13 @@
+@startuml
+#Red:RTC Current Time Interrupt;
+partition "RTC Time Increment ISR" {
+:Get current clock time;
+:Send current clock time to 7-segment display;
+
+if (is P.M.?) then (yes)
+   :P.M. LED ON;
+else(no)
+   :P.M. LED OFF;
+endif
+}
+@enduml
