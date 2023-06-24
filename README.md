@@ -18,13 +18,13 @@
 <!---
 <a href="url"><img src="https://github.com/Markahofmeister/sinking-clock/figures/flowcharts/state-machine_RTC-interrupt-v1.png" width=50%></a>
 -->
-![](figures/flowcharts/state-machine_RTC-currentTime-interrupt-v*.png) 
-![](figures/flowcharts/state-machine_RTC-userAlarm-interrupt-v*.png) 
-![](figures/flowcharts/state-machine_display-button-interrupt-v*.png) 
-![](figures/flowcharts/state-machine_alarm-ENABLE-button-interrupt-v*.png) 
-![](figures/flowcharts/state-machine_alarm-SET-button-interrupt-v*.png) 
-![](figures/flowcharts/state-machine_hour-SET-button-interrupt-v*.png) 
-![](figures/flowcharts/state-machine_minute-SET-button-interrupt-v*.png) 
+![](figures/flowcharts/state-machine_RTC-currentTime-interrupt-v2.png) 
+![](figures/flowcharts/state-machine_RTC-userAlarm-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_display-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_alarm-ENABLE-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_alarm-SET-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_hour-SET-button-interrupt-v1.png) 
+![](figures/flowcharts/state-machine_minute-SET-button-interrupt-v1.png) 
 
 ## Exploded Mechanical View
 	
