@@ -1,5 +1,5 @@
 "Purchase the ""cut tape"" option from DigiKey for all items.",,,,,,,,,,,
-,Item,MFR,MFR P/N,Vendor,Vendor P/N,Quantity,Price,Total Price ,Product link ,,Project Total
+,Item,MFR,MFR P/N,Vendor,Vendor P/N,Quantity,Price,Total Price ,Product link ,,Haul Total
 ,STM32G0 Nucleo Development Board,STMicroelectronics,NUCLEO-G031K8,DigiKey,497-19569-ND,1,$10.97,$10.97,https://www.digikey.com/en/products/detail/stmicroelectronics/NUCLEO-G031K8/10321671,,$94.54
 ,Real-Time Clock (DIP Package) ,Microchip Technology,MCP7940N-I/P,DigiKey,MCP7940N-I/P-ND,3,$0.92,$2.76,https://www.digikey.com/en/products/detail/microchip-technology/MCP7940N-I-P/3872279,,
 ,32.768 kHz clock (TH package),ECS Inc.,ECS-.327-8-14X,DigiKey,X1125-ND,2,$1.17,$2.34,https://www.digikey.com/en/products/detail/ecs-inc/ECS-327-8-14X/827616,,
