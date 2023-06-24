@@ -49,6 +49,71 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+/*
+ * Declare variables to map button presses to GPIOs
+ */
+const uint16_t displayButtonPin = GPIO_PIN_0;
+const uint16_t alarmEnableButtonPin = GPIO_PIN_1;
+const uint16_t alarmSetButtonPin = GPIO_PIN_4;
+const uint16_t hourSetButtonPin = GPIO_PIN_5;
+const uint16_t minuteSetButtonPin = GPIO_PIN_12;
+const uint16_t snoozeButtonPin = GPIO_PIN_11;
+
+/*
+ * Map GPIOS to some lED outputs
+ */
+
+const uint16_t alarmLED = GPIO_PIN_7;			//Port B
+const uint16_t PMLED = GPIO_PIN_6;				//Port B
+const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
+
+/*
+ * Seven-segment display I2C peripheral address, configuration register addresses,
+ * and configuration register data
+ */
+
+uint8_t sevSeg_addr = (0x38 << 1);			//MAX5868 I2C address. 0x038 shifted left for the R/W' bit
+
+
+
+const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
+const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
+//Data buffer to send over I2C
+uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
+
+uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
+// Intensity register takes 0bXX000000 to 0bXX111111 for 1/64 step intensity increments
+
+const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
+const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
+const uint8_t sevSeg_SD_OFF = 0x00;			//Display OFF - only mess with bit 0
+//Data buffer to send over I2C
+uint8_t sevSeg_SD_ONBuff[10] = {sevSeg_SDReg, sevSeg_SD_ON};
+uint8_t sevSeg_SD_OFFBuff[10] = {sevSeg_SDReg, sevSeg_SD_OFF};
+
+const uint8_t sevSeg_testReg = 0x07;			//Address for display test
+const uint8_t sevSeg_testOFF = 0x00;			//Display test OFF
+const uint8_t sevSeg_testON = 0x01;			//Display test ON
+//Data buffer to send over I2C
+uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
+uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
+
+
+const uint8_t sevSeg_digit0Reg = 0x20;
+const uint8_t sevSeg_digit1Reg = 0x21;
+const uint8_t sevSeg_digit2Reg = 0x22;
+const uint8_t sevSeg_digit3Reg = 0x23;
+
+/*
+ * Toggle Variables
+ */
+
+// Display Toggle: 0 = 0% display Intensity, 1 = 50% display brightness, 2 = 100% display brightness
+uint8_t displayToggle = 1;
+
+// Variable to toggle user alarm on or off. Default to off.
+uint8_t userAlarmToggle = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -59,6 +124,7 @@ static void MX_I2C1_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
 
+static void sevSeg_I2C1_Init(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -114,6 +180,8 @@ int main(void)
   MX_I2C1_Init();
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
+
+  sevSeg_I2C1_Init();
 
   /* USER CODE END 2 */
 
@@ -369,6 +437,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, Buzzer_Output_Pin|PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : T_NRST_Pin */
@@ -378,12 +449,19 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(T_NRST_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Display_Button_Pin Alarm_Enable_Button_Pin Alarm_Set_Button_Pin Hour_Set_Button_Pin
-                           Snooze_Button_Pin Minute_Set_Button_Pin */
+                           Minute_Set_Button_Pin */
   GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Enable_Button_Pin|Alarm_Set_Button_Pin|Hour_Set_Button_Pin
-                          |Snooze_Button_Pin|Minute_Set_Button_Pin;
+                          |Minute_Set_Button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Buzzer_Output_Pin PM_LED_Pin Alarm_LED_Pin */
+  GPIO_InitStruct.Pin = Buzzer_Output_Pin|PM_LED_Pin|Alarm_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
@@ -392,11 +470,82 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : Snooze_Button_Pin */
+  GPIO_InitStruct.Pin = Snooze_Button_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Snooze_Button_GPIO_Port, &GPIO_InitStruct);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+
+void sevSeg_I2C1_Init(void) {
+
+
+	/*
+	 * Master TX format:
+	 * HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, 		--> config struct (declared up top)
+	 * 						   uint16_t DevAddress, 			--> peripheral address
+	 * 						   uint8_t *pData,					--> pointer to buffer of data to be sent
+     *                         uint16_t Size, 					--> Size of data
+     *                         uint32_t Timeout);				--> timeout until return
+	 */
+
+	HAL_StatusTypeDef HalRet;
+
+	//Set display to decode hex data inputs
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX decode mode\n\r");
+	} else{
+		printf("Display set to decode mode\n\r");
+	}
+
+	//Disable shutdown mode
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX disable shutdown mode\n\r");
+	} else {
+		printf("Display shutdown mode disabled\n\r");
+	}
+
+	//Set to test mode
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX test mode ON data\n\r");
+	} else {
+		printf("Test mode enabled - all LEDs on\n\r");
+	}
+
+//	uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 0b00100000};	//intensity = 32/64
+//	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+//
+//	if(HalRet != HAL_OK) {		//check HAL
+//		printf("HAL Error - TX intensity level data\n\r");
+//	} else {
+//		printf("Intensity Set\n\r");
+//	}
+
+	HAL_Delay(500);
+
+	//Set to test mode
+	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
+
+	if(HalRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX test mode OFF data\n\r");
+	} else {
+		printf("Test mode disabled - all LEDs off\n\r");
+	}
+
+	return;
+
+}
 
 /* USER CODE END 4 */
 

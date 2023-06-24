@@ -71,6 +71,8 @@ void Error_Handler(void);
 #define Alarm_Set_Button_GPIO_Port GPIOA
 #define Hour_Set_Button_Pin GPIO_PIN_5
 #define Hour_Set_Button_GPIO_Port GPIOA
+#define Buzzer_Output_Pin GPIO_PIN_1
+#define Buzzer_Output_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_6
 #define LD3_GPIO_Port GPIOC
 #define Snooze_Button_Pin GPIO_PIN_11
@@ -81,6 +83,10 @@ void Error_Handler(void);
 #define T_JTMS_GPIO_Port GPIOA
 #define T_JTCK_Pin GPIO_PIN_14
 #define T_JTCK_GPIO_Port GPIOA
+#define PM_LED_Pin GPIO_PIN_6
+#define PM_LED_GPIO_Port GPIOB
+#define Alarm_LED_Pin GPIO_PIN_7
+#define Alarm_LED_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
