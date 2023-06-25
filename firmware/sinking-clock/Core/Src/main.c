@@ -68,6 +68,13 @@ const uint16_t PMLED = GPIO_PIN_6;				//Port B
 const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
 
 /*
+ * RTC access objects
+ */
+
+RTC_TimeTypeDef currTime;
+RTC_DateTypeDef currDate;
+
+/*
  * Seven-segment display I2C peripheral address, configuration register addresses,
  * and configuration register data
  */
@@ -98,11 +105,21 @@ const uint8_t sevSeg_testON = 0x01;			//Display test ON
 uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
 uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
 
-
 const uint8_t sevSeg_digit0Reg = 0x20;
 const uint8_t sevSeg_digit1Reg = 0x21;
 const uint8_t sevSeg_digit2Reg = 0x22;
 const uint8_t sevSeg_digit3Reg = 0x23;
+
+
+const uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
+	  	  	  	  	  	  	  	0x05, 0x06, 0x07, 0x08, 0x09};
+
+//Data buffers to send to each individual LED display
+uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, dispDigits[0]};
+uint8_t sevSeg_digit1Buff[2] = {sevSeg_digit1Reg, dispDigits[0]};
+uint8_t sevSeg_digit2Buff[2] = {sevSeg_digit2Reg, dispDigits[0]};
+uint8_t sevSeg_digit3Buff[2] = {sevSeg_digit3Reg, dispDigits[0]};
+
 
 /*
  * Toggle Variables
@@ -124,7 +141,15 @@ static void MX_I2C1_Init(void);
 static void MX_RTC_Init(void);
 /* USER CODE BEGIN PFP */
 
+/*
+ * Initializes seven segment display IC registers
+ */
 static void sevSeg_I2C1_Init(void);
+
+/*
+ * Call to fetch the current time from the RTC and send to the LED display.
+ */
+HAL_StatusTypeDef updateAndDisplayTime(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -189,6 +214,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	  //HAL_StatusTypeDef halReturn = updateAndDisplayTime();
+
+	  //HAL_Delay(500);
 
     /* USER CODE END WHILE */
 
@@ -400,7 +429,7 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
   huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_7B;
+  huart2.Init.WordLength = UART_WORDLENGTH_9B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
   huart2.Init.Mode = UART_MODE_TX_RX;
@@ -494,58 +523,119 @@ void sevSeg_I2C1_Init(void) {
      *                         uint32_t Timeout);				--> timeout until return
 	 */
 
-	HAL_StatusTypeDef HalRet;
+	HAL_StatusTypeDef halRet;
 
 	//Set display to decode hex data inputs
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
 
-	if(HalRet != HAL_OK) {		//check HAL
+	if(halRet != HAL_OK) {		//check HAL
 		printf("HAL Error - TX decode mode\n\r");
 	} else{
 		printf("Display set to decode mode\n\r");
 	}
 
 	//Disable shutdown mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
 
-	if(HalRet != HAL_OK) {		//check HAL
+	if(halRet != HAL_OK) {		//check HAL
 		printf("HAL Error - TX disable shutdown mode\n\r");
 	} else {
 		printf("Display shutdown mode disabled\n\r");
 	}
 
 	//Set to test mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
 
-	if(HalRet != HAL_OK) {		//check HAL
+	if(halRet != HAL_OK) {		//check HAL
 		printf("HAL Error - TX test mode ON data\n\r");
 	} else {
 		printf("Test mode enabled - all LEDs on\n\r");
 	}
 
 //	uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 0b00100000};	//intensity = 32/64
-//	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+//	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
 //
-//	if(HalRet != HAL_OK) {		//check HAL
+//	if(halRet != HAL_OK) {		//check HAL
 //		printf("HAL Error - TX intensity level data\n\r");
 //	} else {
 //		printf("Intensity Set\n\r");
 //	}
 
-	HAL_Delay(500);
+	HAL_Delay(1000);
 
 	//Set to test mode
-	HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
 
-	if(HalRet != HAL_OK) {		//check HAL
+	if(halRet != HAL_OK) {		//check HAL
 		printf("HAL Error - TX test mode OFF data\n\r");
 	} else {
 		printf("Test mode disabled - all LEDs off\n\r");
 	}
 
+	// Set and display current time (12:00 A.M.)
+
+	currTime.Hours = 12;
+	currTime.Minutes = 0;
+	currTime.Seconds = 0;
+
+	currDate.Year = 0;
+	currDate.Month = RTC_MONTH_JANUARY;
+	currDate.Date = 0;
+
+	HAL_RTC_SetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
+	HAL_RTC_SetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+
+	printf("Current time defaulted to: %d:%d:%d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+
+	halRet = updateAndDisplayTime();
+
+	if(halRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX current time\n\r");
+	} else {
+		printf("Display Updated with current time\n\r");
+	}
+
 	return;
 
 }
+
+HAL_StatusTypeDef updateAndDisplayTime(void) {
+
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
+	HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+
+//	if(halRet != HAL_OK) {
+//		printf("Error retrieving current time.\n\r");
+//	}
+//	else {
+//		printf("Time Update from RTC successfully");
+//	}
+
+	sevSeg_digit0Buff[1] = currTime.Hours / 10;
+	sevSeg_digit1Buff[1] = currTime.Hours % 10;
+	sevSeg_digit2Buff[1] = currTime.Minutes / 10;
+	sevSeg_digit3Buff[1] = currTime.Minutes % 10;
+
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
+
+//	if(halRet != HAL_OK) {
+//		printf("Error sending updated time to display.\n\r");
+//	}
+//	else {
+//		printf("Updated time sent to current display.\n\r");
+//	}
+
+	return halRet;
+
+}
+
+
+
 
 /* USER CODE END 4 */
 

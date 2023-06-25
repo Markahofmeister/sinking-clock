@@ -13,7 +13,7 @@
 
 ## Flowcharts
 ### Main Thread
-![](figures/flowcharts/state-machine_main-thread-v1.png) 
+![](figures/flowcharts/state-machine_main-thread-v2.png) 
 ### Interrupts
 <!---
 <a href="url"><img src="https://github.com/Markahofmeister/sinking-clock/figures/flowcharts/state-machine_RTC-interrupt-v1.png" width=50%></a>

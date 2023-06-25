@@ -3,12 +3,11 @@
 :Initialize I2C bus;
 :Initialize Alarm LED, PM LED, Alarm Buzzer
 GPIOs as outputs.;
-:Initialize 7-segment display driver. Turn on 7-segment display.;
-:Initialize alarm button, hour-set button, minute-set button,
-minute-set button, toggle display button GPIOs
-as external edge-triggered interrupts. 
+:Initialize alarm button, hour-set button, minute-set button,minute-set button, 
+toggle display button GPIOs as external edge-triggered interrupts. 
 Initialize snooze button GPIO as input. Initialize display toggle counter to 1 (display on 50%.);
-:Initialize RTC with 12:00 A.M. time. Disable alarms and date.;
+:Initialize RTC with 12:00 A.M. time. Enable minute interrupts on internal alarm and disable user alarm;
+:Initialize 7-segment display driver. Turn on 7-segment display.;
 :Send current time on clock display.;
 repeat :dead loop - wait for interrupts
 repeat while
