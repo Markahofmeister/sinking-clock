@@ -561,7 +561,7 @@ void sevSeg_I2C1_Init(void) {
 //		printf("Intensity Set\n\r");
 //	}
 
-	HAL_Delay(1000);
+	//HAL_Delay(1000);
 
 	//Set to test mode
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
@@ -634,7 +634,30 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 
 }
 
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
+	  RTC_AlarmTypeDef sAlarm;
+	  HAL_RTC_GetAlarm(hrtc,&sAlarm,RTC_ALARM_A,FORMAT_BIN);
+
+	  printf("Enter alarm minute increment interrupt\n\r");
+
+	  RTC_TimeTypeDef currTime;
+	  RTC_DateTypeDef currDate;
+	  HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
+	  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);		//get date is necessary, else RTC will not update time
+
+	  if(sAlarm.AlarmTime.Seconds>58) {
+		sAlarm.AlarmTime.Seconds=0;
+	  } else {
+		sAlarm.AlarmTime.Seconds=sAlarm.AlarmTime.Seconds+1;
+	  }
+		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
+
+	  updateAndDisplayTime();
+
+	  printf("Current time: %d : %d : %d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+
+}
 
 
 /* USER CODE END 4 */
