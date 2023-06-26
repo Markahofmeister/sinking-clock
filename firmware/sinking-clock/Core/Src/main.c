@@ -126,10 +126,10 @@ uint8_t sevSeg_digit3Buff[2] = {sevSeg_digit3Reg, dispDigits[0]};
  */
 
 // Display Toggle: 0 = 0% display Intensity, 1 = 50% display brightness, 2 = 100% display brightness
-uint8_t displayToggle = 1;
+uint8_t displayToggle;
 
 // Variable to toggle user alarm on or off. Default to off.
-uint8_t userAlarmToggle = 0;
+uint8_t userAlarmToggle;
 
 /* USER CODE END PV */
 
@@ -206,7 +206,10 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
-  sevSeg_I2C1_Init();
+  displayToggle = 1; 		// Display at 50% intensity
+  sevSeg_I2C1_Init();		//Initialize 7-seg
+  HAL_StatusTypeDef halRet = HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_B);	//Initially disable user alarm
+
 
   /* USER CODE END 2 */
 
@@ -393,7 +396,7 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 0x1;
   sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
   {
     Error_Handler();
   }
@@ -402,7 +405,7 @@ static void MX_RTC_Init(void)
   */
   sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
   sAlarm.Alarm = RTC_ALARM_B;
-  if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
   {
     Error_Handler();
   }
@@ -504,6 +507,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(Snooze_Button_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

@@ -59,18 +59,23 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define T_NRST_Pin GPIO_PIN_2
 #define T_NRST_GPIO_Port GPIOF
+#define T_NRST_EXTI_IRQn EXTI2_3_IRQn
 #define Display_Button_Pin GPIO_PIN_0
 #define Display_Button_GPIO_Port GPIOA
+#define Display_Button_EXTI_IRQn EXTI0_1_IRQn
 #define Alarm_Enable_Button_Pin GPIO_PIN_1
 #define Alarm_Enable_Button_GPIO_Port GPIOA
+#define Alarm_Enable_Button_EXTI_IRQn EXTI0_1_IRQn
 #define T_VCP_TX_Pin GPIO_PIN_2
 #define T_VCP_TX_GPIO_Port GPIOA
 #define T_VCP_RX_Pin GPIO_PIN_3
 #define T_VCP_RX_GPIO_Port GPIOA
 #define Alarm_Set_Button_Pin GPIO_PIN_4
 #define Alarm_Set_Button_GPIO_Port GPIOA
+#define Alarm_Set_Button_EXTI_IRQn EXTI4_15_IRQn
 #define Hour_Set_Button_Pin GPIO_PIN_5
 #define Hour_Set_Button_GPIO_Port GPIOA
+#define Hour_Set_Button_EXTI_IRQn EXTI4_15_IRQn
 #define Buzzer_Output_Pin GPIO_PIN_1
 #define Buzzer_Output_GPIO_Port GPIOB
 #define LD3_Pin GPIO_PIN_6
@@ -79,6 +84,7 @@ void Error_Handler(void);
 #define Snooze_Button_GPIO_Port GPIOA
 #define Minute_Set_Button_Pin GPIO_PIN_12
 #define Minute_Set_Button_GPIO_Port GPIOA
+#define Minute_Set_Button_EXTI_IRQn EXTI4_15_IRQn
 #define T_JTMS_Pin GPIO_PIN_13
 #define T_JTMS_GPIO_Port GPIOA
 #define T_JTCK_Pin GPIO_PIN_14
