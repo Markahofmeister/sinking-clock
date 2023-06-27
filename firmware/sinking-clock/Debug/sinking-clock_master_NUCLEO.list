@@ -1616,13 +1616,13 @@ void sevSeg_I2C1_Init(void) {
  8000a86:	4b30      	ldr	r3, [pc, #192]	; (8000b48 <sevSeg_I2C1_Init+0x1dc>)
  8000a88:	220c      	movs	r2, #12
  8000a8a:	701a      	strb	r2, [r3, #0]
-	currTime.Minutes = 0;
+	currTime.Minutes = 59;
  8000a8c:	4b2e      	ldr	r3, [pc, #184]	; (8000b48 <sevSeg_I2C1_Init+0x1dc>)
- 8000a8e:	2200      	movs	r2, #0
+ 8000a8e:	223b      	movs	r2, #59	; 0x3b
  8000a90:	705a      	strb	r2, [r3, #1]
-	currTime.Seconds = 0;
+	currTime.Seconds = 50;
  8000a92:	4b2d      	ldr	r3, [pc, #180]	; (8000b48 <sevSeg_I2C1_Init+0x1dc>)
- 8000a94:	2200      	movs	r2, #0
+ 8000a94:	2232      	movs	r2, #50	; 0x32
  8000a96:	709a      	strb	r2, [r3, #2]
 
 	currDate.Year = 0;

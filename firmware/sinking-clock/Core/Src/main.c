@@ -599,8 +599,8 @@ void sevSeg_I2C1_Init(void) {
 	// Set and display current time (12:00 A.M.)
 
 	currTime.Hours = 12;
-	currTime.Minutes = 0;
-	currTime.Seconds = 0;
+	currTime.Minutes = 59;
+	currTime.Seconds = 50;
 
 	currDate.Year = 0;
 	currDate.Month = RTC_MONTH_JANUARY;
