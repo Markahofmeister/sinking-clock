@@ -918,9 +918,9 @@ static void MX_RTC_Init(void)
  800065c:	187b      	adds	r3, r7, r1
  800065e:	2200      	movs	r2, #0
  8000660:	705a      	strb	r2, [r3, #1]
-  sTime.Seconds = 0x0;
+  sTime.Seconds = 0x50;
  8000662:	187b      	adds	r3, r7, r1
- 8000664:	2200      	movs	r2, #0
+ 8000664:	2250      	movs	r2, #80	; 0x50
  8000666:	709a      	strb	r2, [r3, #2]
   sTime.SubSeconds = 0x0;
  8000668:	187b      	adds	r3, r7, r1
@@ -1855,25 +1855,25 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
  8000c42:	0018      	movs	r0, r3
  8000c44:	f003 f93e 	bl	8003ec4 <HAL_RTC_GetDate>
 
-	  if(sAlarm.AlarmTime.Seconds>58) {
+	  if(sAlarm.AlarmTime.Minutes>58) {
  8000c48:	193b      	adds	r3, r7, r4
- 8000c4a:	789b      	ldrb	r3, [r3, #2]
+ 8000c4a:	785b      	ldrb	r3, [r3, #1]
  8000c4c:	2b3a      	cmp	r3, #58	; 0x3a
  8000c4e:	d903      	bls.n	8000c58 <HAL_RTC_AlarmAEventCallback+0x4c>
-		sAlarm.AlarmTime.Seconds=0;
+		sAlarm.AlarmTime.Minutes=0;
  8000c50:	193b      	adds	r3, r7, r4
  8000c52:	2200      	movs	r2, #0
- 8000c54:	709a      	strb	r2, [r3, #2]
+ 8000c54:	705a      	strb	r2, [r3, #1]
  8000c56:	e006      	b.n	8000c66 <HAL_RTC_AlarmAEventCallback+0x5a>
 	  } else {
-		sAlarm.AlarmTime.Seconds=sAlarm.AlarmTime.Seconds+1;
+		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
  8000c58:	2120      	movs	r1, #32
  8000c5a:	187b      	adds	r3, r7, r1
- 8000c5c:	789b      	ldrb	r3, [r3, #2]
+ 8000c5c:	785b      	ldrb	r3, [r3, #1]
  8000c5e:	3301      	adds	r3, #1
  8000c60:	b2da      	uxtb	r2, r3
  8000c62:	187b      	adds	r3, r7, r1
- 8000c64:	709a      	strb	r2, [r3, #2]
+ 8000c64:	705a      	strb	r2, [r3, #1]
 	  }
 		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
  8000c66:	46c0      	nop			; (mov r8, r8)

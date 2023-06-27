@@ -362,7 +362,7 @@ static void MX_RTC_Init(void)
   */
   sTime.Hours = 0x1;
   sTime.Minutes = 0x0;
-  sTime.Seconds = 0x0;
+  sTime.Seconds = 0x50;
   sTime.SubSeconds = 0x0;
   sTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
@@ -659,10 +659,10 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
 	  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);		//get date is necessary, else RTC will not update time
 
-	  if(sAlarm.AlarmTime.Seconds>58) {
-		sAlarm.AlarmTime.Seconds=0;
+	  if(sAlarm.AlarmTime.Minutes>58) {
+		sAlarm.AlarmTime.Minutes=0;
 	  } else {
-		sAlarm.AlarmTime.Seconds=sAlarm.AlarmTime.Seconds+1;
+		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
 		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
 
