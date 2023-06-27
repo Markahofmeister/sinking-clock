@@ -52,11 +52,14 @@ UART_HandleTypeDef huart2;
 /*
  * Declare variables to map button presses to GPIOs
  */
+// EXTI Pins
 const uint16_t displayButtonPin = GPIO_PIN_0;
 const uint16_t alarmEnableButtonPin = GPIO_PIN_1;
 const uint16_t alarmSetButtonPin = GPIO_PIN_4;
 const uint16_t hourSetButtonPin = GPIO_PIN_5;
 const uint16_t minuteSetButtonPin = GPIO_PIN_12;
+
+// Output Pin
 const uint16_t snoozeButtonPin = GPIO_PIN_11;
 
 /*
@@ -88,8 +91,11 @@ const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segme
 //Data buffer to send over I2C
 uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
 
-uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
-// Intensity register takes 0bXX000000 to 0bXX111111 for 1/64 step intensity increments
+const uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
+// Intensity register takes 0bXX000000 to 0bXX111111 for 1/63 step intensity increments
+// We declare 0% duty cycle, 50% duty cycle, and 100% duty cycle.
+const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
+uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, sevSeg_intensityDuty[1]};
 
 const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
 const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
@@ -152,6 +158,11 @@ static void sevSeg_I2C1_Init(void);
 HAL_StatusTypeDef updateAndDisplayTime(void);
 
 /*
+ * Called on interrupt from display button to toggle 7-segment intensity.
+ */
+HAL_StatusTypeDef displayButtonISR(void);
+
+/*
  * Map printf to UART output to read messages on terminal
  */
 #ifdef __GNUC__
@@ -206,9 +217,15 @@ int main(void)
   MX_RTC_Init();
   /* USER CODE BEGIN 2 */
 
-  displayToggle = 1; 		// Display at 50% intensity
+  displayToggle = 2; 		// Display at 100% intensity for next display toggle
   sevSeg_I2C1_Init();		//Initialize 7-seg
   HAL_StatusTypeDef halRet = HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_B);	//Initially disable user alarm
+
+  if(halRet != HAL_OK) {
+	  printf("Error deactivating user alarm.\n\r");
+  } else {
+	  printf("User alarm deactivated.\n\r");
+  }
 
 
   /* USER CODE END 2 */
@@ -217,10 +234,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	  //HAL_StatusTypeDef halReturn = updateAndDisplayTime();
-
-	  //HAL_Delay(500);
 
     /* USER CODE END WHILE */
 
@@ -556,7 +569,7 @@ void sevSeg_I2C1_Init(void) {
 		printf("Display shutdown mode disabled\n\r");
 	}
 
-	//Set to test mode
+	//S et to test mode
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
 
 	if(halRet != HAL_OK) {		//check HAL
@@ -565,24 +578,22 @@ void sevSeg_I2C1_Init(void) {
 		printf("Test mode enabled - all LEDs on\n\r");
 	}
 
-//	uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 0b00100000};	//intensity = 32/64
-//	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
-//
-//	if(halRet != HAL_OK) {		//check HAL
-//		printf("HAL Error - TX intensity level data\n\r");
-//	} else {
-//		printf("Intensity Set\n\r");
-//	}
-
-	//HAL_Delay(1000);
-
-	//Set to test mode
+	// Disable test mode
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
 
 	if(halRet != HAL_OK) {		//check HAL
 		printf("HAL Error - TX test mode OFF data\n\r");
 	} else {
 		printf("Test mode disabled - all LEDs off\n\r");
+	}
+
+	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[1];		// Initialize to 50% duty cycle
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+	if(halRet != HAL_OK) {		//check HAL
+		printf("HAL Error - TX intensity level data\n\r");
+	} else {
+		printf("Intensity Set\n\r");
 	}
 
 	// Set and display current time (12:00 A.M.)
@@ -672,6 +683,53 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 }
 
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
+
+	if(GPIO_Pin == displayButtonPin) {
+		HAL_StatusTypeDef halRet = displayButtonISR();
+		if (halRet != HAL_OK) {
+			printf("Error toggling display.\n\r");
+		} else {
+			printf("Display intensity toggled.\n\r");
+		}
+	}
+	else if(GPIO_Pin == alarmEnableButtonPin) {
+
+	}
+	else if(GPIO_Pin == alarmSetButtonPin) {
+
+	}
+	else if(GPIO_Pin == hourSetButtonPin) {
+
+	}
+	else if(GPIO_Pin == minuteSetButtonPin) {
+
+	}
+	else {			//Code should never reach here, but do nothing if it does.
+		__NOP();
+	}
+
+}
+
+HAL_StatusTypeDef displayButtonISR(void) {
+
+	printf("Entered display button ISR\n\r");
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayToggle];			//Turn display to proper duty cycle
+
+	// TX new intensity to 7-seg driver
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
+		displayToggle = 0;
+	} else {
+		displayToggle++;
+	}
+
+	return halRet;				// Return HAL status
+
+}
 
 /* USER CODE END 4 */
 
