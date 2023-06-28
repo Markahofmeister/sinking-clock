@@ -612,6 +612,7 @@ void sevSeg_I2C1_Init(void) {
 	currTime.Hours = 12;
 	currTime.Minutes = 59;
 	currTime.Seconds = 50;
+	currTime.TimeFormat = RTC_HOURFORMAT12_AM;			//This is initially in the A.M., so P.M. LED is off.
 
 	currDate.Year = 0;
 	currDate.Month = RTC_MONTH_JANUARY;
@@ -658,12 +659,12 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
 
-//	if(halRet != HAL_OK) {
-//		printf("Error sending updated time to display.\n\r");
-//	}
-//	else {
-//		printf("Updated time sent to current display.\n\r");
-//	}
+	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
+		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
+	}
+	else {
+		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_RESET);		// Else, it is A.M.
+	}
 
 	return halRet;
 
