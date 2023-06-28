@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,6 +33,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define internalAlarm 	RTC_ALARM_A
+#define userAlarm 		RTC_ALARM_B
 
 /* USER CODE END PD */
 
@@ -135,7 +139,7 @@ uint8_t sevSeg_digit3Buff[2] = {sevSeg_digit3Reg, dispDigits[0]};
 uint8_t displayToggle;
 
 // Variable to toggle user alarm on or off. Default to off.
-uint8_t userAlarmToggle;
+bool userAlarmToggle;
 
 /* USER CODE END PV */
 
@@ -161,6 +165,11 @@ HAL_StatusTypeDef updateAndDisplayTime(void);
  * Called on interrupt from display button to toggle 7-segment intensity.
  */
 HAL_StatusTypeDef displayButtonISR(void);
+
+/*
+ * Called on interrupt from alarm enable button to toggle user alarm.
+ */
+HAL_StatusTypeDef alarmEnableISR(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -219,7 +228,9 @@ int main(void)
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
   sevSeg_I2C1_Init();		//Initialize 7-seg
-  HAL_StatusTypeDef halRet = HAL_RTC_DeactivateAlarm(&hrtc, RTC_ALARM_B);	//Initially disable user alarm
+
+  userAlarmToggle = false;			//Default to off
+  HAL_StatusTypeDef halRet = HAL_RTC_DeactivateAlarm(&hrtc, userAlarm);	//Initially disable user alarm
 
   if(halRet != HAL_OK) {
 	  printf("Error deactivating user alarm.\n\r");
@@ -685,8 +696,10 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
+	HAL_StatusTypeDef halRet;					// Flag for printing interrupt status
+
 	if(GPIO_Pin == displayButtonPin) {
-		HAL_StatusTypeDef halRet = displayButtonISR();
+		halRet = displayButtonISR();
 		if (halRet != HAL_OK) {
 			printf("Error toggling display.\n\r");
 		} else {
@@ -694,7 +707,12 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 		}
 	}
 	else if(GPIO_Pin == alarmEnableButtonPin) {
-
+		halRet = alarmEnableISR();
+		if (halRet != HAL_OK) {
+			printf("Error toggling user alarm.\n\r");
+		} else {
+			printf("User alarm toggled.\n\r");
+		}
 	}
 	else if(GPIO_Pin == alarmSetButtonPin) {
 
@@ -713,7 +731,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 HAL_StatusTypeDef displayButtonISR(void) {
 
-	printf("Entered display button ISR\n\r");
+	printf("Entered display toggle ISR\n\r");
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayToggle];			//Turn display to proper duty cycle
@@ -728,6 +746,43 @@ HAL_StatusTypeDef displayButtonISR(void) {
 	}
 
 	return halRet;				// Return HAL status
+
+}
+
+HAL_StatusTypeDef alarmEnableISR(void) {
+
+	printf("Entered alarm toggle ISR\n\r");
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	if(!userAlarmToggle) {					// If alarm is disabled, enable it.
+
+		// Use object to get current user alarm time and set/enable the user alarm to that time.
+		RTC_AlarmTypeDef userAlarmObj;
+		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
+		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
+
+		HAL_GPIO_WritePin(GPIOB, alarmLED, GPIO_PIN_SET);			// Turn on alarm LED
+		userAlarmToggle = true;								// Toggle internal flag to true
+
+		RTC_TimeTypeDef alarmTime = userAlarmObj.AlarmTime;
+		printf("User alarm set to: %d:%d:%d on alarm %d.\n\r", alarmTime.Hours,
+								alarmTime.Minutes, alarmTime.Seconds, userAlarmObj.Alarm);
+
+	}
+	else if (userAlarmToggle) {				// If alarm is enabled, disable it.
+
+		HAL_RTC_DeactivateAlarm(&hrtc, userAlarm);				// Deactivate alarm
+
+		HAL_GPIO_WritePin(GPIOB, alarmLED, GPIO_PIN_RESET);			// Turn off alarm LED
+		userAlarmToggle = false;							// Toggle internal flag to false
+
+		printf("User alarm disabled.\n\r");
+	}
+	else {
+		__NOP();							//Code should never reach here.
+	}
+
+	return halRet;
 
 }
 
