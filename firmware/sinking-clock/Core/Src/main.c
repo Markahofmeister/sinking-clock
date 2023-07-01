@@ -63,7 +63,7 @@ const uint16_t alarmSetButtonPin = GPIO_PIN_4;
 const uint16_t hourSetButtonPin = GPIO_PIN_5;
 const uint16_t minuteSetButtonPin = GPIO_PIN_12;
 
-// Output Pin
+// Input Pin
 const uint16_t snoozeButtonPin = GPIO_PIN_11;
 
 /*
@@ -80,6 +80,8 @@ const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
 
 RTC_TimeTypeDef currTime;
 RTC_DateTypeDef currDate;
+RTC_TimeTypeDef userAlarmTime;
+RTC_TimeTypeDef userAlamrmDate;
 
 /*
  * Seven-segment display I2C peripheral address, configuration register addresses,
@@ -170,6 +172,13 @@ HAL_StatusTypeDef displayButtonISR(void);
  * Called on interrupt from alarm enable button to toggle user alarm.
  */
 HAL_StatusTypeDef alarmEnableISR(void);
+
+/*
+ * Called on interrupt from hour and minute set buttons.
+ * Contain logic to set user alarm hour or minute.
+ */
+HAL_StatusTypeDef hourSetISR(void);
+HAL_StatusTypeDef minuteSetISR(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -610,7 +619,7 @@ void sevSeg_I2C1_Init(void) {
 	// Set and display current time (12:00 A.M.)
 
 	currTime.Hours = 12;
-	currTime.Minutes = 59;
+	currTime.Minutes = 58;
 	currTime.Seconds = 50;
 	currTime.TimeFormat = RTC_HOURFORMAT12_AM;			//This is initially in the A.M., so P.M. LED is off.
 
@@ -719,7 +728,12 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 	}
 	else if(GPIO_Pin == hourSetButtonPin) {
-
+		halRet = hourSetISR();
+		if (halRet != HAL_OK) {
+			printf("Error incrementing current time hour.\n\r");
+		} else {
+			printf("Hour increment ISR success.\n\r");
+		}
 	}
 	else if(GPIO_Pin == minuteSetButtonPin) {
 
@@ -785,6 +799,70 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 	return halRet;
 
+}
+
+HAL_StatusTypeDef hourSetISR(void) {
+
+	printf("Entered hourSetISR.\n\r");
+
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == !GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
+
+		RTC_AlarmTypeDef userAlarmObj;
+		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
+		RTC_TimeTypeDef userAlarmTime = userAlarmObj.AlarmTime;
+
+		if(userAlarmTime.Hours >= 12) {
+			userAlarmTime.Hours = 1;
+			if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
+				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
+			} else {
+				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+			}
+		}
+		else if(userAlarmTime.Hours < 12) {
+			userAlarmTime.Hours = userAlarmTime.Hours + 1;
+		}
+		else {
+			__NOP();
+		}
+
+		userAlarmObj.AlarmTime = userAlarmTime;
+
+		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
+
+		printf("User alarm hour incremented to %d:%d:%d\n\r", userAlarmObj.AlarmTime.Hours,
+				userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
+
+	}
+	else {									// Otherwise, change current time hour.
+
+		HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
+		HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+		if(currTime.Hours >= 12) {
+			currTime.Hours = 1;
+			if(currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
+				currTime.TimeFormat = RTC_HOURFORMAT12_PM;
+			} else {
+				currTime.TimeFormat = RTC_HOURFORMAT12_AM;
+			}
+		}
+		else if(currTime.Hours < 12) {
+			currTime.Hours = currTime.Hours + 1;
+		}
+		else {
+			__NOP();
+		}
+		HAL_RTC_SetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
+
+		updateAndDisplayTime();
+
+		printf("Current time hour incremented to %d:%d:%d.\n\r", currTime.Hours,
+				currTime.Minutes, currTime.Seconds);
+	}
+
+	return halRet;
 }
 
 /* USER CODE END 4 */
