@@ -776,7 +776,33 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	printf("Enter user alarm interrupt.\n\r");
 
+	if(userAlarmToggle) {			//Only execute sequence if the alarm is actually on
 
+		HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
+		uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
+		bool displayBlink = false;
+
+		do {						// Beep buzzer and blink display until snooze button is pressed
+
+			updateAndDisplayTime();
+
+			if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
+
+				sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayBlink];		// Initialize to whatever duty cycle
+				HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+				HAL_GPIO_TogglePin(GPIOB, buzzerPin);
+
+				timerVal = __HAL_TIM_GET_COUNTER(&htim16);
+				displayBlink = !displayBlink;
+
+			}
+
+		} while(HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin) != GPIO_PIN_RESET);
+
+	}
+
+	HAL_TIM_Base_Stop(&htim16);
 
 }
 
@@ -860,7 +886,7 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 		// Use object to get current user alarm time and set/enable the user alarm to that time.
 		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
+		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);				//Does this actually set the alarm?
 
 		HAL_GPIO_WritePin(GPIOB, alarmLED, GPIO_PIN_SET);			// Turn on alarm LED
 		userAlarmToggle = true;								// Toggle internal flag to true
@@ -915,6 +941,8 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[2];
 	HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+	HAL_TIM_Base_Stop(&htim16);
 
 	updateAndDisplayTime();
 
