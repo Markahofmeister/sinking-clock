@@ -84,6 +84,7 @@ RTC_TimeTypeDef currTime;
 RTC_DateTypeDef currDate;
 RTC_TimeTypeDef userAlarmTime;
 RTC_DateTypeDef userAlamrmDate;
+RTC_AlarmTypeDef userAlarmObj;
 
 /*
  * Seven-segment display I2C peripheral address, configuration register addresses,
@@ -424,14 +425,14 @@ static void MX_RTC_Init(void)
   /** Enable the Alarm A
   */
   sAlarm.AlarmTime.Hours = 0x1;
-  sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmTime.Seconds = 0x5;
+  sAlarm.AlarmTime.Minutes = 0x1;
+  sAlarm.AlarmTime.Seconds = 0x0;
   sAlarm.AlarmTime.SubSeconds = 0x0;
   sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
-                              |RTC_ALARMMASK_MINUTES;
+                              |RTC_ALARMMASK_SECONDS;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 0x1;
@@ -444,7 +445,7 @@ static void MX_RTC_Init(void)
   /** Enable the Alarm B
   */
   sAlarm.AlarmTime.Hours = 0x2;
-  sAlarm.AlarmTime.Seconds = 0x0;
+  sAlarm.AlarmTime.Minutes = 0x0;
   sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
@@ -754,17 +755,10 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
 	  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);		//get date is necessary, else RTC will not update time
 
-//	  if(sAlarm.AlarmTime.Minutes>58) {
-//		sAlarm.AlarmTime.Minutes=0;
-//	  } else {
-//		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
-//	  }
-//		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
-
-	  if(sAlarm.AlarmTime.Seconds>58) {
-		sAlarm.AlarmTime.Seconds=0;
+	  if(sAlarm.AlarmTime.Minutes>58) {
+		sAlarm.AlarmTime.Minutes=0;
 	  } else {
-		sAlarm.AlarmTime.Seconds=sAlarm.AlarmTime.Seconds+1;
+		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
 		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
 
@@ -923,6 +917,11 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	printf("Enter user alarm set ISR.\n\r");
 
+	RTC_AlarmTypeDef userAlarmObj;
+	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
+	printf("User alarm currently set to %d:%d:%d.\n\r", userAlarmObj.AlarmTime.Hours,
+			userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
+
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
@@ -951,6 +950,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 	HAL_TIM_Base_Stop(&htim16);
 
 	updateAndDisplayTime();
+	printf("Current time back to %d:%d:%d.\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
 
 	return halRet;
 
