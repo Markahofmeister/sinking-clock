@@ -425,7 +425,7 @@ static void MX_RTC_Init(void)
   */
   sAlarm.AlarmTime.Hours = 0x1;
   sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmTime.Seconds = 0x2;
+  sAlarm.AlarmTime.Seconds = 0x5;
   sAlarm.AlarmTime.SubSeconds = 0x0;
   sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;

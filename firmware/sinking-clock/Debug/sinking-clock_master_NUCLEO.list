@@ -998,9 +998,9 @@ static void MX_RTC_Init(void)
  80006d4:	003b      	movs	r3, r7
  80006d6:	2200      	movs	r2, #0
  80006d8:	705a      	strb	r2, [r3, #1]
-  sAlarm.AlarmTime.Seconds = 0x2;
+  sAlarm.AlarmTime.Seconds = 0x5;
  80006da:	003b      	movs	r3, r7
- 80006dc:	2202      	movs	r2, #2
+ 80006dc:	2205      	movs	r2, #5
  80006de:	709a      	strb	r2, [r3, #2]
   sAlarm.AlarmTime.SubSeconds = 0x0;
  80006e0:	003b      	movs	r3, r7
