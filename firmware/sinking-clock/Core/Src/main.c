@@ -253,13 +253,7 @@ int main(void)
   sevSeg_I2C1_Init();		//Initialize 7-seg
 
   userAlarmToggle = false;			//Default to off
-  HAL_StatusTypeDef halRet = HAL_RTC_DeactivateAlarm(&hrtc, userAlarm);	//Initially disable user alarm
-
-  if(halRet != HAL_OK) {
-	  printf("Error deactivating user alarm.\n\r");
-  } else {
-	  printf("User alarm deactivated.\n\r");
-  }
+  __HAL_RTC_ALARMB_DISABLE(&hrtc);				// Deactivate alarm
 
   /* USER CODE END 2 */
 
@@ -408,7 +402,7 @@ static void MX_RTC_Init(void)
   */
   sTime.Hours = 0x1;
   sTime.Minutes = 0x0;
-  sTime.Seconds = 0x50;
+  sTime.Seconds = 0x0;
   sTime.SubSeconds = 0x0;
   sTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
@@ -431,13 +425,13 @@ static void MX_RTC_Init(void)
   */
   sAlarm.AlarmTime.Hours = 0x1;
   sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmTime.Seconds = 0x0;
+  sAlarm.AlarmTime.Seconds = 0x2;
   sAlarm.AlarmTime.SubSeconds = 0x0;
   sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
-                              |RTC_ALARMMASK_SECONDS;
+                              |RTC_ALARMMASK_MINUTES;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
   sAlarm.AlarmDateWeekDay = 0x1;
@@ -450,6 +444,7 @@ static void MX_RTC_Init(void)
   /** Enable the Alarm B
   */
   sAlarm.AlarmTime.Hours = 0x2;
+  sAlarm.AlarmTime.Seconds = 0x0;
   sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
@@ -749,7 +744,7 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
-	  printf("Enter alarm minute increment interrupt\n\r");
+	  printf("Enter current time minute increment interrupt\n\r");
 
 	  RTC_AlarmTypeDef sAlarm;
 	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, FORMAT_BIN);
@@ -759,10 +754,17 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
 	  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);		//get date is necessary, else RTC will not update time
 
-	  if(sAlarm.AlarmTime.Minutes>58) {
-		sAlarm.AlarmTime.Minutes=0;
+//	  if(sAlarm.AlarmTime.Minutes>58) {
+//		sAlarm.AlarmTime.Minutes=0;
+//	  } else {
+//		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+//	  }
+//		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
+
+	  if(sAlarm.AlarmTime.Seconds>58) {
+		sAlarm.AlarmTime.Seconds=0;
 	  } else {
-		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+		sAlarm.AlarmTime.Seconds=sAlarm.AlarmTime.Seconds+1;
 	  }
 		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
 
@@ -805,6 +807,7 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 	HAL_TIM_Base_Stop(&htim16);
 
 }
+
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
@@ -856,6 +859,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 }
 
+
 HAL_StatusTypeDef displayButtonISR(void) {
 
 	printf("Entered display toggle ISR\n\r");
@@ -886,7 +890,9 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 		// Use object to get current user alarm time and set/enable the user alarm to that time.
 		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);				//Does this actually set the alarm?
+//		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);				//Does this actually set the alarm?
+
+		__HAL_RTC_ALARMB_ENABLE(&hrtc);					//Enable alarm?
 
 		HAL_GPIO_WritePin(GPIOB, alarmLED, GPIO_PIN_SET);			// Turn on alarm LED
 		userAlarmToggle = true;								// Toggle internal flag to true
@@ -898,7 +904,7 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 	}
 	else if (userAlarmToggle) {				// If alarm is enabled, disable it.
 
-		HAL_RTC_DeactivateAlarm(&hrtc, userAlarm);				// Deactivate alarm
+		__HAL_RTC_ALARMB_DISABLE(&hrtc);				// Disable alarm
 
 		HAL_GPIO_WritePin(GPIOB, alarmLED, GPIO_PIN_RESET);			// Turn off alarm LED
 		userAlarmToggle = false;							// Toggle internal flag to false
