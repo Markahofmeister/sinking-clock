@@ -60,8 +60,8 @@ UART_HandleTypeDef huart2;
  */
 // EXTI Pins
 const uint16_t displayButtonPin = GPIO_PIN_0;
-const uint16_t alarmEnableButtonPin = GPIO_PIN_1;
-const uint16_t alarmSetButtonPin = GPIO_PIN_4;
+const uint16_t alarmEnableButtonPin = GPIO_PIN_4;
+const uint16_t alarmSetButtonPin = GPIO_PIN_1;
 const uint16_t hourSetButtonPin = GPIO_PIN_5;
 const uint16_t minuteSetButtonPin = GPIO_PIN_12;
 
@@ -483,7 +483,7 @@ static void MX_TIM16_Init(void)
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim16.Init.RepetitionCounter = 0;
-  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
   {
     Error_Handler();
@@ -559,9 +559,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(T_NRST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Display_Button_Pin Alarm_Enable_Button_Pin Alarm_Set_Button_Pin Hour_Set_Button_Pin
+  /*Configure GPIO pins : Display_Button_Pin Alarm_Set_Button_Pin Alarm_Enable_Button_Pin Hour_Set_Button_Pin
                            Minute_Set_Button_Pin */
-  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Enable_Button_Pin|Alarm_Set_Button_Pin|Hour_Set_Button_Pin
+  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Set_Button_Pin|Alarm_Enable_Button_Pin|Hour_Set_Button_Pin
                           |Minute_Set_Button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -588,7 +588,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(Snooze_Button_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
   HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
@@ -736,7 +736,7 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
 
-	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
+	if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
 		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
 	}
 	else {
@@ -746,8 +746,6 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 	return halRet;
 
 }
-
-
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
@@ -896,27 +894,14 @@ HAL_StatusTypeDef alarmSetISR(void) {
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
-	int16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
+	uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
 	bool displayBlink = false;
-
-	uint8_t count = 0;
 
 	do {											// while the alarm set button is not held down, blink display.
 
-
-//		if(HAL_GPIO_ReadPin(GPIOA, hourSetButtonPin) == GPIO_PIN_RESET) {
-//			halRet = hourSetISR();
-//		}
-//		if(HAL_GPIO_ReadPin(GPIOA, minuteSetButtonPin) == GPIO_PIN_RESET ) {
-//			halRet = hourSetISR();
-//		}
+		updateAndDisplayAlarm();
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
-
-			count++;
-			printf("Toggling 7-seg on count %d\n\r", count);
-
-			updateAndDisplayAlarm();
 
 			sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayBlink];		// Initialize to whatever duty cycle
 			HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
