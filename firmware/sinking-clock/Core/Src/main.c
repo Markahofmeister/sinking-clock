@@ -49,6 +49,8 @@ I2C_HandleTypeDef hi2c1;
 
 RTC_HandleTypeDef hrtc;
 
+TIM_HandleTypeDef htim16;
+
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
@@ -151,6 +153,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_RTC_Init(void);
+static void MX_TIM16_Init(void);
 /* USER CODE BEGIN PFP */
 
 /*
@@ -172,6 +175,11 @@ HAL_StatusTypeDef displayButtonISR(void);
  * Called on interrupt from alarm enable button to toggle user alarm.
  */
 HAL_StatusTypeDef alarmEnableISR(void);
+
+/*
+ * Called on interrupt from alarm set button to enter alarm set loop.
+ */
+HAL_StatusTypeDef alarmSetISR(void);
 
 /*
  * Called on interrupt from hour and minute set buttons.
@@ -233,6 +241,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   MX_RTC_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
@@ -247,6 +256,8 @@ int main(void)
 	  printf("User alarm deactivated.\n\r");
   }
 
+  HAL_TIM_Base_Start(&htim16);			// Begin timer 16 counting (to 500 ms)
+  uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);
 
   /* USER CODE END 2 */
 
@@ -254,6 +265,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
+
+		HAL_GPIO_TogglePin(GPIOB, buzzerPin);
+		timerVal = __HAL_TIM_GET_COUNTER(&htim16);
+
+		printf("LED Toggled.\n\r");
+	}
+
+
 
     /* USER CODE END WHILE */
 
@@ -436,6 +457,7 @@ static void MX_RTC_Init(void)
 
   /** Enable the Alarm B
   */
+  sAlarm.AlarmTime.Hours = 0x2;
   sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
@@ -445,6 +467,38 @@ static void MX_RTC_Init(void)
   /* USER CODE BEGIN RTC_Init 2 */
 
   /* USER CODE END RTC_Init 2 */
+
+}
+
+/**
+  * @brief TIM16 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM16_Init(void)
+{
+
+  /* USER CODE BEGIN TIM16_Init 0 */
+
+  /* USER CODE END TIM16_Init 0 */
+
+  /* USER CODE BEGIN TIM16_Init 1 */
+
+  /* USER CODE END TIM16_Init 1 */
+  htim16.Instance = TIM16;
+  htim16.Init.Prescaler = 244;
+  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim16.Init.Period = 65535;
+  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim16.Init.RepetitionCounter = 0;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM16_Init 2 */
+
+  /* USER CODE END TIM16_Init 2 */
 
 }
 
@@ -681,10 +735,10 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
-	  RTC_AlarmTypeDef sAlarm;
-	  HAL_RTC_GetAlarm(hrtc,&sAlarm,RTC_ALARM_A,FORMAT_BIN);
-
 	  printf("Enter alarm minute increment interrupt\n\r");
+
+	  RTC_AlarmTypeDef sAlarm;
+	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, FORMAT_BIN);
 
 	  RTC_TimeTypeDef currTime;
 	  RTC_DateTypeDef currDate;
@@ -701,6 +755,14 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  updateAndDisplayTime();
 
 	  printf("Current time: %d : %d : %d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+
+}
+
+void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
+
+	printf("Enter user alarm interrupt.\n\r");
+
+
 
 }
 
@@ -803,6 +865,14 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 	}
 
 	return halRet;
+
+}
+
+HAL_StatusTypeDef alarmSetISR(void) {
+
+
+
+
 
 }
 
@@ -922,7 +992,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		if(currTime.Minutes >= 59) {
 			currTime.Minutes = 0;
-			currTime.Hours = userAlarmTime.Hours + 1;
+			currTime.Hours = currTime.Hours + 1;
 			if(currTime.Hours > 12) {
 				currTime.Hours = 1;
 			}
