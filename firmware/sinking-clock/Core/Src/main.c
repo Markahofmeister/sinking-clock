@@ -83,7 +83,7 @@ const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
 RTC_TimeTypeDef currTime;
 RTC_DateTypeDef currDate;
 RTC_TimeTypeDef userAlarmTime;
-RTC_TimeTypeDef userAlamrmDate;
+RTC_DateTypeDef userAlamrmDate;
 
 /*
  * Seven-segment display I2C peripheral address, configuration register addresses,
@@ -165,6 +165,11 @@ static void sevSeg_I2C1_Init(void);
  * Call to fetch the current time from the RTC and send to the LED display.
  */
 HAL_StatusTypeDef updateAndDisplayTime(void);
+
+/*
+ * Call to fetch the current alarm from the RTC and send to the LED display.
+ */
+HAL_StatusTypeDef updateAndDisplayAlarm(void);
 
 /*
  * Called on interrupt from display button to toggle 7-segment intensity.
@@ -256,25 +261,12 @@ int main(void)
 	  printf("User alarm deactivated.\n\r");
   }
 
-  HAL_TIM_Base_Start(&htim16);			// Begin timer 16 counting (to 500 ms)
-  uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
-	if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
-
-		HAL_GPIO_TogglePin(GPIOB, buzzerPin);
-		timerVal = __HAL_TIM_GET_COUNTER(&htim16);
-
-		printf("LED Toggled.\n\r");
-	}
-
-
 
     /* USER CODE END WHILE */
 
@@ -643,7 +635,7 @@ void sevSeg_I2C1_Init(void) {
 		printf("Display shutdown mode disabled\n\r");
 	}
 
-	//S et to test mode
+	//Set to test mode
 	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
 
 	if(halRet != HAL_OK) {		//check HAL
@@ -705,13 +697,6 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
 	HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
 
-//	if(halRet != HAL_OK) {
-//		printf("Error retrieving current time.\n\r");
-//	}
-//	else {
-//		printf("Time Update from RTC successfully");
-//	}
-
 	sevSeg_digit0Buff[1] = currTime.Hours / 10;
 	sevSeg_digit1Buff[1] = currTime.Hours % 10;
 	sevSeg_digit2Buff[1] = currTime.Minutes / 10;
@@ -732,6 +717,37 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	return halRet;
 
 }
+
+HAL_StatusTypeDef updateAndDisplayAlarm(void) {
+
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	RTC_AlarmTypeDef userAlarmObj;
+	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
+	userAlarmTime = userAlarmObj.AlarmTime;
+
+	sevSeg_digit0Buff[1] = userAlarmTime.Hours / 10;
+	sevSeg_digit1Buff[1] = userAlarmTime.Hours % 10;
+	sevSeg_digit2Buff[1] = userAlarmTime.Minutes / 10;
+	sevSeg_digit3Buff[1] = userAlarmTime.Minutes % 10;
+
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
+
+	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
+		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
+	}
+	else {
+		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_RESET);		// Else, it is A.M.
+	}
+
+	return halRet;
+
+}
+
+
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
@@ -787,7 +803,12 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 		}
 	}
 	else if(GPIO_Pin == alarmSetButtonPin) {
-
+		halRet = alarmSetISR();
+		if (halRet != HAL_OK) {
+			printf("Error setting user alarm.\n\r");
+		} else {
+			printf("User alarm set.\n\r");
+		}
 	}
 	else if(GPIO_Pin == hourSetButtonPin) {
 		halRet = hourSetISR();
@@ -870,9 +891,49 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 HAL_StatusTypeDef alarmSetISR(void) {
 
+	printf("Enter user alarm set ISR.\n\r");
+
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
+	int16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
+	bool displayBlink = false;
+
+	uint8_t count = 0;
+
+	do {											// while the alarm set button is not held down, blink display.
 
 
+//		if(HAL_GPIO_ReadPin(GPIOA, hourSetButtonPin) == GPIO_PIN_RESET) {
+//			halRet = hourSetISR();
+//		}
+//		if(HAL_GPIO_ReadPin(GPIOA, minuteSetButtonPin) == GPIO_PIN_RESET ) {
+//			halRet = hourSetISR();
+//		}
 
+		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
+
+			count++;
+			printf("Toggling 7-seg on count %d\n\r", count);
+
+			updateAndDisplayAlarm();
+
+			sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayBlink];		// Initialize to whatever duty cycle
+			HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+			timerVal = __HAL_TIM_GET_COUNTER(&htim16);
+			displayBlink = !displayBlink;
+
+		}
+
+	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
+
+	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[2];
+	HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+	updateAndDisplayTime();
+
+	return halRet;
 
 }
 
@@ -882,11 +943,11 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == !GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
+	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) != GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
 		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-		RTC_TimeTypeDef userAlarmTime = userAlarmObj.AlarmTime;
+		userAlarmTime = userAlarmObj.AlarmTime;
 
 		if(userAlarmTime.Hours >= 12) {
 			userAlarmTime.Hours = 1;
@@ -953,7 +1014,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-		RTC_TimeTypeDef userAlarmTime = userAlarmObj.AlarmTime;
+		userAlarmTime = userAlarmObj.AlarmTime;
 
 		if(userAlarmTime.Minutes >= 59) {
 			userAlarmTime.Minutes = 0;
