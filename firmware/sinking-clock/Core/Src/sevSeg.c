@@ -23,8 +23,7 @@ uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
 const uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
 // Intensity register takes 0bXX000000 to 0bXX111111 for 1/63 step intensity increments
 // We declare 0% duty cycle, 50% duty cycle, and 100% duty cycle.
-const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
-uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, sevSeg_intensityDuty[1]};
+uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 31};
 
 const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
 const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
@@ -106,7 +105,7 @@ void sevSeg_I2C1_Init(I2C_HandleTypeDef *hi2c1) {
 		printf("Test mode disabled - all LEDs off\n\r");
 	}
 
-	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[1];		// Initialize to 50% duty cycle
+	sevSeg_intensityBuff[1] = 31;		// Initialize to 50% duty cycle
 	halRetI2C = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
 
 	if(halRetI2C != HAL_OK) {		//check HAL
@@ -116,6 +115,29 @@ void sevSeg_I2C1_Init(I2C_HandleTypeDef *hi2c1) {
 	}
 
 	return;
+
+}
+
+void sevSeg_updateDigits(I2C_HandleTypeDef *hi2c1, RTC_TimeTypeDef *updateTime) {
+
+	sevSeg_digit0Buff[1] = updateTime->Hours / 10;
+	sevSeg_digit1Buff[1] = updateTime->Hours % 10;
+	sevSeg_digit2Buff[1] = updateTime->Minutes / 10;
+	sevSeg_digit3Buff[1] = updateTime->Minutes % 10;
+
+	HAL_StatusTypeDef halRet;
+
+	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
+
+}
+
+void sevSeg_setIntensity(I2C_HandleTypeDef *hi2c1, uint8_t dutyCycle) {
+
+	sevSeg_intensityBuff[1] = dutyCycle;
+	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
 
 }
 

@@ -56,6 +56,8 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
+
 /*
  * Declare variables to map button presses to GPIOs
  */
@@ -578,15 +580,7 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
 	HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
 
-	sevSeg_digit0Buff[1] = currTime.Hours / 10;
-	sevSeg_digit1Buff[1] = currTime.Hours % 10;
-	sevSeg_digit2Buff[1] = currTime.Minutes / 10;
-	sevSeg_digit3Buff[1] = currTime.Minutes % 10;
-
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
+	sevSeg_updateDigits(&hi2c1, &currTime);
 
 	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
 		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
@@ -606,15 +600,7 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 	userAlarmTime = userAlarmObj.AlarmTime;
 
-	sevSeg_digit0Buff[1] = userAlarmTime.Hours / 10;
-	sevSeg_digit1Buff[1] = userAlarmTime.Hours % 10;
-	sevSeg_digit2Buff[1] = userAlarmTime.Minutes / 10;
-	sevSeg_digit3Buff[1] = userAlarmTime.Minutes % 10;
-
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
+	sevSeg_updateDigits(&hi2c1, &userAlarmTime);
 
 	if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
 		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
@@ -668,8 +654,8 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 
 			if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
 
-				sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayBlink];		// Initialize to whatever duty cycle
-				HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+				sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayBlink]);
+
 
 				HAL_GPIO_TogglePin(GPIOB, buzzerPin);
 
@@ -742,10 +728,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 	printf("Entered display toggle ISR\n\r");
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayToggle];			//Turn display to proper duty cycle
-
-	// TX new intensity to 7-seg driver
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+	sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
@@ -815,8 +798,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
 
-			sevSeg_intensityBuff[1] = sevSeg_intensityDuty[displayBlink];		// Initialize to whatever duty cycle
-			HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+			sevSeg_setIntensity (&hi2c1, sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
 
 			timerVal = __HAL_TIM_GET_COUNTER(&htim16);
 			displayBlink = !displayBlink;
@@ -825,8 +807,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
 
-	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[2];
-	HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+	sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[2]);
 
 	HAL_TIM_Base_Stop(&htim16);
 

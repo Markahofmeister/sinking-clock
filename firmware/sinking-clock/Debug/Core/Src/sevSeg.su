@@ -1,1 +1,3 @@
-../Core/Src/sevSeg.c:59:6:sevSeg_I2C1_Init	40	static
+../Core/Src/sevSeg.c:58:6:sevSeg_I2C1_Init	40	static
+../Core/Src/sevSeg.c:121:6:sevSeg_updateDigits	40	static
+../Core/Src/sevSeg.c:137:6:sevSeg_setIntensity	24	static
