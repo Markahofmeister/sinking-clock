@@ -109,11 +109,6 @@ static void MX_TIM16_Init(void);
 /* USER CODE BEGIN PFP */
 
 /*
- * Initializes seven segment display IC registers
- */
-static void sevSeg_I2C1_Init(void);
-
-/*
  * Call to fetch the current time from the RTC and send to the LED display.
  */
 HAL_StatusTypeDef updateAndDisplayTime(void);
@@ -204,7 +199,31 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
-  sevSeg_I2C1_Init();		//Initialize 7-seg
+  sevSeg_I2C1_Init(&hi2c1);		//Initialize 7-seg
+
+  // Set and display current time (12:00 A.M.)
+
+  	currTime.Hours = 12;
+  	currTime.Minutes = 58;
+  	currTime.Seconds = 50;
+  	currTime.TimeFormat = RTC_HOURFORMAT12_AM;			//This is initially in the A.M., so P.M. LED is off.
+
+  	currDate.Year = 0;
+  	currDate.Month = RTC_MONTH_JANUARY;
+  	currDate.Date = 0;
+
+  	HAL_RTC_SetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
+  	HAL_RTC_SetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+
+  	printf("Current time defaulted to: %d:%d:%d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+
+  	HAL_StatusTypeDef halRet = updateAndDisplayTime();
+
+  	if(halRet != HAL_OK) {		//check HAL
+  		printf("HAL Error - TX current time\n\r");
+  	} else {
+  		printf("Display Updated with current time\n\r");
+  	}
 
   userAlarmToggle = false;			//Default to off
   __HAL_RTC_ALARMB_DISABLE(&hrtc);				// Deactivate alarm
@@ -551,93 +570,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
-void sevSeg_I2C1_Init(void) {
-
-
-	/*
-	 * Master TX format:
-	 * HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, 		--> config struct (declared up top)
-	 * 						   uint16_t DevAddress, 			--> peripheral address
-	 * 						   uint8_t *pData,					--> pointer to buffer of data to be sent
-     *                         uint16_t Size, 					--> Size of data
-     *                         uint32_t Timeout);				--> timeout until return
-	 */
-
-	HAL_StatusTypeDef halRet;
-
-	//Set display to decode hex data inputs
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
-
-	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX decode mode\n\r");
-	} else{
-		printf("Display set to decode mode\n\r");
-	}
-
-	//Disable shutdown mode
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_SD_ONBuff, 2, HAL_MAX_DELAY);
-
-	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX disable shutdown mode\n\r");
-	} else {
-		printf("Display shutdown mode disabled\n\r");
-	}
-
-	//Set to test mode
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testONBuff, 2, HAL_MAX_DELAY);
-
-	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX test mode ON data\n\r");
-	} else {
-		printf("Test mode enabled - all LEDs on\n\r");
-	}
-
-	// Disable test mode
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_testOFFBuff, 2, HAL_MAX_DELAY);
-
-	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX test mode OFF data\n\r");
-	} else {
-		printf("Test mode disabled - all LEDs off\n\r");
-	}
-
-	sevSeg_intensityBuff[1] = sevSeg_intensityDuty[1];		// Initialize to 50% duty cycle
-	halRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
-
-	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX intensity level data\n\r");
-	} else {
-		printf("Intensity Set\n\r");
-	}
-
-	// Set and display current time (12:00 A.M.)
-
-	currTime.Hours = 12;
-	currTime.Minutes = 58;
-	currTime.Seconds = 50;
-	currTime.TimeFormat = RTC_HOURFORMAT12_AM;			//This is initially in the A.M., so P.M. LED is off.
-
-	currDate.Year = 0;
-	currDate.Month = RTC_MONTH_JANUARY;
-	currDate.Date = 0;
-
-	HAL_RTC_SetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-	HAL_RTC_SetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
-
-	printf("Current time defaulted to: %d:%d:%d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
-
-	halRet = updateAndDisplayTime();
-
-	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX current time\n\r");
-	} else {
-		printf("Display Updated with current time\n\r");
-	}
-
-	return;
-
-}
 
 HAL_StatusTypeDef updateAndDisplayTime(void) {
 
