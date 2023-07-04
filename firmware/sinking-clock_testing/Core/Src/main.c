@@ -187,7 +187,9 @@ int main(void)
 //  HAL_RTC_GetTime(hrtc, &currTimeMain, RTC_HourFormat_12);
 //  HAL_RTC_GetDate(hrtc, &currDateMain, RTC_FORMAT_BIN);
 
-
+  	  if(HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin) == GPIO_PIN_RESET) {
+  		  HAL_GPIO_WritePin(GPIOB, displayLEDPin, GPIO_PIN_SET);
+  	  }
 
   /* USER CODE END 2 */
 
@@ -196,30 +198,32 @@ int main(void)
   while (1)
   {
 
-	  HAL_StatusTypeDef HalRet;
+//	  HAL_StatusTypeDef HalRet;
+//
+//	  uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
+//			  	  	  	  	  	  0x05, 0x06, 0x07, 0x08, 0x09};
+//	  uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, 0x00};
+//	  uint8_t sevSeg_digit1Buff[2] = {sevSeg_digit1Reg, 0x00};
+//
+//	  for (uint i = 0; i < 10; i++) {
+//
+//		sevSeg_digit0Buff[1] = dispDigits[i];
+//		sevSeg_digit1Buff[1] = dispDigits[i+1];
+//
+//		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+//		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
+//
+//		if(HalRet != HAL_OK) {		//check HAL
+//			printf("HAL Error - TX digit data\n\r");
+//		} else {
+//			printf("Digit incremented and displayed\n\r");
+//		}
+//
+//		HAL_Delay(1000);
+//
+//	  }
 
-	  uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
-			  	  	  	  	  	  0x05, 0x06, 0x07, 0x08, 0x09};
-	  uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, 0x00};
-	  uint8_t sevSeg_digit1Buff[2] = {sevSeg_digit1Reg, 0x00};
 
-	  for (uint i = 0; i < 10; i++) {
-
-		sevSeg_digit0Buff[1] = dispDigits[i];
-		sevSeg_digit1Buff[1] = dispDigits[i+1];
-
-		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
-		HalRet = HAL_I2C_Master_Transmit(&hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
-
-		if(HalRet != HAL_OK) {		//check HAL
-			printf("HAL Error - TX digit data\n\r");
-		} else {
-			printf("Digit incremented and displayed\n\r");
-		}
-
-		HAL_Delay(1000);
-
-	  }
 
 
     /* USER CODE END WHILE */

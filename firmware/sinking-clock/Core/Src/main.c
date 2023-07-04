@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include "sevSeg.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -87,56 +88,6 @@ RTC_DateTypeDef userAlamrmDate;
 RTC_AlarmTypeDef userAlarmObj;
 
 /*
- * Seven-segment display I2C peripheral address, configuration register addresses,
- * and configuration register data
- */
-
-uint8_t sevSeg_addr = (0x38 << 1);			//MAX5868 I2C address. 0x038 shifted left for the R/W' bit
-
-
-
-const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
-const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
-//Data buffer to send over I2C
-uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
-
-const uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
-// Intensity register takes 0bXX000000 to 0bXX111111 for 1/63 step intensity increments
-// We declare 0% duty cycle, 50% duty cycle, and 100% duty cycle.
-const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
-uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, sevSeg_intensityDuty[1]};
-
-const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
-const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
-const uint8_t sevSeg_SD_OFF = 0x00;			//Display OFF - only mess with bit 0
-//Data buffer to send over I2C
-uint8_t sevSeg_SD_ONBuff[10] = {sevSeg_SDReg, sevSeg_SD_ON};
-uint8_t sevSeg_SD_OFFBuff[10] = {sevSeg_SDReg, sevSeg_SD_OFF};
-
-const uint8_t sevSeg_testReg = 0x07;			//Address for display test
-const uint8_t sevSeg_testOFF = 0x00;			//Display test OFF
-const uint8_t sevSeg_testON = 0x01;			//Display test ON
-//Data buffer to send over I2C
-uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
-uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
-
-const uint8_t sevSeg_digit0Reg = 0x20;
-const uint8_t sevSeg_digit1Reg = 0x21;
-const uint8_t sevSeg_digit2Reg = 0x22;
-const uint8_t sevSeg_digit3Reg = 0x23;
-
-
-const uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
-	  	  	  	  	  	  	  	0x05, 0x06, 0x07, 0x08, 0x09};
-
-//Data buffers to send to each individual LED display
-uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, dispDigits[0]};
-uint8_t sevSeg_digit1Buff[2] = {sevSeg_digit1Reg, dispDigits[0]};
-uint8_t sevSeg_digit2Buff[2] = {sevSeg_digit2Reg, dispDigits[0]};
-uint8_t sevSeg_digit3Buff[2] = {sevSeg_digit3Reg, dispDigits[0]};
-
-
-/*
  * Toggle Variables
  */
 
@@ -193,6 +144,8 @@ HAL_StatusTypeDef alarmSetISR(void);
  */
 HAL_StatusTypeDef hourSetISR(void);
 HAL_StatusTypeDef minuteSetISR(void);
+
+bool capTouchTrigger(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -718,7 +671,6 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	RTC_AlarmTypeDef userAlarmObj;
 	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 	userAlarmTime = userAlarmObj.AlarmTime;
 
@@ -794,14 +746,13 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 
 			}
 
-		} while(HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin) != GPIO_PIN_RESET);
+		} while(!capTouchTrigger());
 
 	}
 
 	HAL_TIM_Base_Stop(&htim16);
 
 }
-
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
@@ -882,7 +833,6 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 	if(!userAlarmToggle) {					// If alarm is disabled, enable it.
 
 		// Use object to get current user alarm time and set/enable the user alarm to that time.
-		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 //		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);				//Does this actually set the alarm?
 
@@ -917,7 +867,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	printf("Enter user alarm set ISR.\n\r");
 
-	RTC_AlarmTypeDef userAlarmObj;
 	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 	printf("User alarm currently set to %d:%d:%d.\n\r", userAlarmObj.AlarmTime.Hours,
 			userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
@@ -964,7 +913,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) != GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
-		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 		userAlarmTime = userAlarmObj.AlarmTime;
 
@@ -986,6 +934,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 		userAlarmObj.AlarmTime = userAlarmTime;
 
 		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
+		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 
 		printf("User alarm hour incremented to %d:%d:%d\n\r", userAlarmObj.AlarmTime.Hours,
 				userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
@@ -1031,7 +980,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == !GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
-		RTC_AlarmTypeDef userAlarmObj;
 		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 		userAlarmTime = userAlarmObj.AlarmTime;
 
@@ -1103,6 +1051,16 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	}
 
 	return halRet;
+}
+
+bool capTouchTrigger(void) {
+
+	if(HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin) == GPIO_PIN_RESET) {
+		return true;
+	}
+
+	return false;
+
 }
 
 /* USER CODE END 4 */
