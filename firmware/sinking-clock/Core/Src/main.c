@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "sevSeg.h"
+#include "alarm.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,6 +56,10 @@ TIM_HandleTypeDef htim16;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+
+/*
+ * Array of all duty cycles used - 0%, 50%, 100%.
+ */
 
 const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
 

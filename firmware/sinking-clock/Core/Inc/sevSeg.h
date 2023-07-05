@@ -8,8 +8,10 @@
 #ifndef INC_SEVSEG_H_
 #define INC_SEVSEG_H_
 
-//#include "../Src/sevSeg.c"
+#ifndef STM32G0XX_HAL_H
 #include "stm32g0xx_hal.h"
+#endif
+
 /*
  * Initializes seven segment display IC registers
  */

@@ -6,7 +6,10 @@
  */
 
 #include "../Inc/sevSeg.h"
+
+#ifndef STDIO_H
 #include <stdio.h>
+#endif
 
 /*
  * Seven-segment display I2C peripheral address, configuration register addresses,
