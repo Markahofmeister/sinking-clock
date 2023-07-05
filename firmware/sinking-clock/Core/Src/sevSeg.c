@@ -7,51 +7,48 @@
 
 #include "../Inc/sevSeg.h"
 
-#ifndef STDIO_H
-#include <stdio.h>
-#endif
-
 /*
  * Seven-segment display I2C peripheral address, configuration register addresses,
  * and configuration register data
  */
 
-uint8_t sevSeg_addr = (0x38 << 1);			//MAX5868 I2C address. 0x038 shifted left for the R/W' bit
+uint8_t sevSeg_addr = (0x38 << 1);			// MAX5868 I2C address. 0x038 shifted left for the R/W' bit
 
-const uint8_t sevSeg_decodeReg = 0x01;		//Address for decode register
-const uint8_t sevSeg_decodeData = 0x0F;		//0b00001111 = decode hex for all segments
+const uint8_t sevSeg_decodeReg = 0x01;		// Address for decode register
+const uint8_t sevSeg_decodeData = 0x0F;		// 0b00001111 = decode hex for all segments
 //Data buffer to send over I2C
 uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
 
-const uint8_t sevSeg_intensityReg = 0x02;		//Address for intensity register
+const uint8_t sevSeg_intensityReg = 0x02;		// Address for intensity register
 // Intensity register takes 0bXX000000 to 0bXX111111 for 1/63 step intensity increments
 // We declare 0% duty cycle, 50% duty cycle, and 100% duty cycle.
 uint8_t sevSeg_intensityBuff[2] = {sevSeg_intensityReg, 31};
 
-const uint8_t sevSeg_SDReg = 0x04;			//Address for shutdown register
-const uint8_t sevSeg_SD_ON = 0x01;			//Display ON - only mess with bit 0
-const uint8_t sevSeg_SD_OFF = 0x00;			//Display OFF - only mess with bit 0
+const uint8_t sevSeg_SDReg = 0x04;			// Address for shutdown register
+const uint8_t sevSeg_SD_ON = 0x01;			// Display ON - only mess with bit 0
+const uint8_t sevSeg_SD_OFF = 0x00;			// Display OFF - only mess with bit 0
 //Data buffer to send over I2C
 uint8_t sevSeg_SD_ONBuff[10] = {sevSeg_SDReg, sevSeg_SD_ON};
 uint8_t sevSeg_SD_OFFBuff[10] = {sevSeg_SDReg, sevSeg_SD_OFF};
 
-const uint8_t sevSeg_testReg = 0x07;			//Address for display test
-const uint8_t sevSeg_testOFF = 0x00;			//Display test OFF
-const uint8_t sevSeg_testON = 0x01;			//Display test ON
+const uint8_t sevSeg_testReg = 0x07;			// Address for display test
+const uint8_t sevSeg_testOFF = 0x00;			// Display test OFF
+const uint8_t sevSeg_testON = 0x01;				//Display test ON
 //Data buffer to send over I2C
 uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
 uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
 
+// I2C Regsiter addresses to access individual digits
 const uint8_t sevSeg_digit0Reg = 0x20;
 const uint8_t sevSeg_digit1Reg = 0x21;
 const uint8_t sevSeg_digit2Reg = 0x22;
 const uint8_t sevSeg_digit3Reg = 0x23;
 
-
+// Array of all possible digit outputs
 const uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
 	  	  	  	  	  	  	  	0x05, 0x06, 0x07, 0x08, 0x09};
 
-//Data buffers to send to each individual LED display
+//Data buffers to send to each individual LED display - initialized to all 0s.
 uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, dispDigits[0]};
 uint8_t sevSeg_digit1Buff[2] = {sevSeg_digit1Reg, dispDigits[0]};
 uint8_t sevSeg_digit2Buff[2] = {sevSeg_digit2Reg, dispDigits[0]};
@@ -70,7 +67,7 @@ void sevSeg_I2C1_Init(I2C_HandleTypeDef *hi2c1) {
      *                         uint32_t Timeout);				--> timeout until return
 	 */
 
-	HAL_StatusTypeDef halRetI2C;
+	HAL_StatusTypeDef halRetI2C;			// HAL status to monitor I2C initialization status
 
 	//Set display to decode hex data inputs
 	halRetI2C = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_decodeBuffer, 2, HAL_MAX_DELAY);
@@ -123,24 +120,29 @@ void sevSeg_I2C1_Init(I2C_HandleTypeDef *hi2c1) {
 
 void sevSeg_updateDigits(I2C_HandleTypeDef *hi2c1, RTC_TimeTypeDef *updateTime) {
 
-	sevSeg_digit0Buff[1] = updateTime->Hours / 10;
-	sevSeg_digit1Buff[1] = updateTime->Hours % 10;
-	sevSeg_digit2Buff[1] = updateTime->Minutes / 10;
-	sevSeg_digit3Buff[1] = updateTime->Minutes % 10;
+	sevSeg_digit0Buff[1] = updateTime->Hours / 10;		// second digit of hours value
+	sevSeg_digit1Buff[1] = updateTime->Hours % 10;		// first digit of hours value
+	sevSeg_digit2Buff[1] = updateTime->Minutes / 10;	// second digit of minutes value
+	sevSeg_digit3Buff[1] = updateTime->Minutes % 10;	// first digit of minutes value
 
-	HAL_StatusTypeDef halRet;
+	// Transmit updated time digits to display digits
+	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
+	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
+	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
+	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
 
-	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit1Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit2Buff, 2, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit3Buff, 2, HAL_MAX_DELAY);
+	return;
 
 }
 
 void sevSeg_setIntensity(I2C_HandleTypeDef *hi2c1, uint8_t dutyCycle) {
 
-	sevSeg_intensityBuff[1] = dutyCycle;
-	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+	if(dutyCycle >= 0 && dutyCycle <= 63) {		// Only change intensity if input is between 0 and 63.
+
+		sevSeg_intensityBuff[1] = dutyCycle;
+		HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_intensityBuff, 2, HAL_MAX_DELAY);
+
+	}
 
 }
 

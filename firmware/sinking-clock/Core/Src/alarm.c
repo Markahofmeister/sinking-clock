@@ -7,10 +7,6 @@
 
 #include "../Inc/alarm.h"
 
-#ifndef STDIO_H
-#include <stdio.h>
-#endif
-
 /*
  * Alarm specification macros
  */
@@ -19,12 +15,12 @@
 
 void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
-	currTime->Hours = 12;
+	currTime->Hours = 12;				// Initialize current RTC time to default values
 	currTime->Minutes = 58;
 	currTime->Seconds = 50;
 	currTime->TimeFormat = RTC_HOURFORMAT12_AM;			//This is initially in the A.M., so P.M. LED is off.
 
-	currDate->Year = 0;
+	currDate->Year = 0;					// Initialize current RTC date to default values
 	currDate->Month = RTC_MONTH_JANUARY;
 	currDate->Date = 0;
 
@@ -37,6 +33,7 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 
 void getRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
+	// Store both current time and current date in time and date pointers.
 	HAL_RTC_GetTime(hrtc, currTime, RTC_FORMAT_BCD);
 	HAL_RTC_GetDate(hrtc, currDate, RTC_FORMAT_BCD);
 
@@ -44,6 +41,7 @@ void getRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateType
 
 void getUserAlarmTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *userAlarmTime) {
 
+	// Store alarm data in alarm object pointer and extract alarm time data from alarm object
 	RTC_AlarmTypeDef userAlarmObj;
 	HAL_RTC_GetAlarm(hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
 	*userAlarmTime = userAlarmObj.AlarmTime;
@@ -52,6 +50,7 @@ void getUserAlarmTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *userAlarmTime) {
 
 void getUserAlarmObj(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *userAlarmObj) {
 
+	// Store alarm data in alarm object pointer
 	HAL_RTC_GetAlarm(hrtc, userAlarmObj, internalAlarm, FORMAT_BIN);
 
 }

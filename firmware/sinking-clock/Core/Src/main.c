@@ -21,11 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
 #include "sevSeg.h"
 #include "alarm.h"
+#include "ctouch.h"
+#include "sinkingClockVars.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,26 +59,7 @@ UART_HandleTypeDef huart2;
 
 const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
 
-/*
- * Declare variables to map button presses to GPIOs
- */
-// EXTI Pins
-const uint16_t displayButtonPin = GPIO_PIN_0;
-const uint16_t alarmEnableButtonPin = GPIO_PIN_4;
-const uint16_t alarmSetButtonPin = GPIO_PIN_1;
-const uint16_t hourSetButtonPin = GPIO_PIN_5;
-const uint16_t minuteSetButtonPin = GPIO_PIN_12;
 
-// Input Pin
-const uint16_t snoozeButtonPin = GPIO_PIN_11;
-
-/*
- * Map GPIOS to some lED outputs
- */
-
-const uint16_t alarmLED = GPIO_PIN_7;			//Port B
-const uint16_t PMLED = GPIO_PIN_6;				//Port B
-const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
 
 /*
  * RTC access objects
@@ -91,15 +71,6 @@ RTC_TimeTypeDef userAlarmTime;
 RTC_DateTypeDef userAlamrmDate;
 RTC_AlarmTypeDef userAlarmObj;
 
-/*
- * Toggle Variables
- */
-
-// Display Toggle: 0 = 0% display Intensity, 1 = 50% display brightness, 2 = 100% display brightness
-uint8_t displayToggle;
-
-// Variable to toggle user alarm on or off. Default to off.
-bool userAlarmToggle;
 
 /* USER CODE END PV */
 
@@ -143,8 +114,6 @@ HAL_StatusTypeDef alarmSetISR(void);
  */
 HAL_StatusTypeDef hourSetISR(void);
 HAL_StatusTypeDef minuteSetISR(void);
-
-bool capTouchTrigger(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -203,9 +172,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
-  sevSeg_I2C1_Init(&hi2c1);		//Initialize 7-seg
-
   initRTCTime(&hrtc, &currTime, &currDate);
+  sevSeg_I2C1_Init(&hi2c1);		//Initialize 7-seg
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -644,7 +612,7 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 
 			}
 
-		} while(!capTouchTrigger());
+		} while(!capTouchTrigger(snoozeButtonPin));
 
 	}
 
@@ -936,15 +904,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	return halRet;
 }
 
-bool capTouchTrigger(void) {
-
-	if(HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin) == GPIO_PIN_RESET) {
-		return true;
-	}
-
-	return false;
-
-}
 
 /* USER CODE END 4 */
 

@@ -3,6 +3,9 @@
  *
  *  Created on: Jul 5, 2023
  *      Author: marka
+ *
+ *  Drives STM32 RTC
+ *  Works with STM32 HAL
  */
 
 #ifndef INC_ALARM_H_
@@ -12,23 +15,47 @@
 #include "stm32g0xx_hal.h"
 #endif
 
+#ifndef STDIO_H
+#include <stdio.h>
+#endif
+
 /*
- * Declare RTC time and date to defaults and update RTC with values
+ * Declare RTC time and date to defaults and update RTC with values configured in .c file.
+ *
+ * @param STM32 HAL RTC handling object pointer
+ * @param STM32 HAL RTC time object pointer (storing current RTC time.)
+ * @param STM32 HAL RTC date object pointer (storing current RTC date.)
+ *
+ * @ret none
  */
 void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate);
 
 /*
  * Gets updated RTC time and stores in access object pointers
+ *
+ * @param STM32 HAL RTC handling object pointer
+ * @param STM32 HAL RTC time object pointer (storing current RTC time.)
+ * @param STM32 HAL RTC date object pointer (storing current RTC date.)
+ *
+ * @ret none
  */
 void getRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate);
 
 /*
  * Gets the time of user's alarm and stores in access object pointers
+ *
+ * @param STM32 HAL RTC handling object pointer
+ * @param STM32 HAL RTC time object pointer (storing current RTC user alarm time.)
  */
 void getUserAlarmTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *userAlarmTime);
 
 /*
  * Updates entire alarm object with user alarm settings
+ *
+ * @param STM32 HAL RTC handling object pointer
+ * @param STM32 HAL RTC alarm object pointer (storing all data of an alarm.)
+ *
+ * @ret none
  */
 void getUserAlarmObj(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *userAlarmObj);
 
