@@ -59,8 +59,6 @@ UART_HandleTypeDef huart2;
 
 const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
 
-
-
 /*
  * RTC access objects
  */
@@ -85,32 +83,56 @@ static void MX_TIM16_Init(void);
 
 /*
  * Call to fetch the current time from the RTC and send to the LED display.
+ *
+ * @param none
+ *
+ * @ret HAL status object
  */
 HAL_StatusTypeDef updateAndDisplayTime(void);
 
 /*
  * Call to fetch the current alarm from the RTC and send to the LED display.
+ *
+ * @param none
+ *
+ * @ret HAL status object
  */
 HAL_StatusTypeDef updateAndDisplayAlarm(void);
 
 /*
  * Called on interrupt from display button to toggle 7-segment intensity.
+ *
+ * @param none
+ *
+ * @ret HAL status object
  */
 HAL_StatusTypeDef displayButtonISR(void);
 
 /*
  * Called on interrupt from alarm enable button to toggle user alarm.
+ *
+ * @param none
+ *
+ * @ret HAL status object
  */
 HAL_StatusTypeDef alarmEnableISR(void);
 
 /*
  * Called on interrupt from alarm set button to enter alarm set loop.
+ *
+ * @param none
+ *
+ * @ret HAL status object
  */
 HAL_StatusTypeDef alarmSetISR(void);
 
 /*
  * Called on interrupt from hour and minute set buttons.
  * Contain logic to set user alarm hour or minute.
+ *
+ * @param none
+ *
+ * @ret HAL status object
  */
 HAL_StatusTypeDef hourSetISR(void);
 HAL_StatusTypeDef minuteSetISR(void);
