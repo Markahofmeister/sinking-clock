@@ -36,9 +36,6 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define internalAlarm 	RTC_ALARM_A
-#define userAlarm 		RTC_ALARM_B
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -208,21 +205,7 @@ int main(void)
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
   sevSeg_I2C1_Init(&hi2c1);		//Initialize 7-seg
 
-  // Set and display current time (12:00 A.M.)
-
-  	currTime.Hours = 12;
-  	currTime.Minutes = 58;
-  	currTime.Seconds = 50;
-  	currTime.TimeFormat = RTC_HOURFORMAT12_AM;			//This is initially in the A.M., so P.M. LED is off.
-
-  	currDate.Year = 0;
-  	currDate.Month = RTC_MONTH_JANUARY;
-  	currDate.Date = 0;
-
-  	HAL_RTC_SetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-  	HAL_RTC_SetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
-
-  	printf("Current time defaulted to: %d:%d:%d\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+  initRTCTime(&hrtc, &currTime, &currDate);
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -582,9 +565,7 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-	HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
-
+	getRTCTime(&hrtc, &currTime, &currDate);
 	sevSeg_updateDigits(&hi2c1, &currTime);
 
 	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
@@ -602,9 +583,7 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-	userAlarmTime = userAlarmObj.AlarmTime;
-
+	getUserAlarmTime(&hrtc, &userAlarmTime);
 	sevSeg_updateDigits(&hi2c1, &userAlarmTime);
 
 	if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
@@ -623,12 +602,8 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  printf("Enter current time minute increment interrupt\n\r");
 
 	  RTC_AlarmTypeDef sAlarm;
-	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, FORMAT_BIN);
-
-	  RTC_TimeTypeDef currTime;
-	  RTC_DateTypeDef currDate;
-	  HAL_RTC_GetTime(hrtc, &currTime, RTC_FORMAT_BIN);
-	  HAL_RTC_GetDate(hrtc, &currDate, RTC_FORMAT_BIN);		//get date is necessary, else RTC will not update time
+	  getUserAlarmObj(hrtc, &sAlarm);
+	  getRTCTime(hrtc, &currTime, &currDate);
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
 		sAlarm.AlarmTime.Minutes=0;
@@ -727,7 +702,6 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 }
 
-
 HAL_StatusTypeDef displayButtonISR(void) {
 
 	printf("Entered display toggle ISR\n\r");
@@ -752,18 +726,15 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 	if(!userAlarmToggle) {					// If alarm is disabled, enable it.
 
-		// Use object to get current user alarm time and set/enable the user alarm to that time.
-		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-//		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);				//Does this actually set the alarm?
+		getUserAlarmTime(&hrtc, &userAlarmTime);
 
 		__HAL_RTC_ALARMB_ENABLE(&hrtc);					//Enable alarm?
 
 		HAL_GPIO_WritePin(GPIOB, alarmLED, GPIO_PIN_SET);			// Turn on alarm LED
 		userAlarmToggle = true;								// Toggle internal flag to true
 
-		RTC_TimeTypeDef alarmTime = userAlarmObj.AlarmTime;
-		printf("User alarm set to: %d:%d:%d on alarm %d.\n\r", alarmTime.Hours,
-								alarmTime.Minutes, alarmTime.Seconds, userAlarmObj.Alarm);
+		printf("User alarm set to: %d:%d:%d.\n\r", userAlarmTime.Hours,
+								userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else if (userAlarmToggle) {				// If alarm is enabled, disable it.
@@ -787,9 +758,9 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	printf("Enter user alarm set ISR.\n\r");
 
-	HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-	printf("User alarm currently set to %d:%d:%d.\n\r", userAlarmObj.AlarmTime.Hours,
-			userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
+	getUserAlarmTime(&hrtc, &userAlarmTime);
+	printf("User alarm currently set to %d:%d:%d.\n\r", userAlarmTime.Hours,
+			userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
@@ -831,8 +802,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) != GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
-		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-		userAlarmTime = userAlarmObj.AlarmTime;
+		getUserAlarmTime(&hrtc, &userAlarmTime);
 
 		if(userAlarmTime.Hours >= 12) {
 			userAlarmTime.Hours = 1;
@@ -852,16 +822,15 @@ HAL_StatusTypeDef hourSetISR(void) {
 		userAlarmObj.AlarmTime = userAlarmTime;
 
 		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
-		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
+		getUserAlarmTime(&hrtc, &userAlarmTime);
 
-		printf("User alarm hour incremented to %d:%d:%d\n\r", userAlarmObj.AlarmTime.Hours,
-				userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
+		printf("User alarm hour incremented to %d:%d:%d\n\r", userAlarmTime.Hours,
+				userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else {									// Otherwise, change current time hour.
 
-		HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-		HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+		getRTCTime(&hrtc, &currTime, &currDate);
 		if(currTime.Hours >= 12) {
 			currTime.Hours = 1;
 			if(currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
@@ -880,8 +849,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		updateAndDisplayTime();
 
-		HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-		HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+		getRTCTime(&hrtc, &currTime, &currDate);
 
 		printf("Current time hour incremented to %d:%d:%d.\n\r", currTime.Hours,
 				currTime.Minutes, currTime.Seconds);
@@ -898,8 +866,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == !GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
-		HAL_RTC_GetAlarm(&hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
-		userAlarmTime = userAlarmObj.AlarmTime;
+		getUserAlarmTime(&hrtc, &userAlarmTime);
 
 		if(userAlarmTime.Minutes >= 59) {
 			userAlarmTime.Minutes = 0;
@@ -933,8 +900,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	}
 	else {									// Otherwise, change current time hour.
 
-		HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-		HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+		getRTCTime(&hrtc, &currTime, &currDate);
 
 		if(currTime.Minutes >= 59) {
 			currTime.Minutes = 0;
@@ -961,8 +927,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		updateAndDisplayTime();
 
-		HAL_RTC_GetTime(&hrtc, &currTime, RTC_FORMAT_BCD);
-		HAL_RTC_GetDate(&hrtc, &currDate, RTC_FORMAT_BCD);
+		getRTCTime(&hrtc, &currTime, &currDate);
 
 		printf("Current time minute incremented to %d:%d:%d.\n\r", currTime.Hours,
 				currTime.Minutes, currTime.Seconds);

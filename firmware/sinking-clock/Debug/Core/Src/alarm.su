@@ -1,0 +1,4 @@
+../Core/Src/alarm.c:20:6:initRTCTime	24	static
+../Core/Src/alarm.c:38:6:getRTCTime	24	static
+../Core/Src/alarm.c:45:6:getUserAlarmTime	64	static
+../Core/Src/alarm.c:53:6:getUserAlarmObj	16	static
