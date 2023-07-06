@@ -23,6 +23,8 @@
 #include <string.h>
 #endif
 
+#define RTCTimeFormat RTC_FORMAT_BIN
+
 /*
  * Declare variables to map button presses to GPIOs
  */
@@ -44,6 +46,11 @@ const uint16_t alarmLED = GPIO_PIN_7;			//Port B
 const uint16_t PMLED = GPIO_PIN_6;				//Port B
 const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
 
+/*
+ * Array of all duty cycles used - 0%, 50%, 100%.
+ */
+
+const uint8_t sevSeg_intensityDuty[3] = {00, 31, 63};
 
 /*
  * Toggle Variables
