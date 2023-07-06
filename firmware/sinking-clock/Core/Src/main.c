@@ -618,27 +618,31 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 		uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
 		bool displayBlink = false;
 
-		do {						// Beep buzzer and blink display until snooze button is pressed
-
-			updateAndDisplayTime();
-
-			if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
-
-				sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayBlink]);
-
-
-				HAL_GPIO_TogglePin(GPIOB, buzzerPin);
-
-				timerVal = __HAL_TIM_GET_COUNTER(&htim16);
-				displayBlink = !displayBlink;
-
-			}
-
-		} while(!capTouchTrigger(snoozeButtonPin));
-
+		userAlarmBeep();				// Enter beeping alarm loop
 	}
 
 	HAL_TIM_Base_Stop(&htim16);
+
+}
+
+void userAlarmBeep(void) {
+
+	do {						// Beep buzzer and blink display until snooze button is pressed
+
+		updateAndDisplayTime();				// Update to current time and display
+
+		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {		// Use hardware timer to blink/beep display
+
+			sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 100% duty cycle
+
+			HAL_GPIO_TogglePin(GPIOB, buzzerPin);					// Toggle Buzzer
+
+			timerVal = __HAL_TIM_GET_COUNTER(&htim16);				// Update timer value
+			displayBlink = !displayBlink;							// Toggle display blink counter
+
+		}
+
+	} while(!capTouchTrigger(snoozeButtonPin));
 
 }
 
