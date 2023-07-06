@@ -57,7 +57,7 @@ UART_HandleTypeDef huart2;
  * Array of all duty cycles used - 0%, 50%, 100%.
  */
 
-const uint8_t sevSeg_intensityDuty[3] = {0x00, 0x31, 0x63};
+const uint8_t sevSeg_intensityDuty[3] = {00, 31, 63};
 
 /*
  * RTC access objects
@@ -138,6 +138,11 @@ HAL_StatusTypeDef hourSetISR(void);
 HAL_StatusTypeDef minuteSetISR(void);
 
 /*
+ * Enters loop to signal user alarm
+ */
+void userAlarmBeep();
+
+/*
  * Map printf to UART output to read messages on terminal
  */
 #ifdef __GNUC__
@@ -215,7 +220,7 @@ int main(void)
   while (1)
   {
 
-    /* USER CODE END WHILE */
+	/* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -614,18 +619,16 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	if(userAlarmToggle) {			//Only execute sequence if the alarm is actually on
 
-		HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
-		uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
-		bool displayBlink = false;
-
 		userAlarmBeep();				// Enter beeping alarm loop
 	}
 
-	HAL_TIM_Base_Stop(&htim16);
-
 }
 
-void userAlarmBeep(void) {
+void userAlarmBeep() {
+
+	HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
+	uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
+	bool displayBlink = false;
 
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
@@ -638,11 +641,16 @@ void userAlarmBeep(void) {
 			HAL_GPIO_TogglePin(GPIOB, buzzerPin);					// Toggle Buzzer
 
 			timerVal = __HAL_TIM_GET_COUNTER(&htim16);				// Update timer value
+
 			displayBlink = !displayBlink;							// Toggle display blink counter
+
+			printf("Display Blink = %d\n\r", displayBlink);
 
 		}
 
-	} while(!capTouchTrigger(snoozeButtonPin));
+	} while(capTouchTrigger(snoozeButtonPin));
+
+	HAL_TIM_Base_Stop(&htim16);
 
 }
 
