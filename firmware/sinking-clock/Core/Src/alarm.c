@@ -35,15 +35,23 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 		printf("Error defaulting RTC time.\n\r");
 	}
 
-	RTC_AlarmTypeDef internalAlarm_init;
+	RTC_AlarmTypeDef internalAlarm_init = {0};
 	internalAlarm_init.AlarmTime.Hours = currTime->Hours;
 	internalAlarm_init.AlarmTime.Minutes = currTime->Minutes + 1;
 	internalAlarm_init.AlarmTime.Seconds = currTime->Seconds;
+	internalAlarm_init.AlarmTime.SubSeconds = currTime->SubSeconds;
 	internalAlarm_init.AlarmTime.TimeFormat = currTime->TimeFormat;
-
+	internalAlarm_init.AlarmTime.TimeFormat = currTime->TimeFormat;
+	internalAlarm_init.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	internalAlarm_init.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+	internalAlarm_init.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
+								  |RTC_ALARMMASK_SECONDS;
+	internalAlarm_init.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+	internalAlarm_init.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+	internalAlarm_init.AlarmDateWeekDay = 0x1;
 	internalAlarm_init.Alarm = internalAlarm;
 
-	halRet = HAL_RTC_SetAlarm(hrtc, &internalAlarm_init, RTC_FORMAT_BCD);
+	halRet = HAL_RTC_SetAlarm_IT(hrtc, &internalAlarm_init, RTC_FORMAT_BCD);
 
 	RTC_AlarmTypeDef internalAlarm_initTest;
 	HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTC_FORMAT_BCD);

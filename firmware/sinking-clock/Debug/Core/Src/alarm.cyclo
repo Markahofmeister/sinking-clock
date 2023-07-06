@@ -1,4 +1,4 @@
 alarm.c:16:6:initRTCTime	3
-alarm.c:58:6:getRTCTime	1
-alarm.c:66:6:getUserAlarmTime	1
-alarm.c:75:6:getUserAlarmObj	1
+alarm.c:66:6:getRTCTime	1
+alarm.c:74:6:getUserAlarmTime	1
+alarm.c:83:6:getUserAlarmObj	1

@@ -63,11 +63,10 @@ const uint8_t sevSeg_intensityDuty[3] = {00, 31, 63};
  * RTC access objects
  */
 
-RTC_TimeTypeDef currTime;
-RTC_DateTypeDef currDate;
-RTC_TimeTypeDef userAlarmTime;
-RTC_DateTypeDef userAlamrmDate;
-RTC_AlarmTypeDef userAlarmObj;
+RTC_TimeTypeDef currTime = {0};
+RTC_DateTypeDef currDate = {0};
+RTC_TimeTypeDef userAlarmTime = {0};
+RTC_AlarmTypeDef userAlarmObj = {0};
 
 
 /* USER CODE END PV */
@@ -219,7 +218,7 @@ int main(void)
   while (1)
   {
 
-	/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -409,6 +408,11 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN RTC_Init 2 */
+
+  currTime = sTime;
+  currDate = sDate;
+  userAlarmObj = sAlarm;
+  userAlarmTime = userAlarmObj.AlarmTime;
 
   /* USER CODE END RTC_Init 2 */
 
@@ -816,7 +820,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		userAlarmObj.AlarmTime = userAlarmTime;
 
-		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
+		HAL_RTC_SetAlarm_IT(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
 		getUserAlarmTime(&hrtc, &userAlarmTime);
 
 		printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
@@ -887,7 +891,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		userAlarmObj.AlarmTime = userAlarmTime;
 
-		HAL_RTC_SetAlarm(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
+		HAL_RTC_SetAlarm_IT(&hrtc, &userAlarmObj, RTC_FORMAT_BCD);
 
 		printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmObj.AlarmTime.Hours,
 				userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
