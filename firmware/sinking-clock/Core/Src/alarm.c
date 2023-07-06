@@ -12,6 +12,7 @@
  */
 #define internalAlarm 	RTC_ALARM_A
 #define userAlarm 		RTC_ALARM_B
+#define RTCTimeFormat	RTC_FORMAT_BIN
 
 void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
@@ -25,8 +26,8 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 	currDate->Date = 0;
 
 	HAL_StatusTypeDef halRet = HAL_OK;
-	halRet = HAL_RTC_SetTime(hrtc, currTime, RTC_FORMAT_BCD);
-	halRet = HAL_RTC_SetDate(hrtc, currDate, RTC_FORMAT_BCD);
+	halRet = HAL_RTC_SetTime(hrtc, currTime, RTCTimeFormat);
+	halRet = HAL_RTC_SetDate(hrtc, currDate, RTCTimeFormat);
 
 	if(halRet == HAL_OK) {
 		printf("Current time defaulted to: %u:%u:%u\n\r", currTime->Hours, currTime->Minutes, currTime->Seconds);
@@ -51,10 +52,10 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 	internalAlarm_init.AlarmDateWeekDay = 0x1;
 	internalAlarm_init.Alarm = internalAlarm;
 
-	halRet = HAL_RTC_SetAlarm_IT(hrtc, &internalAlarm_init, RTC_FORMAT_BCD);
+	halRet = HAL_RTC_SetAlarm_IT(hrtc, &internalAlarm_init, RTCTimeFormat);
 
 	RTC_AlarmTypeDef internalAlarm_initTest;
-	HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTC_FORMAT_BCD);
+	HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTCTimeFormat);
 
 	if(halRet == HAL_OK) {
 		printf("Internal alarm A defaulted to %u:%u:%u.\n\r", internalAlarm_initTest.AlarmTime.Hours,
@@ -66,8 +67,8 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 void getRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
 	// Store both current time and current date in time and date pointers.
-	HAL_RTC_GetTime(hrtc, currTime, RTC_FORMAT_BCD);
-	HAL_RTC_GetDate(hrtc, currDate, RTC_FORMAT_BCD);
+	HAL_RTC_GetTime(hrtc, currTime, RTCTimeFormat);
+	HAL_RTC_GetDate(hrtc, currDate, RTCTimeFormat);
 
 }
 
@@ -75,7 +76,7 @@ void getUserAlarmTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *userAlarmTime) {
 
 	// Store alarm data in alarm object pointer and extract alarm time data from alarm object
 	RTC_AlarmTypeDef userAlarmObj;
-	HAL_RTC_GetAlarm(hrtc, &userAlarmObj, userAlarm, RTC_FORMAT_BCD);
+	HAL_RTC_GetAlarm(hrtc, &userAlarmObj, userAlarm, RTCTimeFormat);
 	*userAlarmTime = userAlarmObj.AlarmTime;
 
 }
