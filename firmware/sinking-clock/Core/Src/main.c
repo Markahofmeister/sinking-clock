@@ -198,7 +198,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
-  initRTCTime(&hrtc, &currTime, &currDate);
+//  initRTCTime(&hrtc, &currTime, &currDate);
   sevSeg_I2C1_Init(&hi2c1);		//Initialize 7-seg
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
@@ -399,9 +399,7 @@ static void MX_RTC_Init(void)
 
   /** Enable the Alarm B
   */
-  sAlarm.AlarmTime.Hours = 0x2;
-  sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmMask = RTC_ALARMMASK_ALL;
+  sAlarm.AlarmTime.Seconds = 0x1;
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
   {
