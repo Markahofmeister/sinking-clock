@@ -15,7 +15,7 @@
 uint8_t sevSeg_addr = (0x38 << 1);			// MAX5868 I2C address. 0x038 shifted left for the R/W' bit
 
 const uint8_t sevSeg_decodeReg = 0x01;		// Address for decode register
-const uint8_t sevSeg_decodeData = 0x0F;		// 0b00001111 = decode hex for all segments
+const uint8_t sevSeg_decodeData = 0x0E;		// 0b00001110 = decode hex for all segments except for the 1.
 //Data buffer to send over I2C
 uint8_t sevSeg_decodeBuffer[2] = {sevSeg_decodeReg, sevSeg_decodeData};
 
@@ -28,8 +28,8 @@ const uint8_t sevSeg_SDReg = 0x04;			// Address for shutdown register
 const uint8_t sevSeg_SD_ON = 0x01;			// Display ON - only mess with bit 0
 const uint8_t sevSeg_SD_OFF = 0x00;			// Display OFF - only mess with bit 0
 //Data buffer to send over I2C
-uint8_t sevSeg_SD_ONBuff[10] = {sevSeg_SDReg, sevSeg_SD_ON};
-uint8_t sevSeg_SD_OFFBuff[10] = {sevSeg_SDReg, sevSeg_SD_OFF};
+uint8_t sevSeg_SD_ONBuff[2] = {sevSeg_SDReg, sevSeg_SD_ON};
+uint8_t sevSeg_SD_OFFBuff[2] = {sevSeg_SDReg, sevSeg_SD_OFF};
 
 const uint8_t sevSeg_testReg = 0x07;			// Address for display test
 const uint8_t sevSeg_testOFF = 0x00;			// Display test OFF
@@ -38,7 +38,7 @@ const uint8_t sevSeg_testON = 0x01;				//Display test ON
 uint8_t sevSeg_testOFFBuff[2] = {sevSeg_testReg, sevSeg_testOFF};
 uint8_t sevSeg_testONBuff[2] = {sevSeg_testReg, sevSeg_testON};
 
-// I2C Regsiter addresses to access individual digits
+// I2C Register addresses to access individual digits
 const uint8_t sevSeg_digit0Reg = 0x20;
 const uint8_t sevSeg_digit1Reg = 0x21;
 const uint8_t sevSeg_digit2Reg = 0x22;
@@ -48,8 +48,11 @@ const uint8_t sevSeg_digit3Reg = 0x23;
 const uint8_t dispDigits[10] = {0x00, 0x01, 0x02, 0x03, 0x04,
 	  	  	  	  	  	  	  	0x05, 0x06, 0x07, 0x08, 0x09};
 
+const uint8_t sevSeg_digit0_OFF = 0x03;		// 0b00000011 = colons on, 1 is off.
+const uint8_t sevSeg_digit0_ON = 0x33;		// 0b00110011 = colons on, 1 is on.
+
 //Data buffers to send to each individual LED display - initialized to all 0s.
-uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, dispDigits[0]};
+uint8_t sevSeg_digit0Buff[2] = {sevSeg_digit0Reg, sevSeg_digit0_OFF};
 uint8_t sevSeg_digit1Buff[2] = {sevSeg_digit1Reg, dispDigits[0]};
 uint8_t sevSeg_digit2Buff[2] = {sevSeg_digit2Reg, dispDigits[0]};
 uint8_t sevSeg_digit3Buff[2] = {sevSeg_digit3Reg, dispDigits[0]};
@@ -120,10 +123,16 @@ void sevSeg_I2C1_Init(I2C_HandleTypeDef *hi2c1) {
 
 void sevSeg_updateDigits(I2C_HandleTypeDef *hi2c1, RTC_TimeTypeDef *updateTime) {
 
-	sevSeg_digit0Buff[1] = updateTime->Hours / 10;		// second digit of hours value
-	sevSeg_digit1Buff[1] = updateTime->Hours % 10;		// first digit of hours value
-	sevSeg_digit2Buff[1] = updateTime->Minutes / 10;	// second digit of minutes value
-	sevSeg_digit3Buff[1] = updateTime->Minutes % 10;	// first digit of minutes value
+	if(updateTime->Hours / 10 == 1) {					// Check whether or not to activate 1 for hour
+		sevSeg_digit0Buff[1] = sevSeg_digit0_ON;
+	}
+	else {
+		sevSeg_digit0Buff[1] = sevSeg_digit0_OFF;
+	}
+
+	sevSeg_digit1Buff[1] = updateTime->Hours % 10;		// tenths digit of hours value
+	sevSeg_digit2Buff[1] = updateTime->Minutes / 10;	// ones digit of minutes value
+	sevSeg_digit3Buff[1] = updateTime->Minutes % 10;	// tenths digit of minutes value
 
 	// Transmit updated time digits to display digits
 	HAL_I2C_Master_Transmit(hi2c1, sevSeg_addr, sevSeg_digit0Buff, 2, HAL_MAX_DELAY);
