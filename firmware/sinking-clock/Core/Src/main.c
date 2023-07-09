@@ -634,7 +634,7 @@ void userAlarmBeep() {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 100% duty cycle
+			sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayBlink + 1]);	// Toggle 0% to 100% duty cycle
 
 			HAL_GPIO_TogglePin(GPIOB, buzzerPin);					// Toggle Buzzer
 
@@ -707,10 +707,13 @@ HAL_StatusTypeDef displayButtonISR(void) {
 	printf("Entered display toggle ISR\n\r");
 	HAL_StatusTypeDef halRet = HAL_OK;
 
+	updateAndDisplayTime();
+
 	sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
+		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_RESET);		// If display is off, turn off AM/PM LED
 	} else {
 		displayToggle++;
 	}
@@ -768,7 +771,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
 
-			sevSeg_setIntensity (&hi2c1, sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
+			sevSeg_setIntensity (&hi2c1, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
 
 			timerVal = __HAL_TIM_GET_COUNTER(&htim16);
 			displayBlink = !displayBlink;
@@ -777,7 +780,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
 
-	sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[2]);
+	sevSeg_setIntensity(&hi2c1, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
 
 	HAL_TIM_Base_Stop(&htim16);
 

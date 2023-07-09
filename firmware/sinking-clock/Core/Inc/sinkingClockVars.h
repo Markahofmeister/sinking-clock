@@ -50,7 +50,9 @@ const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
  * Array of all duty cycles used - 0%, 50%, 100%.
  */
 
-const uint8_t sevSeg_intensityDuty[3] = {00, 31, 63};
+const uint8_t sevSeg_intensityDuty[3] = {63, 31, 00};
+// The above array is "backwards" w.r.t. what might intuitively makes sense to allow for
+// some clever logic in main function ISRs.
 
 /*
  * Toggle Variables

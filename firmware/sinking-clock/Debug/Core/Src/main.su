@@ -13,8 +13,8 @@
 ../Core/Src/main.c:625:6:userAlarmBeep	16	static
 ../Core/Src/main.c:655:6:HAL_GPIO_EXTI_Falling_Callback	32	static,ignoring_inline_asm
 ../Core/Src/main.c:705:19:displayButtonISR	16	static
-../Core/Src/main.c:722:19:alarmEnableISR	16	static,ignoring_inline_asm
-../Core/Src/main.c:751:19:alarmSetISR	16	static
-../Core/Src/main.c:791:19:hourSetISR	24	static,ignoring_inline_asm
-../Core/Src/main.c:855:19:minuteSetISR	24	static,ignoring_inline_asm
-../Core/Src/main.c:940:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:725:19:alarmEnableISR	16	static,ignoring_inline_asm
+../Core/Src/main.c:754:19:alarmSetISR	16	static
+../Core/Src/main.c:794:19:hourSetISR	24	static,ignoring_inline_asm
+../Core/Src/main.c:858:19:minuteSetISR	24	static,ignoring_inline_asm
+../Core/Src/main.c:943:6:Error_Handler	8	static,ignoring_inline_asm
