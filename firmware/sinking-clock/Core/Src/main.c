@@ -394,8 +394,8 @@ static void MX_RTC_Init(void)
 
   /** Enable the Alarm B
   */
-  sAlarm.AlarmTime.Seconds = 1;
-  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS;
+  sAlarm.AlarmTime.Seconds = 5;
+  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
   {
@@ -642,7 +642,7 @@ void userAlarmBeep() {
 
 			displayBlink = !displayBlink;							// Toggle display blink counter
 
-			printf("Display Blink = %u\n\r", displayBlink);
+			//printf("Display Blink = %u\n\r", displayBlink);
 
 		}
 
@@ -929,7 +929,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 	return halRet;
 }
-
 
 
 /* USER CODE END 4 */

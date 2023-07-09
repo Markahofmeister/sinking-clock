@@ -17,4 +17,4 @@ main.c:722:19:alarmEnableISR	3
 main.c:751:19:alarmSetISR	3
 main.c:791:19:hourSetISR	8
 main.c:855:19:minuteSetISR	16
-main.c:941:6:Error_Handler	1
+main.c:940:6:Error_Handler	1
