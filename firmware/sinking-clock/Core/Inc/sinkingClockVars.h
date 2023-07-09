@@ -30,7 +30,7 @@
  */
 // EXTI Pins
 const uint16_t displayButtonPin = GPIO_PIN_0;
-const uint16_t alarmEnableButtonPin = GPIO_PIN_4;
+const uint16_t alarmEnableButtonPin = GPIO_PIN_6;
 const uint16_t alarmSetButtonPin = GPIO_PIN_1;
 const uint16_t hourSetButtonPin = GPIO_PIN_5;
 const uint16_t minuteSetButtonPin = GPIO_PIN_12;

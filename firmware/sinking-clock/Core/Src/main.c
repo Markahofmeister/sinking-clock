@@ -394,7 +394,7 @@ static void MX_RTC_Init(void)
 
   /** Enable the Alarm B
   */
-  sAlarm.AlarmTime.Seconds = 5;
+  sAlarm.AlarmTime.Seconds = 10;
   sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
   sAlarm.Alarm = RTC_ALARM_B;
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
@@ -509,9 +509,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(T_NRST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Display_Button_Pin Alarm_Set_Button_Pin Alarm_Enable_Button_Pin Hour_Set_Button_Pin
+  /*Configure GPIO pins : Display_Button_Pin Alarm_Set_Button_Pin Hour_Set_Button_Pin Alarm_Enable_Button_Pin
                            Minute_Set_Button_Pin */
-  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Set_Button_Pin|Alarm_Enable_Button_Pin|Hour_Set_Button_Pin
+  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Set_Button_Pin|Hour_Set_Button_Pin|Alarm_Enable_Button_Pin
                           |Minute_Set_Button_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;

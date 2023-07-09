@@ -7,23 +7,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         00006ac0  080000bc  080000bc  000100bc  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       00000630  08006b7c  08006b7c  00016b7c  2**2
+  2 .rodata       00000618  08006b7c  08006b7c  00016b7c  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  080071ac  080071ac  00020098  2**0
+  3 .ARM.extab    00000000  08007194  08007194  00020098  2**0
                   CONTENTS
-  4 .ARM          00000008  080071ac  080071ac  000171ac  2**2
+  4 .ARM          00000008  08007194  08007194  00017194  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  080071b4  080071b4  00020098  2**0
+  5 .preinit_array 00000000  0800719c  0800719c  00020098  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .init_array   00000004  080071b4  080071b4  000171b4  2**2
+  6 .init_array   00000004  0800719c  0800719c  0001719c  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  7 .fini_array   00000004  080071b8  080071b8  000171b8  2**2
+  7 .fini_array   00000004  080071a0  080071a0  000171a0  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .data         00000098  20000000  080071bc  00020000  2**2
+  8 .data         00000098  20000000  080071a4  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          000001ec  20000098  08007254  00020098  2**2
+  9 .bss          000001ec  20000098  0800723c  00020098  2**2
                   ALLOC
- 10 ._user_heap_stack 00000604  20000284  08007254  00020284  2**0
+ 10 ._user_heap_stack 00000604  20000284  0800723c  00020284  2**0
                   ALLOC
  11 .ARM.attributes 00000028  00000000  00000000  00020098  2**0
                   CONTENTS, READONLY
@@ -37,11 +37,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00019417  00000000  00000000  0003b5d0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00017928  00000000  00000000  000549e7  2**0
+ 17 .debug_line   00017925  00000000  00000000  000549e7  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0009dca9  00000000  00000000  0006c30f  2**0
+ 18 .debug_str    0009dca9  00000000  00000000  0006c30c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  00109fb8  2**0
+ 19 .comment      00000050  00000000  00000000  00109fb5  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00004d84  00000000  00000000  0010a008  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -1166,9 +1166,9 @@ static void MX_RTC_Init(void)
 
   /** Enable the Alarm B
   */
-  sAlarm.AlarmTime.Seconds = 5;
+  sAlarm.AlarmTime.Seconds = 10;
  80007c6:	003b      	movs	r3, r7
- 80007c8:	2205      	movs	r2, #5
+ 80007c8:	220a      	movs	r2, #10
  80007ca:	709a      	strb	r2, [r3, #2]
   sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY;
  80007cc:	003b      	movs	r3, r7
@@ -1499,9 +1499,9 @@ static void MX_GPIO_Init(void)
  80009ac:	0010      	movs	r0, r2
  80009ae:	f001 f9e5 	bl	8001d7c <HAL_GPIO_Init>
 
-  /*Configure GPIO pins : Display_Button_Pin Alarm_Set_Button_Pin Alarm_Enable_Button_Pin Hour_Set_Button_Pin
+  /*Configure GPIO pins : Display_Button_Pin Alarm_Set_Button_Pin Hour_Set_Button_Pin Alarm_Enable_Button_Pin
                            Minute_Set_Button_Pin */
-  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Set_Button_Pin|Alarm_Enable_Button_Pin|Hour_Set_Button_Pin
+  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Set_Button_Pin|Hour_Set_Button_Pin|Alarm_Enable_Button_Pin
  80009b2:	193b      	adds	r3, r7, r4
  80009b4:	4a34      	ldr	r2, [pc, #208]	; (8000a88 <MX_GPIO_Init+0x184>)
  80009b6:	601a      	str	r2, [r3, #0]
@@ -1633,7 +1633,7 @@ static void MX_GPIO_Init(void)
  8000a7c:	50000400 	.word	0x50000400
  8000a80:	50000800 	.word	0x50000800
  8000a84:	50001400 	.word	0x50001400
- 8000a88:	00001033 	.word	0x00001033
+ 8000a88:	00001063 	.word	0x00001063
 
 08000a8c <updateAndDisplayTime>:
 
@@ -1903,7 +1903,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 }
  8000c30:	e065      	b.n	8000cfe <HAL_GPIO_EXTI_Falling_Callback+0x10a>
 	else if(GPIO_Pin == alarmEnableButtonPin) {
- 8000c32:	2210      	movs	r2, #16
+ 8000c32:	2240      	movs	r2, #64	; 0x40
  8000c34:	1dbb      	adds	r3, r7, #6
  8000c36:	881b      	ldrh	r3, [r3, #0]
  8000c38:	4293      	cmp	r3, r2
@@ -2027,16 +2027,16 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
  8000d02:	b004      	add	sp, #16
  8000d04:	bdb0      	pop	{r4, r5, r7, pc}
  8000d06:	46c0      	nop			; (mov r8, r8)
- 8000d08:	08006c5c 	.word	0x08006c5c
- 8000d0c:	08006c78 	.word	0x08006c78
- 8000d10:	08006c98 	.word	0x08006c98
- 8000d14:	08006cb8 	.word	0x08006cb8
- 8000d18:	08006cd0 	.word	0x08006cd0
- 8000d1c:	08006cec 	.word	0x08006cec
- 8000d20:	08006d00 	.word	0x08006d00
- 8000d24:	08006d1c 	.word	0x08006d1c
- 8000d28:	08006d3c 	.word	0x08006d3c
- 8000d2c:	08006d5c 	.word	0x08006d5c
+ 8000d08:	08006c44 	.word	0x08006c44
+ 8000d0c:	08006c60 	.word	0x08006c60
+ 8000d10:	08006c80 	.word	0x08006c80
+ 8000d14:	08006ca0 	.word	0x08006ca0
+ 8000d18:	08006cb8 	.word	0x08006cb8
+ 8000d1c:	08006cd4 	.word	0x08006cd4
+ 8000d20:	08006ce8 	.word	0x08006ce8
+ 8000d24:	08006d04 	.word	0x08006d04
+ 8000d28:	08006d24 	.word	0x08006d24
+ 8000d2c:	08006d44 	.word	0x08006d44
 
 08000d30 <displayButtonISR>:
 
@@ -2094,9 +2094,9 @@ HAL_StatusTypeDef displayButtonISR(void) {
  8000d7a:	46bd      	mov	sp, r7
  8000d7c:	b002      	add	sp, #8
  8000d7e:	bd80      	pop	{r7, pc}
- 8000d80:	08006d7c 	.word	0x08006d7c
+ 8000d80:	08006d64 	.word	0x08006d64
  8000d84:	200000b4 	.word	0x200000b4
- 8000d88:	08007098 	.word	0x08007098
+ 8000d88:	08007080 	.word	0x08007080
  8000d8c:	200000b8 	.word	0x200000b8
 
 08000d90 <alarmEnableISR>:
@@ -2191,12 +2191,12 @@ HAL_StatusTypeDef alarmEnableISR(void) {
  8000e0a:	b002      	add	sp, #8
  8000e0c:	bd80      	pop	{r7, pc}
  8000e0e:	46c0      	nop			; (mov r8, r8)
- 8000e10:	08006d9c 	.word	0x08006d9c
+ 8000e10:	08006d84 	.word	0x08006d84
  8000e14:	200000b5 	.word	0x200000b5
  8000e18:	50000400 	.word	0x50000400
  8000e1c:	20000230 	.word	0x20000230
- 8000e20:	08006db8 	.word	0x08006db8
- 8000e24:	08006dd8 	.word	0x08006dd8
+ 8000e20:	08006da0 	.word	0x08006da0
+ 8000e24:	08006dc0 	.word	0x08006dc0
 
 08000e28 <alarmSetISR>:
 
@@ -2349,15 +2349,15 @@ HAL_StatusTypeDef alarmSetISR(void) {
  8000f0e:	46bd      	mov	sp, r7
  8000f10:	b002      	add	sp, #8
  8000f12:	bd80      	pop	{r7, pc}
- 8000f14:	08006df0 	.word	0x08006df0
+ 8000f14:	08006dd8 	.word	0x08006dd8
  8000f18:	20000230 	.word	0x20000230
  8000f1c:	2000010c 	.word	0x2000010c
- 8000f20:	08006e0c 	.word	0x08006e0c
+ 8000f20:	08006df4 	.word	0x08006df4
  8000f24:	20000138 	.word	0x20000138
- 8000f28:	08007098 	.word	0x08007098
+ 8000f28:	08007080 	.word	0x08007080
  8000f2c:	200000b8 	.word	0x200000b8
  8000f30:	20000218 	.word	0x20000218
- 8000f34:	08006e34 	.word	0x08006e34
+ 8000f34:	08006e1c 	.word	0x08006e1c
 
 08000f38 <hourSetISR>:
 
@@ -2575,14 +2575,14 @@ HAL_StatusTypeDef hourSetISR(void) {
  800106a:	b003      	add	sp, #12
  800106c:	bd90      	pop	{r4, r7, pc}
  800106e:	46c0      	nop			; (mov r8, r8)
- 8001070:	08006e58 	.word	0x08006e58
+ 8001070:	08006e40 	.word	0x08006e40
  8001074:	20000230 	.word	0x20000230
  8001078:	2000010c 	.word	0x2000010c
  800107c:	20000244 	.word	0x20000244
- 8001080:	08006e70 	.word	0x08006e70
+ 8001080:	08006e58 	.word	0x08006e58
  8001084:	2000022c 	.word	0x2000022c
  8001088:	20000218 	.word	0x20000218
- 800108c:	08006e9c 	.word	0x08006e9c
+ 800108c:	08006e84 	.word	0x08006e84
 
 08001090 <minuteSetISR>:
 
@@ -2861,14 +2861,14 @@ HAL_StatusTypeDef minuteSetISR(void) {
  800121e:	46bd      	mov	sp, r7
  8001220:	b003      	add	sp, #12
  8001222:	bd90      	pop	{r4, r7, pc}
- 8001224:	08006ecc 	.word	0x08006ecc
+ 8001224:	08006eb4 	.word	0x08006eb4
  8001228:	20000230 	.word	0x20000230
  800122c:	2000010c 	.word	0x2000010c
  8001230:	20000244 	.word	0x20000244
- 8001234:	08006ee8 	.word	0x08006ee8
+ 8001234:	08006ed0 	.word	0x08006ed0
  8001238:	2000022c 	.word	0x2000022c
  800123c:	20000218 	.word	0x20000218
- 8001240:	08006f14 	.word	0x08006f14
+ 8001240:	08006efc 	.word	0x08006efc
 
 08001244 <Error_Handler>:
 /**
@@ -3095,20 +3095,20 @@ void sevSeg_I2C1_Init(I2C_HandleTypeDef *hi2c1) {
  800137e:	46c0      	nop			; (mov r8, r8)
  8001380:	20000000 	.word	0x20000000
  8001384:	20000004 	.word	0x20000004
- 8001388:	08006f44 	.word	0x08006f44
- 800138c:	08006f64 	.word	0x08006f64
+ 8001388:	08006f2c 	.word	0x08006f2c
+ 800138c:	08006f4c 	.word	0x08006f4c
  8001390:	2000000c 	.word	0x2000000c
- 8001394:	08006f84 	.word	0x08006f84
- 8001398:	08006fac 	.word	0x08006fac
+ 8001394:	08006f6c 	.word	0x08006f6c
+ 8001398:	08006f94 	.word	0x08006f94
  800139c:	20000014 	.word	0x20000014
- 80013a0:	08006fd0 	.word	0x08006fd0
- 80013a4:	08006ff4 	.word	0x08006ff4
+ 80013a0:	08006fb8 	.word	0x08006fb8
+ 80013a4:	08006fdc 	.word	0x08006fdc
  80013a8:	20000010 	.word	0x20000010
- 80013ac:	08007018 	.word	0x08007018
- 80013b0:	0800703c 	.word	0x0800703c
+ 80013ac:	08007000 	.word	0x08007000
+ 80013b0:	08007024 	.word	0x08007024
  80013b4:	20000008 	.word	0x20000008
- 80013b8:	08007060 	.word	0x08007060
- 80013bc:	08007088 	.word	0x08007088
+ 80013b8:	08007048 	.word	0x08007048
+ 80013bc:	08007070 	.word	0x08007070
 
 080013c0 <sevSeg_updateDigits>:
 
@@ -3935,11 +3935,11 @@ void EXTI4_15_IRQHandler(void)
   /* USER CODE BEGIN EXTI4_15_IRQn 0 */
 
   /* USER CODE END EXTI4_15_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(Alarm_Enable_Button_Pin);
- 80017e2:	2010      	movs	r0, #16
- 80017e4:	f000 fc68 	bl	80020b8 <HAL_GPIO_EXTI_IRQHandler>
   HAL_GPIO_EXTI_IRQHandler(Hour_Set_Button_Pin);
- 80017e8:	2020      	movs	r0, #32
+ 80017e2:	2020      	movs	r0, #32
+ 80017e4:	f000 fc68 	bl	80020b8 <HAL_GPIO_EXTI_IRQHandler>
+  HAL_GPIO_EXTI_IRQHandler(Alarm_Enable_Button_Pin);
+ 80017e8:	2040      	movs	r0, #64	; 0x40
  80017ea:	f000 fc65 	bl	80020b8 <HAL_GPIO_EXTI_IRQHandler>
   HAL_GPIO_EXTI_IRQHandler(Minute_Set_Button_Pin);
  80017ee:	2380      	movs	r3, #128	; 0x80
@@ -4361,7 +4361,7 @@ LoopForever:
   ldr r1, =_edata
  80019b4:	20000098 	.word	0x20000098
   ldr r2, =_sidata
- 80019b8:	080071bc 	.word	0x080071bc
+ 80019b8:	080071a4 	.word	0x080071a4
   ldr r2, =_sbss
  80019bc:	20000098 	.word	0x20000098
   ldr r4, =_ebss
@@ -11412,7 +11412,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  8003e8c:	40021000 	.word	0x40021000
  8003e90:	fffff0ff 	.word	0xfffff0ff
  8003e94:	ffff8fff 	.word	0xffff8fff
- 8003e98:	0800709c 	.word	0x0800709c
+ 8003e98:	08007084 	.word	0x08007084
  8003e9c:	20000028 	.word	0x20000028
  8003ea0:	2000002c 	.word	0x2000002c
 
@@ -11650,7 +11650,7 @@ uint32_t HAL_RCC_GetPCLK1Freq(void)
  8003fde:	46bd      	mov	sp, r7
  8003fe0:	bdb0      	pop	{r4, r5, r7, pc}
  8003fe2:	46c0      	nop			; (mov r8, r8)
- 8003fe4:	080070dc 	.word	0x080070dc
+ 8003fe4:	080070c4 	.word	0x080070c4
 
 08003fe8 <HAL_RCCEx_PeriphCLKConfig>:
   *         the RTC clock source: in this case the access to Backup domain is enabled.
@@ -15764,7 +15764,7 @@ HAL_StatusTypeDef UART_SetConfig(UART_HandleTypeDef *huart)
  8005624:	40021000 	.word	0x40021000
  8005628:	40004400 	.word	0x40004400
  800562c:	00f42400 	.word	0x00f42400
- 8005630:	080070fc 	.word	0x080070fc
+ 8005630:	080070e4 	.word	0x080070e4
       default:
         pclk = 0U;
  8005634:	2300      	movs	r3, #0
@@ -16020,7 +16020,7 @@ HAL_StatusTypeDef UART_SetConfig(UART_HandleTypeDef *huart)
  80057ae:	b010      	add	sp, #64	; 0x40
  80057b0:	bdb0      	pop	{r4, r5, r7, pc}
  80057b2:	46c0      	nop			; (mov r8, r8)
- 80057b4:	080070fc 	.word	0x080070fc
+ 80057b4:	080070e4 	.word	0x080070e4
  80057b8:	00f42400 	.word	0x00f42400
 
 080057bc <UART_AdvFeatureConfig>:
@@ -16703,10 +16703,10 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  8005b8e:	4798      	blx	r3
  8005b90:	3601      	adds	r6, #1
  8005b92:	e7f2      	b.n	8005b7a <__libc_init_array+0x1e>
- 8005b94:	080071b4 	.word	0x080071b4
- 8005b98:	080071b4 	.word	0x080071b4
- 8005b9c:	080071b4 	.word	0x080071b4
- 8005ba0:	080071b8 	.word	0x080071b8
+ 8005b94:	0800719c 	.word	0x0800719c
+ 8005b98:	0800719c 	.word	0x0800719c
+ 8005b9c:	0800719c 	.word	0x0800719c
+ 8005ba0:	080071a0 	.word	0x080071a0
 
 08005ba4 <memset>:
  8005ba4:	0003      	movs	r3, r0
@@ -16883,7 +16883,7 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  8005d0e:	2301      	movs	r3, #1
  8005d10:	61a3      	str	r3, [r4, #24]
  8005d12:	e7d2      	b.n	8005cba <__sinit+0xe>
- 8005d14:	08007114 	.word	0x08007114
+ 8005d14:	080070fc 	.word	0x080070fc
  8005d18:	08005c31 	.word	0x08005c31
 
 08005d1c <__sfp>:
@@ -16948,7 +16948,7 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  8005d9e:	603b      	str	r3, [r7, #0]
  8005da0:	e7ef      	b.n	8005d82 <__sfp+0x66>
  8005da2:	46c0      	nop			; (mov r8, r8)
- 8005da4:	08007114 	.word	0x08007114
+ 8005da4:	080070fc 	.word	0x080070fc
  8005da8:	ffff0001 	.word	0xffff0001
 
 08005dac <_fwalk_reent>:
@@ -17471,12 +17471,12 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  80061c0:	f000 f882 	bl	80062c8 <_printf_i>
  80061c4:	e7e3      	b.n	800618e <_vfiprintf_r+0x21a>
  80061c6:	46c0      	nop			; (mov r8, r8)
- 80061c8:	08007138 	.word	0x08007138
- 80061cc:	08007158 	.word	0x08007158
- 80061d0:	08007118 	.word	0x08007118
- 80061d4:	08007178 	.word	0x08007178
- 80061d8:	0800717e 	.word	0x0800717e
- 80061dc:	08007182 	.word	0x08007182
+ 80061c8:	08007120 	.word	0x08007120
+ 80061cc:	08007140 	.word	0x08007140
+ 80061d0:	08007100 	.word	0x08007100
+ 80061d4:	08007160 	.word	0x08007160
+ 80061d8:	08007166 	.word	0x08007166
+ 80061dc:	0800716a 	.word	0x0800716a
  80061e0:	00000000 	.word	0x00000000
  80061e4:	08005f4f 	.word	0x08005f4f
 
@@ -17851,8 +17851,8 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  80064de:	e7e9      	b.n	80064b4 <_printf_i+0x1ec>
  80064e0:	2500      	movs	r5, #0
  80064e2:	e7f7      	b.n	80064d4 <_printf_i+0x20c>
- 80064e4:	08007189 	.word	0x08007189
- 80064e8:	0800719a 	.word	0x0800719a
+ 80064e4:	08007171 	.word	0x08007171
+ 80064e8:	08007182 	.word	0x08007182
 
 080064ec <_sbrk_r>:
  80064ec:	2300      	movs	r3, #0
@@ -18025,9 +18025,9 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  8006642:	2601      	movs	r6, #1
  8006644:	4276      	negs	r6, r6
  8006646:	e7ea      	b.n	800661e <__swbuf_r+0x76>
- 8006648:	08007138 	.word	0x08007138
- 800664c:	08007158 	.word	0x08007158
- 8006650:	08007118 	.word	0x08007118
+ 8006648:	08007120 	.word	0x08007120
+ 800664c:	08007140 	.word	0x08007140
+ 8006650:	08007100 	.word	0x08007100
 
 08006654 <_write_r>:
  8006654:	b570      	push	{r4, r5, r6, lr}
@@ -18160,9 +18160,9 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  8006758:	60a2      	str	r2, [r4, #8]
  800675a:	e7ef      	b.n	800673c <__swsetup_r+0xc0>
  800675c:	20000034 	.word	0x20000034
- 8006760:	08007138 	.word	0x08007138
- 8006764:	08007158 	.word	0x08007158
- 8006768:	08007118 	.word	0x08007118
+ 8006760:	08007120 	.word	0x08007120
+ 8006764:	08007140 	.word	0x08007140
+ 8006768:	08007100 	.word	0x08007100
 
 0800676c <_close_r>:
  800676c:	2300      	movs	r3, #0
@@ -18377,9 +18377,9 @@ __STATIC_FORCEINLINE void __set_PRIMASK(uint32_t priMask)
  8006916:	68ec      	ldr	r4, [r5, #12]
  8006918:	e7da      	b.n	80068d0 <_fflush_r+0x28>
  800691a:	46c0      	nop			; (mov r8, r8)
- 800691c:	08007138 	.word	0x08007138
- 8006920:	08007158 	.word	0x08007158
- 8006924:	08007118 	.word	0x08007118
+ 800691c:	08007120 	.word	0x08007120
+ 8006920:	08007140 	.word	0x08007140
+ 8006924:	08007100 	.word	0x08007100
 
 08006928 <_lseek_r>:
  8006928:	b570      	push	{r4, r5, r6, lr}
