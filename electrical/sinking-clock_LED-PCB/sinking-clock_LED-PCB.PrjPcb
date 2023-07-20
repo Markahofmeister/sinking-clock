@@ -33,7 +33,7 @@ FSMCodingStyle=eFMSDropDownList_OneProcess
 FSMEncodingStyle=eFMSDropDownList_OneHot
 IsProjectConflictPreventionWarningsEnabled=0
 IsVirtualBomDocumentRemoved=0
-OutputPath=
+OutputPath=Project Outputs for sinking-clock_LED-PCB
 LogFolderPath=
 ManagedProjectGUID=
 IncludeDesignInRelease=0
@@ -184,8 +184,93 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=QITENMTO
 
+[Document9]
+DocumentPath=sinking-clock_LED-PCB.OutJob
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [GeneratedDocument1]
 DocumentPath=Project Outputs for sinking-clock_LED-PCB\Design Rule Check - sinking-clock_LED-PCB.html
+DItemRevisionGUID=
+
+[GeneratedDocument2]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Pick Place\Pick Place for sinking-clock_LED-PCB.txt
+DItemRevisionGUID=
+
+[GeneratedDocument3]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\NC Drill\sinking-clock_LED-PCB.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument4]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GBL
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GBO
+DItemRevisionGUID=
+
+[GeneratedDocument7]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GBP
+DItemRevisionGUID=
+
+[GeneratedDocument8]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GBS
+DItemRevisionGUID=
+
+[GeneratedDocument9]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM1
+DItemRevisionGUID=
+
+[GeneratedDocument10]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM15
+DItemRevisionGUID=
+
+[GeneratedDocument11]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTL
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTO
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTP
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTS
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\NC Drill\sinking-clock_LED-PCB.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.REP
+DItemRevisionGUID=
+
+[GeneratedDocument17]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument18]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\NC Drill\sinking-clock_LED-PCB.TXT
 DItemRevisionGUID=
 
 [Configuration1]
@@ -197,6 +282,9 @@ Variant=[No Variations]
 OutputJobsCount=0
 ContentTypeGUID=CB6F2064-E317-11DF-B822-12313F0024A2
 ConfigurationType=Source
+
+[Generic_EDE]
+OutputDir=Project Outputs for sinking-clock_LED-PCB
 
 [OutputGroup1]
 Name=Netlist Outputs
