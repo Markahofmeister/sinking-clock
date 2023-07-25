@@ -39,9 +39,8 @@ void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftS
 void sevSeg_updateDigits(uint8_t shiftDataPin, uint8_t shiftDataClockPin,
 							uint8_t shiftStoreClockPin, RTC_TimeTypeDef *updateTime) {
 
-	uint8_t sendTime[4] = {updateTime->Minutes % 10, updateTime->Minutes / 10,
-							updateTime->Hours % 10, updateTime->Hours / 10};
-
+	uint8_t sendTime[4] = {updateTime->Hours / 10, updateTime->Hours % 10,
+							updateTime->Minutes / 10, updateTime->Minutes % 10};
 
 	if(updateTime->Hours / 10 == 1) {					// Check whether or not to activate 1 for hour
 
@@ -49,6 +48,22 @@ void sevSeg_updateDigits(uint8_t shiftDataPin, uint8_t shiftDataClockPin,
 	else {
 
 	}
+
+	uint8_t sendByte;
+
+	for(int i = 1; i <= 3; i++) {
+
+		sendByte = dispDigits[sendTime[i]];
+
+		for(int j = 0; j < 8; j++) {
+
+			// write data pin with byte masked with & 1
+			// toggle clock
+			// shift bits right
+
+		}
+	}
+
 
 	return;
 
