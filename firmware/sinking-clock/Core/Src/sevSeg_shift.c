@@ -5,17 +5,55 @@
  *      Author: marka
  */
 
-#include "../Inc/sevSeg.h"
+#include "../Inc/sevSeg_shift.h"
 
 /*
- * Flashes an initializing "Hof" symbol
+ * Digit 0 = LSB (ones place of minutes)
+ * .
+ * .
+ * Digit 3 = MSB (tenths place of hours)
  */
 
-void sevSeg_init() {
+// Binary codes for each digit in the form of a 7-segment display.
+// All codes must have a 0 in the MSB, as the first output on each register is NC.
+const uint8_t dispDigits[10] = {0b01111110, 	// 0
+								0b00110000,		// 1
+								0b01101101,		// 2
+								0b01111001,		// 3
+								0b00110011,		// 4
+								0b01011011,		// 5
+								0b01011111,		// 6
+								0b01110000,		// 7
+								0b01111111,		// 8
+								0b01111011};	// 9
+
+const uint8_t dig3
+
+
+
+void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
+					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin, TIM_HandleTypeDef *htim) {
 
 }
 
-void sevSeg_updateDigits() {
+void sevSeg_updateDigits(uint8_t shiftDataPin, uint8_t shiftDataClockPin,
+							uint8_t shiftStoreClockPin, RTC_TimeTypeDef *updateTime) {
+
+	uint8_t sendTime[4] = {updateTime->Minutes % 10, updateTime->Minutes / 10,
+							updateTime->Hours % 10, updateTime->Hours / 10};
+
+
+	if(updateTime->Hours / 10 == 1) {					// Check whether or not to activate 1 for hour
+
+	}
+	else {
+
+	}
+
+	return;
 
 }
 
+void sevSeg_setIntensity(uint8_t dutyCycle) {
+
+}
