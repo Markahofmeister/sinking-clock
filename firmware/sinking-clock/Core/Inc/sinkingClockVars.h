@@ -11,6 +11,10 @@
 #ifndef INC_SINKINGCLOCKVARS_H_
 #define INC_SINKINGCLOCKVARS_H_
 
+#ifndef STM32G0XX_HAL_H
+#include "stm32g0xx_hal.h"
+#endif
+
 #ifndef STDIO_H
 #include <stdio.h>
 #endif
@@ -39,18 +43,29 @@ const uint16_t minuteSetButtonPin = GPIO_PIN_12;
 const uint16_t snoozeButtonPin = GPIO_PIN_11;
 
 /*
- * Map GPIOS to some lED outputs
+ * Map GPIOS to some LED outputs
  */
 
-const uint16_t alarmLED = GPIO_PIN_7;			//Port B
-const uint16_t PMLED = GPIO_PIN_6;				//Port B
+const uint16_t alarmLED = GPIO_PIN_8;			//Port B
+const uint16_t PMLED = GPIO_PIN_7;				//Port B
 const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
+
+/*
+ * GPIO Pins for shift data
+ * Array of ports to map each GPIO onto
+ */
+uint8_t shiftDataPin = GPIO_PIN_6;
+uint8_t shiftDataClockPin = GPIO_PIN_3;
+uint8_t shiftStoreClockPin = GPIO_PIN_4;
+uint8_t shiftOutputEnablePin = GPIO_PIN_5;
+uint8_t shiftMCLRPin = GPIO_PIN_15;
+GPIO_TypeDef GPIOPortArray[5] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOB};
 
 /*
  * Array of all duty cycles used - 0%, 50%, 100%.
  */
 
-const uint8_t sevSeg_intensityDuty[3] = {63, 31, 00};
+const uint8_t sevSeg_intensityDuty[3] = {100, 50, 00};
 // The above array is "backwards" w.r.t. what might intuitively makes sense to allow for
 // some clever logic in main function ISRs.
 

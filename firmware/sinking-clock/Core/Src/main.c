@@ -188,8 +188,9 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
-//  initRTCTime(&hrtc, &currTime, &currDate);
-  sevSeg_I2C1_Init(&hi2c1);		//Initialize 7-seg
+  sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
+					shiftOutputEnablePin, shiftMCLRPin,
+					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim16)
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
