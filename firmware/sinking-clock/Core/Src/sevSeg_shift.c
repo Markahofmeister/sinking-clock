@@ -49,9 +49,34 @@ uint16_t shiftMCLR;
  */
 uint8_t portArray[5] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA};
 
+// Used to avoid conditionals
+GPIO_TypeDef GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
+
+
 void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
 					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
 					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim) {
+
+	shiftData = shiftDataPin;
+	shiftDataClock = shiftDataClockPin;
+	shiftStoreClock = shiftStoreClockPin;
+	shiftOutputEnable = shiftOutputEnablePin;
+	shiftMCLR = shiftMCLRPin;
+
+	for(int i = 0; i < 5; i++) {
+		portArray[i] = GPIOPortArray[i];
+	}
+
+	// Clear any existing shift register data
+	HAL_GPIO_WritePin(portArray[4], shiftMCLR, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(portArray[4], shiftMCLR, GPIOPinSet[1]);
+
+	// Store cleared data and Enable output
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(portArray[3], shiftOutputEnable, GPIOPinSet[0]);
+
+	//Flash an initializing "Hof" symbol
 
 }
 
@@ -67,7 +92,6 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 
 	uint8_t sendByte;					// To be used to shift bits
-	GPIO_TypeDef GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};		// Used to avoid conditionals
 
 	for(int i = 0; i <= 3; i++) {
 

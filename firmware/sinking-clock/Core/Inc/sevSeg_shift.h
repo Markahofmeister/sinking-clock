@@ -22,7 +22,6 @@
  * - Flashes an initializing "Hof" symbol
  */
 
-
 void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
 					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
 					TIM_HandleTypeDef *htim, GPIO_TypeDef *GPIOPortArray);
