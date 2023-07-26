@@ -24,11 +24,11 @@
 
 
 void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
-					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin, TIM_HandleTypeDef *htim);
+					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
+					TIM_HandleTypeDef *htim, GPIO_TypeDef *GPIOPortArray);
 
 
-void sevSeg_updateDigits(uint8_t shiftDataPin, uint8_t shiftDataClockPin,
-							uint8_t shiftStoreClockPin, RTC_TimeTypeDef *updateTime);
+void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime);
 
 
 void sevSeg_setIntensity(uint8_t dutyCycle);

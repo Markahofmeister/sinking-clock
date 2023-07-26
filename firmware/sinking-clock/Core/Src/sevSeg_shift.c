@@ -27,43 +27,71 @@ const uint8_t dispDigits[10] = {0b01111110, 	// 0
 								0b01111111,		// 8
 								0b01111011};	// 9
 
-const uint8_t dig3
+const uint8_t dig3Seg[2] = {0b00100000, 0b01100000};
 
+/*
+ * Global variables to be initialized with GPIO assignments
+ */
+uint16_t shiftData;
+uint16_t shiftDataClock;
+uint16_t shiftStoreClock;
+uint16_t shiftOutputEnable;
+uint16_t shiftMCLR;
 
+/*
+ * Array of GPIO ports to be initialized for each shift register GPIO
+ * Order:
+ * [0] = shift data pin port
+ * [1] = shift data clock pin port
+ * [2] = shift store clock pin port
+ * [3] = shift output enable pin port
+ * [4] = shift master clear pin port
+ */
+uint8_t portArray[5] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA};
 
 void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
-					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin, TIM_HandleTypeDef *htim) {
+					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
+					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim) {
 
 }
 
-void sevSeg_updateDigits(uint8_t shiftDataPin, uint8_t shiftDataClockPin,
-							uint8_t shiftStoreClockPin, RTC_TimeTypeDef *updateTime) {
+void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
-	uint8_t sendTime[4] = {updateTime->Hours / 10, updateTime->Hours % 10,
+	/*
+	 * Determine what time to send to shift registers
+	 * digit 3 is a special case - the colons are always on, but the one can be on/off.
+	 * Therefore, use array indexing to decide what to send.
+	 */
+	uint8_t sendTime[4] = {dig3Seg[updateTime->Hours / 10], updateTime->Hours % 10,
 							updateTime->Minutes / 10, updateTime->Minutes % 10};
 
-	if(updateTime->Hours / 10 == 1) {					// Check whether or not to activate 1 for hour
 
-	}
-	else {
+	uint8_t sendByte;					// To be used to shift bits
+	GPIO_TypeDef GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};		// Used to avoid conditionals
 
-	}
-
-	uint8_t sendByte;
-
-	for(int i = 1; i <= 3; i++) {
+	for(int i = 0; i <= 3; i++) {
 
 		sendByte = dispDigits[sendTime[i]];
 
 		for(int j = 0; j < 8; j++) {
 
-			// write data pin with byte masked with & 1
-			// toggle clock
-			// shift bits right
+			// Write data pin with LSB of data
+			HAL_GPIO_WritePin(portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
+
+			// Toggle clock GPIO to shift bit into register
+			HAL_GPIO_WritePin(portArray[1], shiftDataClock, GPIOPinSet[1]);
+			HAL_GPIO_WritePin(portArray[1], shiftDataClock, GPIOPinSet[0]);
+
+			// Once data pin has been written and shifted out, shift data right by one bit.
+			sendByte >>= 1;
 
 		}
 	}
 
+	// Once all data has been shifted out, toggle store clock register to display data.
+
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[0]);
 
 	return;
 
