@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "sevSeg.h"
+#include "sevSeg_shift.h"
 #include "alarm.h"
 #include "ctouch.h"
 #include "sinkingClockVars.h"
@@ -45,6 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
 
+TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim16;
 
 UART_HandleTypeDef huart2;
@@ -69,6 +70,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_TIM16_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /*
@@ -185,12 +187,15 @@ int main(void)
   MX_USART2_UART_Init();
   MX_RTC_Init();
   MX_TIM16_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
+
+  // Initialize all GPIOs to be used with 7 segment display
   sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 					shiftOutputEnablePin, shiftMCLRPin,
-					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim16)
+					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim16, TIM_HandleTypeDef *htim3);
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -362,6 +367,63 @@ static void MX_RTC_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 16-1;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 200-1;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /*
+   * Calculations:
+   * 16 MHz clock
+   * Prescalar 16 - 1 = 1MHz clock
+   * ARR 200 - 1 = 5 kHz clock (FCC things)
+   * Duty Cycle = (CCR / ARR) * 100 = (CCR / 200) * 100
+   */
+
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
   * @brief TIM16 Initialization Function
   * @param None
   * @retval None
@@ -447,8 +509,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Buzzer_Output_Pin|Shift_Data_Clock_Pin|Shift_Store_Clock_Pin|Shift_Output_Enable_Pin
-                          |Shift_Data_In_Pin|AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Buzzer_Output_Pin|Shift_Data_Clock_Pin|Shift_Store_Clock_Pin|Shift_Data_In_Pin
+                          |AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
@@ -470,10 +532,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Buzzer_Output_Pin Shift_Data_Clock_Pin Shift_Store_Clock_Pin Shift_Output_Enable_Pin
-                           Shift_Data_In_Pin AM_PM_LED_Pin Alarm_LED_Pin */
-  GPIO_InitStruct.Pin = Buzzer_Output_Pin|Shift_Data_Clock_Pin|Shift_Store_Clock_Pin|Shift_Output_Enable_Pin
-                          |Shift_Data_In_Pin|AM_PM_LED_Pin|Alarm_LED_Pin;
+  /*Configure GPIO pins : Buzzer_Output_Pin Shift_Data_Clock_Pin Shift_Store_Clock_Pin Shift_Data_In_Pin
+                           AM_PM_LED_Pin Alarm_LED_Pin */
+  GPIO_InitStruct.Pin = Buzzer_Output_Pin|Shift_Data_Clock_Pin|Shift_Store_Clock_Pin|Shift_Data_In_Pin
+                          |AM_PM_LED_Pin|Alarm_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -520,7 +582,7 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	getRTCTime(&hrtc, &currTime, &currDate);
-	sevSeg_updateDigits(&hi2c1, &currTime);
+	sevSeg_updateDigits(&currTime);
 
 	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
 		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
@@ -538,7 +600,7 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	getUserAlarmTime(&hrtc, &userAlarmTime);
-	sevSeg_updateDigits(&hi2c1, &userAlarmTime);
+	sevSeg_updateDigits(&userAlarmTime);
 
 	if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
 		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
