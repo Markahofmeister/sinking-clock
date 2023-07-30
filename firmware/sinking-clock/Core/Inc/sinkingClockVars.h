@@ -54,12 +54,12 @@ const uint16_t buzzerPin = GPIO_PIN_1;			//Port B
  * GPIO Pins for shift data
  * Array of ports to map each GPIO onto
  */
-uint8_t shiftDataPin = GPIO_PIN_6;
-uint8_t shiftDataClockPin = GPIO_PIN_3;
+uint8_t shiftMCLRPin = GPIO_PIN_6;
+uint8_t shiftDataClockPin = GPIO_PIN_5;
 uint8_t shiftStoreClockPin = GPIO_PIN_4;
-uint8_t shiftOutputEnablePin = GPIO_PIN_5;
-uint8_t shiftMCLRPin = GPIO_PIN_15;
-GPIO_TypeDef GPIOPortArray[5] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOB};
+uint8_t shiftOutputEnablePin = GPIO_PIN_3;
+uint8_t shiftDataPin = GPIO_PIN_15;
+GPIO_TypeDef GPIOPortArray[5] = {GPIOB, GPIOB, GPIOB, GPIOB, GPIOA};
 
 /*
  * Array of all duty cycles used - 0%, 50%, 100%.
