@@ -1,0 +1,3 @@
+sevSeg_shift.c:56:6:sevSeg_Init	2
+sevSeg_shift.c:87:6:sevSeg_updateDigits	3
+sevSeg_shift.c:128:6:sevSeg_setIntensity	1

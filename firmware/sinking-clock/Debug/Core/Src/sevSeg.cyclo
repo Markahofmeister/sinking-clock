@@ -1,3 +1,0 @@
-sevSeg.c:61:6:sevSeg_I2C1_Init	6
-sevSeg.c:124:6:sevSeg_updateDigits	2
-sevSeg.c:147:6:sevSeg_setIntensity	2

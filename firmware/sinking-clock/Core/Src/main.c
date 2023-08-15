@@ -195,7 +195,7 @@ int main(void)
   // Initialize all GPIOs to be used with 7 segment display
   sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 					shiftOutputEnablePin, shiftMCLRPin,
-					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim16, TIM_HandleTypeDef *htim3);
+					GPIOPortArray, &htim16, &htim1);
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -673,7 +673,7 @@ void userAlarmBeep() {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(&htim3, sevSeg_intensityDuty[displayBlink + 1]);	// Toggle 0% to 50% duty cycle
+			sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayBlink + 1]);	// Toggle 0% to 50% duty cycle
 
 			HAL_GPIO_TogglePin(GPIOB, buzzerPin);					// Toggle Buzzer
 
@@ -748,7 +748,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	updateAndDisplayTime();
 
-	sevSeg_setIntensity(&htim3, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
+	sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
@@ -810,7 +810,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
 
-			sevSeg_setIntensity (&htim3, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
+			sevSeg_setIntensity (&htim1, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
 
 			timerVal = __HAL_TIM_GET_COUNTER(&htim16);
 			displayBlink = !displayBlink;
@@ -819,7 +819,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
 
-	sevSeg_setIntensity(&htim3, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
+	sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
 
 	HAL_TIM_Base_Stop(&htim16);
 
