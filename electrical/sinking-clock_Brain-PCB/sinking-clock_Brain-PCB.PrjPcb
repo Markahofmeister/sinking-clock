@@ -1164,20 +1164,22 @@ Net11=NetName=GND|NetColor=$00747A85
 Net12=NetName=HOUR_SET_BUTTON|NetColor=$00CA9C00
 Net13=NetName=MINUTE_SET_BUTTON|NetColor=$00CA9C00
 Net14=NetName=NetBZ1_P|NetColor=$00AD7500
-Net15=NetName=NetD?_1|NetColor=$00FF6EFF
-Net16=NetName=NetQ?_3|NetColor=$00FF6EFF
-Net17=NetName=NetR?_2|NetColor=$00FF6EFF
-Net18=NetName=NRST|NetColor=clYellow
-Net19=NetName=SHIFT_DATA_CLK|NetColor=$0000BE00
-Net20=NetName=SHIFT_DATA_IN|NetColor=$0000BE00
-Net21=NetName=SHIFT_MCLR|NetColor=$0000BE00
-Net22=NetName=SHIFT_OUTPUT_EN|NetColor=$0000BE00
-Net23=NetName=SHIFT_STORE_CLK|NetColor=$0000BE00
-Net24=NetName=SNOOZE_BUTTON|NetColor=$00CA9C00
-Net25=NetName=SWD_CLK|NetColor=clYellow
-Net26=NetName=SWD_IO|NetColor=clYellow
-Net27=NetName=SWO|NetColor=clYellow
-Net28=NetName=VCC|NetColor=$000083FD
+Net15=NetName=NetC10_2|NetColor=$00164FDE
+Net16=NetName=NetD?_1|NetColor=$00FF6EFF
+Net17=NetName=NetJ5_1|NetColor=$00164FDE
+Net18=NetName=NetQ?_3|NetColor=$00FF6EFF
+Net19=NetName=NetR?_2|NetColor=$00FF6EFF
+Net20=NetName=NRST|NetColor=clYellow
+Net21=NetName=SHIFT_DATA_CLK|NetColor=$0000BE00
+Net22=NetName=SHIFT_DATA_IN|NetColor=$0000BE00
+Net23=NetName=SHIFT_MCLR|NetColor=$0000BE00
+Net24=NetName=SHIFT_OUTPUT_EN|NetColor=$0000BE00
+Net25=NetName=SHIFT_STORE_CLK|NetColor=$0000BE00
+Net26=NetName=SNOOZE_BUTTON|NetColor=$00CA9C00
+Net27=NetName=SWD_CLK|NetColor=clYellow
+Net28=NetName=SWD_IO|NetColor=clYellow
+Net29=NetName=SWO|NetColor=clYellow
+Net30=NetName=VCC|NetColor=$000083FD
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
