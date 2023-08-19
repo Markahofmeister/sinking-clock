@@ -155,6 +155,10 @@ DocumentPath=Project Outputs for sinking-clock_Brain-PCB\BOM\Bill of Materials-s
 DItemRevisionGUID=
 
 [GeneratedDocument2]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Design Rule Check - sinking-clock_Brain-PCB.html
+DItemRevisionGUID=
+
+[GeneratedDocument3]
 DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Pick Place\Pick Place for sinking-clock_Brain-PCB.txt
 DItemRevisionGUID=
 
@@ -1102,8 +1106,8 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=sinking-clock.SchLib
-ComponentDesignItemID0=STM32G031C6T6
-ComponentSymbolReference0=STM32G031C6T6
+ComponentDesignItemID0=SPDT SMT Tactile Push Button Switch
+ComponentSymbolReference0=SPDT SMT Tactile Push Button Switch
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=0
@@ -1140,7 +1144,7 @@ ParameterUpdate8=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=48-LQFP
+ModelName0=TL3301BF160QGTUBE
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
