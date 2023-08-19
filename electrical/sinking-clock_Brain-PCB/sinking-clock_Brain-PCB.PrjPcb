@@ -162,6 +162,82 @@ DItemRevisionGUID=
 DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Pick Place\Pick Place for sinking-clock_Brain-PCB.txt
 DItemRevisionGUID=
 
+[GeneratedDocument4]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\NC Drill\sinking-clock_Brain-PCB.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GBL
+DItemRevisionGUID=
+
+[GeneratedDocument7]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GBO
+DItemRevisionGUID=
+
+[GeneratedDocument8]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GBP
+DItemRevisionGUID=
+
+[GeneratedDocument9]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GBS
+DItemRevisionGUID=
+
+[GeneratedDocument10]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GM1
+DItemRevisionGUID=
+
+[GeneratedDocument11]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GM3
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GM15
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GPB
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GPT
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GTL
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GTO
+DItemRevisionGUID=
+
+[GeneratedDocument17]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GTP
+DItemRevisionGUID=
+
+[GeneratedDocument18]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.GTS
+DItemRevisionGUID=
+
+[GeneratedDocument19]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\NC Drill\sinking-clock_Brain-PCB.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument20]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.REP
+DItemRevisionGUID=
+
+[GeneratedDocument21]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\Gerber\sinking-clock_Brain-PCB.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument22]
+DocumentPath=Project Outputs for sinking-clock_Brain-PCB\NC Drill\sinking-clock_Brain-PCB.TXT
+DItemRevisionGUID=
+
 [Configuration1]
 Name=Sources
 ParameterCount=0
@@ -473,6 +549,24 @@ OutputDocumentPath1=
 OutputVariantName1=[No Variations]
 OutputDefault1=0
 PageOptions1=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
+Configuration1_Name1=ColumnNameFormat
+Configuration1_Item1=CaptionAsName
+Configuration1_Name2=ForceUpdateSettings
+Configuration1_Item2=False
+Configuration1_Name3=General
+Configuration1_Item3=OpenExported=False|AddToProject=False|ReportBOMViolationsInMessages=False|ForceFit=False|NotFitted=False|Database=False|DatabasePriority=False|IncludePcbData=False|IncludeVaultData=True|IncludeCloudData=False|IncludeDocumentData=True|IncludeAlternatives=False|ShowExportOptions=True|TemplateFilename=|TemplateVaultGuid=|TemplateItemGuid=|TemplateRevisionGuid=|BatchMode=5|FormWidth=1200|FormHeight=710|SupplierProdQty=1|SupplierAutoQty=False|SupplierUseCachedPricing=False|SupplierCurrency=USD|SolutionsPerItem=1|SuppliersPerSolution=1|ViewType=0|UseDirectApi=False|BomSetName=
+Configuration1_Name4=GroupOrder
+Configuration1_Item4=
+Configuration1_Name5=SortOrder
+Configuration1_Item5=Vendor=Up
+Configuration1_Name6=VisibleOrder
+Configuration1_Item6=Line #=53|Description=158|Designator=77|Value=67|Footprint=101|MFR=85|MFR PN=147|Vendor=59|Vendor PN=123|Quantity=67|Vendor Link=82
+Configuration1_Name7=VisibleOrder_Base
+Configuration1_Item7=Line #=53|Description=158|Designator=77|Value=67|Footprint=101|MFR=85|MFR PN=147|Vendor=59|Vendor PN=123|Quantity=67|Vendor Link=82
+Configuration1_Name8=VisibleOrder_Consolidated
+Configuration1_Item8=Line #=100|Comment=100|Description=100|Designator=100|Quantity=100|Manufacturer 1=99|Manufacturer Part Number 1=166|Manufacturer Lifecycle 1=143|Supplier 1=72|Supplier Part Number 1=139|Supplier Unit Price 1=123|Supplier Subtotal 1=116
+Configuration1_Name9=VisibleOrder_Flat
+Configuration1_Item9=Line #=100|Comment=100|Description=100|Designator=100|Manufacturer 1=99|Manufacturer Part Number 1=166|Manufacturer Lifecycle 1=143|Supplier 1=72|Supplier Part Number 1=139|Supplier Unit Price 1=123|Supplier Subtotal 1=116
 OutputType2=BOM_ReportCompare
 OutputName2=BOM Compare
 OutputDocumentPath2=
