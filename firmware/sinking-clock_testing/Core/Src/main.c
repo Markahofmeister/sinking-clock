@@ -42,38 +42,11 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-I2C_HandleTypeDef hi2c1;
-
 RTC_HandleTypeDef hrtc;
 
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
-/*
- * Declare variables to map button presses to GPIOs
- */
-const uint16_t displayButtonPin = GPIO_PIN_0;
-const uint16_t alarmEnableButtonPin = GPIO_PIN_1;
-const uint16_t alarmSetButtonPin = GPIO_PIN_4;
-const uint16_t hourSetButtonPin = GPIO_PIN_5;
-const uint16_t minuteSetButtonPin = GPIO_PIN_12;
-const uint16_t snoozeButtonPin = GPIO_PIN_11;
-
-/*
- * Declare variables to map interrupts from button GPIOs to LED outputs.
- * Some of these are port B;
- */
-
-const uint16_t displayLEDPin = GPIO_PIN_7;			//Port B
-const uint16_t alarmEnableLEDPin = GPIO_PIN_6;		//Port B
-const uint16_t alarmSetLEDPin = GPIO_PIN_1;			//Port B
-const uint16_t hourSetLEDPin = GPIO_PIN_10;			//Port A
-const uint16_t minuteSetLEDPin = GPIO_PIN_9;		//Port A
-const uint16_t snoozeButtonLEDPin = GPIO_PIN_0;		//Port B
-const uint16_t RTCInterruptLEDPin = GPIO_PIN_6;		//Port A
-
-
 
 
 /* USER CODE END PV */
@@ -83,10 +56,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_RTC_Init(void);
-static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
-
-static void sevSeg_I2C1_Init(void);
 
 /*
  * Map printf to UART output to read messages on terminal
@@ -140,8 +110,35 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_RTC_Init();
-  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+
+  GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
+
+	  uint16_t shiftDataPin = GPIO_PIN_15;			// Port A
+	  uint16_t shiftDataClockPin = GPIO_PIN_5;		// Port B
+	  uint16_t shiftStoreClockPin = GPIO_PIN_4;		// Port B
+	  uint16_t shiftOutputEnablePin = GPIO_PIN_3;		// Port B
+	  uint16_t shiftMCLRPin = GPIO_PIN_6;				// Port B
+
+	  const uint8_t dispDigits[10] = {0b01111110, 	// 0
+									0b00110000,		// 1
+									0b01101101,		// 2
+									0b01111001,		// 3
+									0b00110011,		// 4
+									0b01011011,		// 5
+									0b01011111,		// 6
+									0b01110000,		// 7
+									0b01111111,		// 8
+									0b01111011};	// 9
+
+	// Clear any existing shift register data
+	HAL_GPIO_WritePin(GPIOB, shiftMCLRPin, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(GPIOB, shiftMCLRPin, GPIOPinSet[1]);
+
+	// Store cleared data
+	HAL_GPIO_WritePin(GPIOB, shiftStoreClockPin, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(GPIOB, shiftStoreClockPin, GPIOPinSet[0]);
+
 
   /* USER CODE END 2 */
 
@@ -149,28 +146,79 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		// Enable output by pulling enable pin low
+		HAL_GPIO_WritePin(GPIOB, shiftOutputEnablePin, GPIOPinSet[0]);
 
-	  GPIO_PinState pinState = HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin);
-	  if(pinState == GPIO_PIN_RESET) {
-	   		  HAL_GPIO_WritePin(GPIOB, displayLEDPin, GPIO_PIN_RESET);
-	   		  printf("Pin State = %d\n\r", 0);
+	  for (int i = 0; i < 4; i++) {
+
+
+
+		  uint8_t sendByte = dispDigits[i+1];
+
+//		  for(int j = 0; j < 8; j++) {
+		  for(int j = 0; j < 20; j++) {
+
+			// Write data pin with LSB of data
+			//HAL_GPIO_WritePin(GPIOA, shiftDataPin, GPIOPinSet[sendByte & 1]);
+			  if(j == 0) {
+				  HAL_GPIO_WritePin(GPIOA, shiftDataPin, GPIOPinSet[1]);
+			  }
+			  else {
+				  HAL_GPIO_WritePin(GPIOA, shiftDataPin, GPIOPinSet[0]);
+			  }
+
+
+			// Toggle clock GPIO to shift bit into register
+			HAL_GPIO_WritePin(GPIOB, shiftDataClockPin, GPIOPinSet[1]);
+			HAL_GPIO_WritePin(GPIOB, shiftDataClockPin, GPIOPinSet[0]);
+
+
+			// Once data pin has been written and shifted out, shift data right by one bit.
+			sendByte >>= 1;
+
+			  // Display shifted data
+				HAL_GPIO_WritePin(GPIOB, shiftStoreClockPin, GPIOPinSet[1]);
+				HAL_GPIO_WritePin(GPIOB, shiftStoreClockPin, GPIOPinSet[0]);
+
+
+				HAL_Delay(1000);
+		}
+
+
 	  }
-	  else {
-		  HAL_GPIO_WritePin(GPIOB, displayLEDPin, GPIO_PIN_SET);
-		  printf("Pin State = %d\n\r", 1);
-	  }
-	  HAL_Delay(100);
+
+
+	  		// Clear out previous digit
+	  		HAL_GPIO_WritePin(GPIOB, shiftMCLRPin, GPIOPinSet[0]);
+	  		HAL_GPIO_WritePin(GPIOB, shiftMCLRPin, GPIOPinSet[1]);
+
+	  		// Store cleared data
+	  		HAL_GPIO_WritePin(GPIOB, shiftStoreClockPin, GPIOPinSet[1]);
+	  		HAL_GPIO_WritePin(GPIOB, shiftStoreClockPin, GPIOPinSet[0]);
+
+	  		HAL_Delay(1000);
+
 
    }
 
-
+  //	  GPIO_PinState pinState = HAL_GPIO_ReadPin(GPIOA, snoozeButtonPin);
+  //	  if(pinState == GPIO_PIN_RESET) {
+  //	   		  HAL_GPIO_WritePin(GPIOB, displayLEDPin, GPIO_PIN_RESET);
+  //	   		  printf("Pin State = %d\n\r", 0);
+  //	  }
+  //	  else {
+  //		  HAL_GPIO_WritePin(GPIOB, displayLEDPin, GPIO_PIN_SET);
+  //		  printf("Pin State = %d\n\r", 1);
+  //	  }
+  //	  HAL_Delay(100);
 
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+
   /* USER CODE END 3 */
+}
 
 /**
   * @brief System Clock Configuration
@@ -211,54 +259,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief I2C1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_I2C1_Init(void)
-{
-
-  /* USER CODE BEGIN I2C1_Init 0 */
-
-  /* USER CODE END I2C1_Init 0 */
-
-  /* USER CODE BEGIN I2C1_Init 1 */
-
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x0010061A;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Analogue filter
-  */
-  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-  /** Configure Digital filter
-  */
-  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN I2C1_Init 2 */
-
-  /* USER CODE END I2C1_Init 2 */
-
 }
 
 /**
@@ -397,19 +397,16 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RTC_Interrupt_LED_Pin|Minute_Set_LED_Pin|Hour_Set_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : T_NRST_Pin */
   GPIO_InitStruct.Pin = T_NRST_Pin;
@@ -417,86 +414,33 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(T_NRST_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Display_Button_Pin Alarm_Enable_Button_Pin Alarm_Set_Button_Pin Hour_Set_Button_Pin
-                           Snooze_Button_Pin Minute_Set_Button_Pin */
-  GPIO_InitStruct.Pin = Display_Button_Pin|Alarm_Enable_Button_Pin|Alarm_Set_Button_Pin|Hour_Set_Button_Pin
-                          |Snooze_Button_Pin|Minute_Set_Button_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : RTC_Interrupt_LED_Pin Minute_Set_LED_Pin Hour_Set_LED_Pin */
-  GPIO_InitStruct.Pin = RTC_Interrupt_LED_Pin|Minute_Set_LED_Pin|Hour_Set_LED_Pin;
+  /*Configure GPIO pin : PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Snooze_LED_Pin Alarm_Set_LED_Pin Alarm_Enable_LED_Pin Display_LED_Pin */
-  GPIO_InitStruct.Pin = Snooze_LED_Pin|Alarm_Set_LED_Pin|Alarm_Enable_LED_Pin|Display_LED_Pin;
+  /*Configure GPIO pins : PB3 PB4 PB5 PB6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD3_Pin */
-  GPIO_InitStruct.Pin = LD3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
-
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-
   HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
-
 /* USER CODE BEGIN MX_GPIO_Init_2 */
   // Initialize all output pins to low
-	HAL_GPIO_WritePin(GPIOB, displayLEDPin, 0);
-	HAL_GPIO_WritePin(GPIOB, alarmEnableLEDPin, 0);
-	HAL_GPIO_WritePin(GPIOB, alarmSetLEDPin, 0);
-	HAL_GPIO_WritePin(GPIOA, hourSetLEDPin, 0);
-	HAL_GPIO_WritePin(GPIOA, minuteSetLEDPin, 0);
-	HAL_GPIO_WritePin(GPIOB, snoozeButtonLEDPin, 0);
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
-	if(GPIO_Pin == displayButtonPin) {
-		HAL_GPIO_TogglePin(GPIOB, displayLEDPin);
-	}
-	else if(GPIO_Pin == alarmEnableButtonPin) {
-		HAL_GPIO_TogglePin(GPIOB, alarmEnableLEDPin);
-	}
-	else if(GPIO_Pin == alarmSetButtonPin) {
-		HAL_GPIO_TogglePin(GPIOB, alarmSetLEDPin);
-	}
-	else if(GPIO_Pin == hourSetButtonPin) {
-		HAL_GPIO_TogglePin(GPIOA, hourSetLEDPin);
-	}
-	else if(GPIO_Pin == minuteSetButtonPin) {
-		HAL_GPIO_TogglePin(GPIOA, minuteSetLEDPin);
-	}
-	else if(GPIO_Pin == snoozeButtonPin) {
-		HAL_GPIO_TogglePin(GPIOB, snoozeButtonLEDPin);
-	}
-	else {
-		__NOP();
-	}
-//  if(GPIO_Pin == GPIO_PIN_1) {
-//    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_0);
-//    printf("ISR Entered\n");
-//  } else {
-//      __NOP();
-//  }
+
 }
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {

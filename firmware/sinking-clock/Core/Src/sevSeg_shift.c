@@ -40,6 +40,7 @@ uint16_t shiftMCLR;
 
 /*
  * Array of GPIO ports to be initialized for each shift register GPIO
+ * GPIO Port A values are placeholders
  * Order:
  * [0] = shift data pin port
  * [1] = shift data clock pin port
@@ -78,7 +79,7 @@ void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftS
 
 	// Set duty cycle to 50%
 
-	sevSeg_setIntensity(htim, 50);
+	//sevSeg_setIntensity(htim, 50);
 
 	//Flash an initializing "Hof" symbol
 
@@ -127,8 +128,8 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 void sevSeg_setIntensity(TIM_HandleTypeDef *htim, uint8_t dutyCycle) {
 
-	TIM3->CCR2 = dutyCycle * 2;
-	HAL_TIM_PWM_Start(htim, TIM_CHANNEL_2);
+	//TIM1->CCR2 = dutyCycle * 2;
+	//HAL_TIM_PWM_Start(htim, TIM_CHANNEL_2);
 
 }
 

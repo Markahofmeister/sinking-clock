@@ -1,10 +1,9 @@
-../Core/Src/main.c:100:1:__io_putchar	16	static
-../Core/Src/main.c:117:5:main	24	static
-../Core/Src/main.c:179:6:SystemClock_Config	88	static
-../Core/Src/main.c:221:13:MX_I2C1_Init	8	static
+../Core/Src/main.c:70:1:__io_putchar	16	static
+../Core/Src/main.c:87:5:main	64	static
+../Core/Src/main.c:227:6:SystemClock_Config	88	static
 ../Core/Src/main.c:269:13:MX_RTC_Init	72	static
 ../Core/Src/main.c:357:13:MX_USART2_UART_Init	8	static
 ../Core/Src/main.c:393:13:MX_GPIO_Init	56	static
-../Core/Src/main.c:471:6:HAL_GPIO_EXTI_Falling_Callback	16	static,ignoring_inline_asm
-../Core/Src/main.c:502:6:HAL_RTC_AlarmAEventCallback	16	static
-../Core/Src/main.c:533:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:441:6:HAL_GPIO_EXTI_Falling_Callback	16	static
+../Core/Src/main.c:446:6:HAL_RTC_AlarmAEventCallback	16	static
+../Core/Src/main.c:477:6:Error_Handler	8	static,ignoring_inline_asm
