@@ -449,7 +449,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|Shift_Output_Enable_Pin|Shift_Store_Clock_Pin
+  HAL_GPIO_WritePin(GPIOB, Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|GPIO_PIN_3|Shift_Store_Clock_Pin
                           |Shift_Data_Clock_Pin|Shift_Master_Clear_Pin|AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -458,9 +458,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Shift_Data_In_GPIO_Port, Shift_Data_In_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : Shift_Data_In_ALTERNATE_Pin Buzzer_Output_Pin Shift_Output_Enable_Pin Shift_Store_Clock_Pin
+  /*Configure GPIO pins : Shift_Data_In_ALTERNATE_Pin Buzzer_Output_Pin PB3 Shift_Store_Clock_Pin
                            Shift_Data_Clock_Pin Shift_Master_Clear_Pin AM_PM_LED_Pin Alarm_LED_Pin */
-  GPIO_InitStruct.Pin = Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|Shift_Output_Enable_Pin|Shift_Store_Clock_Pin
+  GPIO_InitStruct.Pin = Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|GPIO_PIN_3|Shift_Store_Clock_Pin
                           |Shift_Data_Clock_Pin|Shift_Master_Clear_Pin|AM_PM_LED_Pin|Alarm_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;

@@ -130,8 +130,8 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 void sevSeg_setIntensity(TIM_HandleTypeDef *htim_PWM, uint8_t dutyCycle) {
 
-	//TIM1->CCR2 = dutyCycle * 2;
-	//HAL_TIM_PWM_Start(htim_PWM, TIM_CHANNEL_2);
+	TIM1->CCR2 = dutyCycle * 2;
+	HAL_TIM_PWM_Start(htim_PWM, TIM_CHANNEL_2);
 
 }
 
