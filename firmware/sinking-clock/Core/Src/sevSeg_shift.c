@@ -54,8 +54,8 @@ GPIO_TypeDef *portArray[5] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA};
 GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
 
-void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
-					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
+void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shiftStoreClockPin,
+					uint16_t shiftOutputEnablePin, uint16_t shiftMCLRPin,
 					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim) {
 
 	shiftData = shiftDataPin;
@@ -107,7 +107,7 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 			// Write data pin with LSB of data
 			//HAL_GPIO_WritePin(portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
-			HAL_GPIO_WritePin(portArray[0], GPIO_PIN_15, GPIOPinSet[sendByte & 1]);
+			HAL_GPIO_WritePin(portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
 
 			// Toggle clock GPIO to shift bit into register
 			HAL_GPIO_WritePin(portArray[1], shiftDataClock, GPIOPinSet[1]);
