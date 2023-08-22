@@ -24,7 +24,7 @@
 
 void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
 					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
-					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM);
+					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim);
 
 
 void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime);

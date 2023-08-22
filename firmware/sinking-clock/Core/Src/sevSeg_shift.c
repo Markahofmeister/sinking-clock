@@ -48,7 +48,7 @@ uint16_t shiftMCLR;
  * [3] = shift output enable pin port
  * [4] = shift master clear pin port
  */
-GPIO_TypeDef portArray[5] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA};
+GPIO_TypeDef *portArray[5] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA};
 
 // Used to avoid conditionals
 GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
@@ -56,7 +56,7 @@ GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
 void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftStoreClockPin,
 					uint8_t shiftOutputEnablePin, uint8_t shiftMCLRPin,
-					GPIO_TypeDef *GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM) {
+					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim) {
 
 	shiftData = shiftDataPin;
 	shiftDataClock = shiftDataClockPin;
@@ -69,17 +69,17 @@ void sevSeg_Init(uint8_t shiftDataPin, uint8_t shiftDataClockPin, uint8_t shiftS
 	}
 
 	// Clear any existing shift register data
-	HAL_GPIO_WritePin(&portArray[4], shiftMCLR, GPIOPinSet[0]);
-	HAL_GPIO_WritePin(&portArray[4], shiftMCLR, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(portArray[4], shiftMCLR, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(portArray[4], shiftMCLR, GPIOPinSet[1]);
 
 	// Store cleared data and Enable output
-	HAL_GPIO_WritePin(&portArray[2], shiftStoreClock, GPIOPinSet[1]);
-	HAL_GPIO_WritePin(&portArray[2], shiftStoreClock, GPIOPinSet[0]);
-	HAL_GPIO_WritePin(&portArray[3], shiftOutputEnable, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(portArray[3], shiftOutputEnable, GPIOPinSet[0]);
 
 	// Set duty cycle to 50%
 
-	//sevSeg_setIntensity(htim, 50);
+	//sevSeg_setIntensity(htim_PWM, 50);
 
 	//Flash an initializing "Hof" symbol
 
@@ -95,6 +95,7 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 	uint8_t sendTime[4] = {dig3Seg[updateTime->Hours / 10], updateTime->Hours % 10,
 							updateTime->Minutes / 10, updateTime->Minutes % 10};
 
+	//uint8_t sendTime[4] = {8, 8, 8, 8};
 
 	uint8_t sendByte;					// To be used to shift bits
 
@@ -105,11 +106,12 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 		for(int j = 0; j < 8; j++) {
 
 			// Write data pin with LSB of data
-			HAL_GPIO_WritePin(&portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
+			//HAL_GPIO_WritePin(portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
+			HAL_GPIO_WritePin(portArray[0], GPIO_PIN_15, GPIOPinSet[sendByte & 1]);
 
 			// Toggle clock GPIO to shift bit into register
-			HAL_GPIO_WritePin(&portArray[1], shiftDataClock, GPIOPinSet[1]);
-			HAL_GPIO_WritePin(&portArray[1], shiftDataClock, GPIOPinSet[0]);
+			HAL_GPIO_WritePin(portArray[1], shiftDataClock, GPIOPinSet[1]);
+			HAL_GPIO_WritePin(portArray[1], shiftDataClock, GPIOPinSet[0]);
 
 			// Once data pin has been written and shifted out, shift data right by one bit.
 			sendByte >>= 1;
@@ -119,17 +121,17 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 	// Once all data has been shifted out, toggle store clock register to display data.
 
-	HAL_GPIO_WritePin(&portArray[2], shiftStoreClock, GPIOPinSet[1]);
-	HAL_GPIO_WritePin(&portArray[2], shiftStoreClock, GPIOPinSet[0]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[0]);
 
 	return;
 
 }
 
-void sevSeg_setIntensity(TIM_HandleTypeDef *htim, uint8_t dutyCycle) {
+void sevSeg_setIntensity(TIM_HandleTypeDef *htim_PWM, uint8_t dutyCycle) {
 
 	//TIM1->CCR2 = dutyCycle * 2;
-	//HAL_TIM_PWM_Start(htim, TIM_CHANNEL_2);
+	//HAL_TIM_PWM_Start(htim_PWM, TIM_CHANNEL_2);
 
 }
 

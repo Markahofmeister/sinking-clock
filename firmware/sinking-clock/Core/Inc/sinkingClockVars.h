@@ -59,7 +59,7 @@ uint16_t shiftDataClockPin = GPIO_PIN_5;
 uint16_t shiftStoreClockPin = GPIO_PIN_4;
 uint16_t shiftOutputEnablePin = GPIO_PIN_3;
 uint16_t shiftMCLRPin = GPIO_PIN_6;
-GPIO_TypeDef GPIOPortArray[5] = {GPIOA, GPIOB, GPIOB, GPIOB, GPIOB};
+GPIO_TypeDef *GPIOPortArray[5] = {GPIOA, GPIOB, GPIOB, GPIOB, GPIOB};
 
 /*
  * Array of all duty cycles used - 0%, 50%, 100%.

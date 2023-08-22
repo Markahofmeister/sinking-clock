@@ -45,7 +45,6 @@
 /* Private variables ---------------------------------------------------------*/
 RTC_HandleTypeDef hrtc;
 
-TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim16;
 
 UART_HandleTypeDef huart2;
@@ -70,7 +69,6 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_RTC_Init(void);
 static void MX_TIM16_Init(void);
-static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /*
@@ -187,7 +185,6 @@ int main(void)
   MX_USART2_UART_Init();
   MX_RTC_Init();
   MX_TIM16_Init();
-  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
   displayToggle = 2; 		// Display at 100% intensity for next display toggle
@@ -195,7 +192,7 @@ int main(void)
   // Initialize all GPIOs to be used with 7 segment display
   sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 					shiftOutputEnablePin, shiftMCLRPin,
-					GPIOPortArray, &htim16, &htim1);
+					GPIOPortArray, &htim16);
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -367,78 +364,6 @@ static void MX_RTC_Init(void)
 }
 
 /**
-  * @brief TIM1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM1_Init(void)
-{
-
-  /* USER CODE BEGIN TIM1_Init 0 */
-
-  /* USER CODE END TIM1_Init 0 */
-
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
-
-  /* USER CODE BEGIN TIM1_Init 1 */
-
-  /* USER CODE END TIM1_Init 1 */
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65535;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.BreakFilter = 0;
-  sBreakDeadTimeConfig.BreakAFMode = TIM_BREAK_AFMODE_INPUT;
-  sBreakDeadTimeConfig.Break2State = TIM_BREAK2_DISABLE;
-  sBreakDeadTimeConfig.Break2Polarity = TIM_BREAK2POLARITY_HIGH;
-  sBreakDeadTimeConfig.Break2Filter = 0;
-  sBreakDeadTimeConfig.Break2AFMode = TIM_BREAK_AFMODE_INPUT;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM1_Init 2 */
-
-  /* USER CODE END TIM1_Init 2 */
-  HAL_TIM_MspPostInit(&htim1);
-
-}
-
-/**
   * @brief TIM16 Initialization Function
   * @param None
   * @retval None
@@ -518,20 +443,29 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Buzzer_Output_Pin|Shift_Store_Clock_Pin|Shift_Data_Clock_Pin|Shift_Master_Clear_Pin
-                          |AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|Shift_Output_Enable_Pin|Shift_Store_Clock_Pin
+                          |Shift_Data_Clock_Pin|Shift_Master_Clear_Pin|AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Shift_Data_In_GPIO_Port, Shift_Data_In_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : Shift_Data_In_ALTERNATE_Pin Buzzer_Output_Pin Shift_Output_Enable_Pin Shift_Store_Clock_Pin
+                           Shift_Data_Clock_Pin Shift_Master_Clear_Pin AM_PM_LED_Pin Alarm_LED_Pin */
+  GPIO_InitStruct.Pin = Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|Shift_Output_Enable_Pin|Shift_Store_Clock_Pin
+                          |Shift_Data_Clock_Pin|Shift_Master_Clear_Pin|AM_PM_LED_Pin|Alarm_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : T_NRST_Pin */
   GPIO_InitStruct.Pin = T_NRST_Pin;
@@ -546,15 +480,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : Buzzer_Output_Pin Shift_Store_Clock_Pin Shift_Data_Clock_Pin Shift_Master_Clear_Pin
-                           AM_PM_LED_Pin Alarm_LED_Pin */
-  GPIO_InitStruct.Pin = Buzzer_Output_Pin|Shift_Store_Clock_Pin|Shift_Data_Clock_Pin|Shift_Master_Clear_Pin
-                          |AM_PM_LED_Pin|Alarm_LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
@@ -673,7 +598,7 @@ void userAlarmBeep() {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayBlink + 1]);	// Toggle 0% to 50% duty cycle
+			//sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayBlink + 1]);	// Toggle 0% to 50% duty cycle
 
 			HAL_GPIO_TogglePin(GPIOB, buzzerPin);					// Toggle Buzzer
 
@@ -748,7 +673,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	updateAndDisplayTime();
 
-	sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
+	//sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
@@ -810,7 +735,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
 
-			sevSeg_setIntensity (&htim1, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
+			//sevSeg_setIntensity (&htim1, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
 
 			timerVal = __HAL_TIM_GET_COUNTER(&htim16);
 			displayBlink = !displayBlink;
@@ -819,7 +744,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
 
-	sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
+	//sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
 
 	HAL_TIM_Base_Stop(&htim16);
 
