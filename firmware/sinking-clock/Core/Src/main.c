@@ -214,7 +214,6 @@ int main(void)
   while (1)
   {
 
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -508,29 +507,20 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|Shift_Store_Clock_Pin|Shift_Data_Clock_Pin
-                          |Shift_Master_Clear_Pin|AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Buzzer_Output_Pin|Shift_Store_Clock_Pin|Shift_Data_Clock_Pin|Shift_Master_Clear_Pin
+                          |AM_PM_LED_Pin|Alarm_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Shift_Data_In_GPIO_Port, Shift_Data_In_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pins : Shift_Data_In_ALTERNATE_Pin Buzzer_Output_Pin Shift_Store_Clock_Pin Shift_Data_Clock_Pin
-                           Shift_Master_Clear_Pin AM_PM_LED_Pin Alarm_LED_Pin */
-  GPIO_InitStruct.Pin = Shift_Data_In_ALTERNATE_Pin|Buzzer_Output_Pin|Shift_Store_Clock_Pin|Shift_Data_Clock_Pin
-                          |Shift_Master_Clear_Pin|AM_PM_LED_Pin|Alarm_LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : T_NRST_Pin */
   GPIO_InitStruct.Pin = T_NRST_Pin;
@@ -545,6 +535,15 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Buzzer_Output_Pin Shift_Store_Clock_Pin Shift_Data_Clock_Pin Shift_Master_Clear_Pin
+                           AM_PM_LED_Pin Alarm_LED_Pin */
+  GPIO_InitStruct.Pin = Buzzer_Output_Pin|Shift_Store_Clock_Pin|Shift_Data_Clock_Pin|Shift_Master_Clear_Pin
+                          |AM_PM_LED_Pin|Alarm_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
@@ -738,7 +737,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	updateAndDisplayTime();
 
-	//sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
+	sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
