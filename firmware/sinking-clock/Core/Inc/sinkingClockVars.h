@@ -65,9 +65,7 @@ GPIO_TypeDef *GPIOPortArray[5] = {GPIOA, GPIOB, GPIOB, GPIOB, GPIOB};
  * Array of all duty cycles used - 0%, 50%, 100%.
  */
 
-const uint8_t sevSeg_intensityDuty[3] = {100, 50, 00};
-// The above array is "backwards" w.r.t. what might intuitively makes sense to allow for
-// some clever logic in main function ISRs.
+const uint8_t sevSeg_intensityDuty[3] = {99, 90, 50};
 
 /*
  * Toggle Variables

@@ -79,7 +79,7 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
 
 	// Set duty cycle to 50%
 
-	sevSeg_setIntensity(htim_PWM, 900);
+	sevSeg_setIntensity(htim_PWM, 90);
 
 	//Flash an initializing "Hof" symbol
 	uint8_t hofSymb[4] = {0b00000000, 0b00110111, 0b00011101, 0b01000111};
