@@ -27,7 +27,7 @@ const uint8_t dispDigits[10] = {0b01111110, 	// 0
 								0b01111111,		// 8
 								0b01111011};	// 9
 
-const uint8_t dig3Seg[2] = {0b00100000, 0b01100000};
+const uint8_t dig3Seg[2] = {0b00010000, 0b00110000};
 
 /*
  * Global variables to be initialized with GPIO assignments
@@ -135,21 +135,24 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 	 * digit 3 is a special case - the colons are always on, but the one can be on/off.
 	 * Therefore, use array indexing to decide what to send.
 	 */
-	uint8_t sendTime[4] = {dig3Seg[updateTime->Hours / 10], updateTime->Hours % 10,
+	uint8_t sendTime[4] = {updateTime->Hours / 10, updateTime->Hours % 10,
 							updateTime->Minutes / 10, updateTime->Minutes % 10};
 
 	//uint8_t sendTime[4] = {8, 8, 8, 8};
 
 	uint8_t sendByte;					// To be used to shift bits
 
-	for(int i = 0; i <= 3; i++) {
+	for(int i = 0; i < 4; i++) {
 
 		sendByte = dispDigits[sendTime[i]];
+
+		if(i == 0) {		// If tenth's place of hour, use special values
+			sendByte = dig3Seg[updateTime->Hours / 10];
+		}
 
 		for(int j = 0; j < 8; j++) {
 
 			// Write data pin with LSB of data
-			//HAL_GPIO_WritePin(portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
 			HAL_GPIO_WritePin(portArray[0], shiftData, GPIOPinSet[sendByte & 1]);
 
 			// Toggle clock GPIO to shift bit into register
