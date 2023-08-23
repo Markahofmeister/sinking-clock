@@ -95,6 +95,8 @@ void Error_Handler(void);
 #define T_JTCK_GPIO_Port GPIOA
 #define Shift_Data_In_Pin GPIO_PIN_15
 #define Shift_Data_In_GPIO_Port GPIOA
+#define Shift_Output_En_Pin GPIO_PIN_3
+#define Shift_Output_En_GPIO_Port GPIOB
 #define Shift_Store_Clock_Pin GPIO_PIN_4
 #define Shift_Store_Clock_GPIO_Port GPIOB
 #define Shift_Data_Clock_Pin GPIO_PIN_5

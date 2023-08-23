@@ -109,10 +109,14 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
 	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[1]);
 	HAL_GPIO_WritePin(portArray[2], shiftStoreClock, GPIOPinSet[0]);
 
-	/*
-	 * _______________________________Replace with timer delay
-	 */
-	HAL_Delay(1000);
+	// Delay for 500 ms using hardware timer
+	HAL_TIM_Base_Stop(htim);
+	HAL_TIM_Base_Start(htim);							// Begin timer counting
+	uint32_t timerVal = __HAL_TIM_GET_COUNTER(htim);	// Get initial timer value to compare to
+	//Hang in dead loop until 500 ms
+	while(__HAL_TIM_GET_COUNTER(htim) - timerVal <= (65535 / 2)){ timerVal = __HAL_TIM_GET_COUNTER(htim); }
+
+	HAL_TIM_Base_Stop(htim);
 
 	// Clear any existing shift register data
 	HAL_GPIO_WritePin(portArray[4], shiftMCLR, GPIOPinSet[0]);
