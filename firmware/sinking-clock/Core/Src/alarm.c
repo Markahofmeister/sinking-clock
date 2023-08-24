@@ -11,7 +11,6 @@
  * Alarm specification macros
  */
 #define internalAlarm 	RTC_ALARM_A
-#define userAlarm 		RTC_ALARM_A
 #define RTCTimeFormat	RTC_FORMAT_BIN
 
 
@@ -73,21 +72,4 @@ void getRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateType
 	HAL_RTC_GetDate(hrtc, currDate, RTCTimeFormat);
 
 }
-
-void getUserAlarmTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *userAlarmTime) {
-
-	// Store alarm data in alarm object pointer and extract alarm time data from alarm object
-	RTC_AlarmTypeDef userAlarmObj;
-	HAL_RTC_GetAlarm(hrtc, &userAlarmObj, userAlarm, RTCTimeFormat);
-	*userAlarmTime = userAlarmObj.AlarmTime;
-
-}
-
-void getUserAlarmObj(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *userAlarmObj) {
-
-	// Store alarm data in alarm object pointer
-	HAL_RTC_GetAlarm(hrtc, userAlarmObj, internalAlarm, FORMAT_BIN);
-
-}
-
 

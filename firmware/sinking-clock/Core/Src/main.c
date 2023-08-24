@@ -613,7 +613,6 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	getUserAlarmTime(&hrtc, &userAlarmTime);
 	sevSeg_updateDigits(&userAlarmTime);
 
 	if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
@@ -632,7 +631,6 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  printf("Enter current time minute increment interrupt\n\r");
 
 	  RTC_AlarmTypeDef sAlarm;
-	  getUserAlarmObj(hrtc, &sAlarm);
 	  getRTCTime(hrtc, &currTime, &currDate);
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
@@ -654,17 +652,6 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  }
 
 }
-
-//void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
-//
-//	printf("Enter user alarm interrupt.\n\r");
-//
-//	if(userAlarmToggle) {			//Only execute sequence if the alarm is actually on
-//
-//		userAlarmBeep();				// Enter beeping alarm loop
-//	}
-//
-//}
 
 void userAlarmBeep() {
 
@@ -800,7 +787,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	printf("Enter user alarm set ISR.\n\r");
 
-	getUserAlarmTime(&hrtc, &userAlarmTime);
 	printf("User alarm currently set to %u:%u:%u.\n\r", userAlarmTime.Hours,
 			userAlarmTime.Minutes, userAlarmTime.Seconds);
 
@@ -845,8 +831,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) != GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
-		getUserAlarmTime(&hrtc, &userAlarmTime);
-
 		if(userAlarmTime.Hours >= 12) {
 			userAlarmTime.Hours = 1;
 			if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
@@ -861,11 +845,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 		else {
 			__NOP();
 		}
-
-		userAlarmObj.AlarmTime = userAlarmTime;
-
-		HAL_RTC_SetAlarm_IT(&hrtc, &userAlarmObj, RTCTimeFormat);
-		getUserAlarmTime(&hrtc, &userAlarmTime);
 
 		printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
 				userAlarmTime.Minutes, userAlarmTime.Seconds);
@@ -909,8 +888,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 	if(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == !GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
 
-		getUserAlarmTime(&hrtc, &userAlarmTime);
-
 		if(userAlarmTime.Minutes >= 59) {
 			userAlarmTime.Minutes = 0;
 			userAlarmTime.Hours = userAlarmTime.Hours + 1;
@@ -932,10 +909,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 		else {
 			__NOP();
 		}
-
-		userAlarmObj.AlarmTime = userAlarmTime;
-
-		HAL_RTC_SetAlarm_IT(&hrtc, &userAlarmObj, RTCTimeFormat);
 
 		printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmObj.AlarmTime.Hours,
 				userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);

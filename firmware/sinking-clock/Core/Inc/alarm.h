@@ -41,22 +41,5 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
  */
 void getRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate);
 
-/*
- * Gets the time of user's alarm and stores in access object pointers
- *
- * @param STM32 HAL RTC handling object pointer
- * @param STM32 HAL RTC time object pointer (storing current RTC user alarm time.)
- */
-void getUserAlarmTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *userAlarmTime);
-
-/*
- * Updates entire alarm object with user alarm settings
- *
- * @param STM32 HAL RTC handling object pointer
- * @param STM32 HAL RTC alarm object pointer (storing all data of an alarm.)
- *
- * @ret none
- */
-void getUserAlarmObj(RTC_HandleTypeDef *hrtc, RTC_AlarmTypeDef *userAlarmObj);
 
 #endif /* INC_ALARM_H_ */
