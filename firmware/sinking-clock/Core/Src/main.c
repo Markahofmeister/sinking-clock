@@ -61,9 +61,9 @@ TIM_HandleTypeDef *timerDelay = &htim16;
 
 RTC_TimeTypeDef currTime = {0};
 RTC_DateTypeDef currDate = {0};
-RTC_TimeTypeDef userAlarmTime = {0};
 RTC_AlarmTypeDef userAlarmObj = {0};
 
+RTC_TimeTypeDef userAlarmTime = {0};
 
 /* USER CODE END PV */
 
@@ -209,6 +209,11 @@ HAL_Init();
   	}
 
   userAlarmToggle = false;			//Default to off
+
+  // User alarm default value
+  userAlarmTime.Hours = 1;
+  userAlarmTime.Minutes = 1;
+  userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
   /* USER CODE END 2 */
 
@@ -642,18 +647,24 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	  printf("Current time: %u : %u : %u\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
 
-}
-
-void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
-
-	printf("Enter user alarm interrupt.\n\r");
-
-	if(userAlarmToggle) {			//Only execute sequence if the alarm is actually on
-
-		userAlarmBeep();				// Enter beeping alarm loop
-	}
+	  // If alarm is enabled and current time matches user alarm time, set off the alarm.
+	  if(userAlarmToggle && userAlarmTime.Hours == currTime.Hours
+			  && userAlarmTime.Minutes == currTime.Minutes && userAlarmTime.TimeFormat == currTime.TimeFormat) {
+		  userAlarmBeep();
+	  }
 
 }
+
+//void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
+//
+//	printf("Enter user alarm interrupt.\n\r");
+//
+//	if(userAlarmToggle) {			//Only execute sequence if the alarm is actually on
+//
+//		userAlarmBeep();				// Enter beeping alarm loop
+//	}
+//
+//}
 
 void userAlarmBeep() {
 

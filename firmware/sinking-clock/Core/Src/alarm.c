@@ -11,8 +11,10 @@
  * Alarm specification macros
  */
 #define internalAlarm 	RTC_ALARM_A
-#define userAlarm 		RTC_ALARM_B
+#define userAlarm 		RTC_ALARM_A
 #define RTCTimeFormat	RTC_FORMAT_BIN
+
+
 
 void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
