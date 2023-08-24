@@ -217,9 +217,7 @@ HAL_Init();
   while (1)
   {
 
-	  userAlarmBeep();
 
-	  HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -797,8 +795,9 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
+	HAL_TIM_Base_Stop(timerDelay);
 	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
-	uint16_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
 	do {											// while the alarm set button is not held down, blink display.
@@ -807,7 +806,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
 
-			sevSeg_setIntensity (timerPWM, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
+			sevSeg_setIntensity (timerPWM, sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
 
 			timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
 			displayBlink = !displayBlink;
@@ -816,7 +815,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
 
-	sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
+	sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[1]);			// Turn display back to full intensity
 
 	HAL_TIM_Base_Stop(timerDelay);
 
