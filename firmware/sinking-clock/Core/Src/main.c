@@ -52,6 +52,9 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
+TIM_HandleTypeDef *timerPWM = &htim1;
+TIM_HandleTypeDef *timerDelay = &htim16;
+
 /*
  * RTC access objects
  */
@@ -169,7 +172,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -195,7 +198,7 @@ int main(void)
   // Initialize all GPIOs to be used with 7 segment display
   sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 					shiftOutputEnablePin, shiftMCLRPin,
-					GPIOPortArray, &htim16, &htim1);
+					GPIOPortArray, timerDelay, timerPWM);
 
   	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -213,6 +216,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	  userAlarmBeep();
+
+	  HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
@@ -652,21 +659,22 @@ void HAL_RTC_AlarmBEventCallback(RTC_HandleTypeDef *hrtc) {
 
 void userAlarmBeep() {
 
-	HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
-	int16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
+	HAL_TIM_Base_Stop(timerDelay);
+	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
+	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
 		updateAndDisplayTime();				// Update to current time and display
 
-		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {		// Use hardware timer to blink/beep display
+		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 2)) {		// Use hardware timer to blink/beep display
 
-			//sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayBlink + 1]);	// Toggle 0% to 50% duty cycle
+			sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
 
 			HAL_GPIO_TogglePin(GPIOB, buzzerPin);					// Toggle Buzzer
 
-			timerVal = __HAL_TIM_GET_COUNTER(&htim16);				// Update timer value
+			timerVal = __HAL_TIM_GET_COUNTER(timerDelay);				// Update timer value
 
 			displayBlink = !displayBlink;							// Toggle display blink counter
 
@@ -676,7 +684,7 @@ void userAlarmBeep() {
 
 	} while(capTouchTrigger(snoozeButtonPin));
 
-	HAL_TIM_Base_Stop(&htim16);
+	HAL_TIM_Base_Stop(timerDelay);
 
 }
 
@@ -737,7 +745,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	updateAndDisplayTime();
 
-	sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
+	sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
@@ -789,28 +797,28 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	HAL_TIM_Base_Start(&htim16);						// Begin timer 16 counting (to 500 ms)
-	uint16_t timerVal = __HAL_TIM_GET_COUNTER(&htim16);	// Get initial timer value to compare to
+	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
+	uint16_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
 	do {											// while the alarm set button is not held down, blink display.
 
 		updateAndDisplayAlarm();
 
-		if(__HAL_TIM_GET_COUNTER(&htim16) - timerVal >= (65536 / 2)) {
+		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
 
-			//sevSeg_setIntensity (&htim1, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
+			sevSeg_setIntensity (timerPWM, sevSeg_intensityDuty[displayBlink + 1]);		// Initialize to whatever duty cycle
 
-			timerVal = __HAL_TIM_GET_COUNTER(&htim16);
+			timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
 			displayBlink = !displayBlink;
 
 		}
 
 	}while(HAL_GPIO_ReadPin(GPIOA, alarmSetButtonPin) == GPIO_PIN_RESET);
 
-	//sevSeg_setIntensity(&htim1, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
+	sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[0]);			// Turn display back to full intensity
 
-	HAL_TIM_Base_Stop(&htim16);
+	HAL_TIM_Base_Stop(timerDelay);
 
 	updateAndDisplayTime();
 	printf("Current time back to %u:%u:%u.\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
