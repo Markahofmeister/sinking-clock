@@ -15,5 +15,5 @@ main.c:737:19:displayButtonISR	2
 main.c:757:19:alarmEnableISR	3
 main.c:786:19:alarmSetISR	3
 main.c:826:19:hourSetISR	8
-main.c:888:19:minuteSetISR	16
-main.c:973:6:Error_Handler	1
+main.c:883:19:minuteSetISR	16
+main.c:962:6:Error_Handler	1

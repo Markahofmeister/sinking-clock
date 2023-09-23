@@ -910,8 +910,8 @@ HAL_StatusTypeDef minuteSetISR(void) {
 			__NOP();
 		}
 
-		printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmObj.AlarmTime.Hours,
-				userAlarmObj.AlarmTime.Minutes, userAlarmObj.AlarmTime.Seconds);
+		printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
+				userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else {									// Otherwise, change current time hour.

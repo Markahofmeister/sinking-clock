@@ -15,5 +15,5 @@
 ../Core/Src/main.c:757:19:alarmEnableISR	16	static,ignoring_inline_asm
 ../Core/Src/main.c:786:19:alarmSetISR	16	static
 ../Core/Src/main.c:826:19:hourSetISR	16	static,ignoring_inline_asm
-../Core/Src/main.c:888:19:minuteSetISR	16	static,ignoring_inline_asm
-../Core/Src/main.c:973:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:883:19:minuteSetISR	16	static,ignoring_inline_asm
+../Core/Src/main.c:962:6:Error_Handler	8	static,ignoring_inline_asm
