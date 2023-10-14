@@ -1431,12 +1431,12 @@ Net126=NetName=NetR2E1_1|NetColor=$00FF6E6E
 Net127=NetName=NetR3B1_1|NetColor=$006A00A1
 Net128=NetName=NetR3B2_1|NetColor=$006A00A1
 Net129=NetName=NetRN?_1|NetColor=clYellow
-Net130=NetName=NetRN?_10|NetColor=clYellow
-Net131=NetName=NetRN?_11|NetColor=clYellow
-Net132=NetName=NetRN?_12|NetColor=clYellow
-Net133=NetName=NetRN?_13|NetColor=clYellow
-Net134=NetName=NetRN?_14|NetColor=clYellow
-Net135=NetName=NetRN?_15|NetColor=clYellow
+Net130=NetName=NetRN?_10|NetColor=$00FF6E6E
+Net131=NetName=NetRN?_11|NetColor=$00FF6E6E
+Net132=NetName=NetRN?_12|NetColor=$00FF6E6E
+Net133=NetName=NetRN?_13|NetColor=$00FF6E6E
+Net134=NetName=NetRN?_14|NetColor=$00FF6E6E
+Net135=NetName=NetRN?_15|NetColor=$00FF6E6E
 Net136=NetName=NetRN?_16|NetColor=clYellow
 Net137=NetName=NetRN?_2|NetColor=clYellow
 Net138=NetName=NetRN?_3|NetColor=clYellow
@@ -1444,7 +1444,7 @@ Net139=NetName=NetRN?_4|NetColor=clYellow
 Net140=NetName=NetRN?_5|NetColor=clYellow
 Net141=NetName=NetRN?_6|NetColor=clYellow
 Net142=NetName=NetRN?_7|NetColor=clYellow
-Net143=NetName=NetRN?_9|NetColor=clYellow
+Net143=NetName=NetRN?_9|NetColor=$00FF6E6E
 Net144=NetName=NetRN0A_1|NetColor=clYellow
 Net145=NetName=NetRN0A_10|NetColor=clYellow
 Net146=NetName=NetRN0A_11|NetColor=clYellow
@@ -1477,10 +1477,13 @@ Net172=NetName=NetRN2A_13|NetColor=$00FF6E6E
 Net173=NetName=NetRN2A_14|NetColor=$00FF6E6E
 Net174=NetName=NetRN2A_15|NetColor=$00FF6E6E
 Net175=NetName=NetRN2A_9|NetColor=$00FF6E6E
-Net176=NetName=NetU0_9|NetColor=clYellow
-Net177=NetName=NetU1_9|NetColor=$0000BE00
-Net178=NetName=NetU2_9|NetColor=$00FF6E6E
-Net179=NetName=VCC|NetColor=$000083FD
+Net176=NetName=NetRN3A_12|NetColor=$006A00A1
+Net177=NetName=NetRN3A_13|NetColor=$006A00A1
+Net178=NetName=NetRN3A_14|NetColor=$006A00A1
+Net179=NetName=NetU0_9|NetColor=clYellow
+Net180=NetName=NetU1_9|NetColor=$0000BE00
+Net181=NetName=NetU2_9|NetColor=$00FF6E6E
+Net182=NetName=VCC|NetColor=$000083FD
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0

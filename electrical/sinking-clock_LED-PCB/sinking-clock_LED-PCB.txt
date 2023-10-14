@@ -1,0 +1,20 @@
+Board Information Report
+Filename     : C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\sinking-clock_LED-PCB.PcbDoc
+Date         : 10/14/2023
+Time         : 1:45:17 PM
+Time Elapsed : 00:00:00
+
+Non-Plated Hole Size, Pads, Vias
+    0mils, 64, 0
+count : 1
+
+Plated Hole Size, Pads, Vias
+    0mils, 418, 0
+    11mils, 0, 104
+    16mils, 0, 22
+    102.362mils, 2, 0
+count : 4
+
+Net Via Size, Count
+    22mils, 146
+count : 1
