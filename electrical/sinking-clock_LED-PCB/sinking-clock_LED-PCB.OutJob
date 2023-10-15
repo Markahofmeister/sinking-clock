@@ -17,11 +17,11 @@ RevisionNamingSchemeGUID=
 [OutputGroup1]
 Name=sinking-clock_LED-PCB.OutJob
 Description=
-TargetOutputMedium=BOM
+TargetOutputMedium=PDF
 VariantName=[No Variations]
 VariantScope=1
 CurrentConfigurationName=
-TargetPrinter=Microsoft Print to PDF
+TargetPrinter=Virtual Printer
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 OutputMedium1=Print Job
 OutputMedium1_Type=Printer
@@ -62,7 +62,7 @@ OutputEnabled2_OutputMedium4=0
 OutputEnabled2_OutputMedium5=0
 OutputDefault2=0
 Configuration2_Name1=OutputConfigurationParameter1
-Configuration2_Item1=BoardEdgeRoutToolDia=2000000|GenerateBoardEdgeRout=False|GenerateDrilledSlotsG85=False|GenerateEIADrillFile=False|GenerateSeparatePlatedNonPlatedFiles=False|GenerateSeparateViaTypeFiles=False|NumberOfDecimals=4|NumberOfUnits=4|OptimizeChangeLocationCommands=True|OriginPosition=Relative|Record=DrillView|Units=Metric|ZeroesMode=SuppressTrailingZeroes|DocumentPath=C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\sinking-clock_LED-PCB.PcbDoc
+Configuration2_Item1=BoardEdgeRoutToolDia=2000000|GenerateBoardEdgeRout=False|GenerateDrilledSlotsG85=False|GenerateEIADrillFile=False|GenerateSeparatePlatedNonPlatedFiles=False|GenerateSeparateViaTypeFiles=False|NumberOfDecimals=4|NumberOfUnits=4|OptimizeChangeLocationCommands=True|OriginPosition=Relative|Record=DrillView|Units=Metric|ZeroesMode=SuppressTrailingZeroes|DocumentPath=sinking-clock_LED-PCB.PcbDoc
 OutputType3=Assembly
 OutputName3=Assembly Drawings
 OutputCategory3=Assembly
@@ -70,7 +70,7 @@ OutputDocumentPath3=sinking-clock_LED-PCB.PcbDoc
 OutputVariantName3=
 OutputEnabled3=0
 OutputEnabled3_OutputMedium1=0
-OutputEnabled3_OutputMedium2=2
+OutputEnabled3_OutputMedium2=0
 OutputEnabled3_OutputMedium3=0
 OutputEnabled3_OutputMedium4=0
 OutputEnabled3_OutputMedium5=0
@@ -120,13 +120,13 @@ OutputEnabled4_OutputMedium4=1
 OutputEnabled4_OutputMedium5=0
 OutputDefault4=0
 Configuration4_Name1=OutputConfigurationParameter1
-Configuration4_Item1=Record=PickPlaceView|Units=Imperial|GenerateCSVFormat=False|GenerateTextFormat=True|ShowUnits=False|Separator=.|ExcludeFilterParam=False|IncludeVariations=False|IncludeStandardNoBOM=True|Filter= |FilterActive=False|YFlip=False|Column#1=Name:Designator,Fixed:True,Metric:False,Visible:True,Sort:None,Position:0|Column#2=Name:Comment,Fixed:True,Metric:False,Visible:True,Sort:None,Position:11|Column#3=Name:Layer,Fixed:True,Metric:False,Visible:True,Sort:None,Position:8|Column#4=Name:Footprint,Fixed:True,Metric:False,Visible:True,Sort:None,Position:1|Column#5=Name:Footprint Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:9|Column#6=Name:Center-X,Fixed:True,Metric:True,Visible:True,Sort:Descending,SortIndex:0,Position:2|Column#7=Name:Center-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:3|Column#8=Name:Rotation,Fixed:True,Metric:False,Visible:True,Sort:None,Position:10|Column#9=Name:Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:12|Column#10=Name:ComponentKind,Fixed:True,Metric:False,Visible:False,Sort:None,Position:13|Column#11=Name:Height,Fixed:True,Metric:True,Visible:False,Sort:None,Position:14|Column#12=Name:Ref-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:4|Column#13=Name:Ref-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:5|Column#14=Name:Pad-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:6|Column#15=Name:Pad-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:7|Column#16=Name:Variation,Fixed:True,Metric:False,Visible:False,Sort:None,Position:15|Column#17=Name:Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:18|Column#18=Name:Color,Fixed:False,Metric:False,Visible:False,Sort:None,Position:16|Column#19=Name:Part Number,Fixed:False,Metric:False,Visible:False,Sort:None,Position:17|DocumentPath=C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\sinking-clock_LED-PCB.PcbDoc
+Configuration4_Item1=Record=PickPlaceView|Units=Imperial|GenerateCSVFormat=True|GenerateTextFormat=True|ShowUnits=False|Separator=.|ExcludeFilterParam=False|IncludeVariations=False|IncludeStandardNoBOM=True|Filter= |FilterActive=False|YFlip=False|Column#1=Name:Designator,Fixed:True,Metric:False,Visible:True,Sort:None,Position:0|Column#2=Name:Comment,Fixed:True,Metric:False,Visible:True,Sort:None,Position:11|Column#3=Name:Layer,Fixed:True,Metric:False,Visible:True,Sort:Descending,SortIndex:0,Position:9|Column#4=Name:Footprint,Fixed:True,Metric:False,Visible:True,Sort:None,Position:1|Column#5=Name:Footprint Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:8|Column#6=Name:Center-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:2|Column#7=Name:Center-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:3|Column#8=Name:Rotation,Fixed:True,Metric:False,Visible:True,Sort:None,Position:10|Column#9=Name:Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:12|Column#10=Name:ComponentKind,Fixed:True,Metric:False,Visible:False,Sort:None,Position:13|Column#11=Name:Height,Fixed:True,Metric:True,Visible:False,Sort:None,Position:14|Column#12=Name:Ref-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:4|Column#13=Name:Ref-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:5|Column#14=Name:Pad-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:6|Column#15=Name:Pad-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:7|Column#16=Name:Variation,Fixed:True,Metric:False,Visible:False,Sort:None,Position:15|Column#17=Name:Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:18|Column#18=Name:Color,Fixed:False,Metric:False,Visible:False,Sort:None,Position:16|Column#19=Name:Part Number,Fixed:False,Metric:False,Visible:False,Sort:None,Position:17|Column#20=Name:MFR PN,Fixed:False,Metric:False,Visible:False,Sort:None,Position:24|Column#21=Name:Vendor,Fixed:False,Metric:False,Visible:False,Sort:None,Position:25|Column#22=Name:Vendor PN,Fixed:False,Metric:False,Visible:False,Sort:None,Position:27|Column#23=Name:ComponentLink2URL,Fixed:False,Metric:False,Visible:False,Sort:None,Position:22|Column#24=Name:Vendor Link,Fixed:False,Metric:False,Visible:False,Sort:None,Position:26|Column#25=Name:ComponentLink1Description,Fixed:False,Metric:False,Visible:False,Sort:None,Position:19|Column#26=Name:ComponentLink1URL,Fixed:False,Metric:False,Visible:False,Sort:None,Position:20|Column#27=Name:MFR,Fixed:False,Metric:False,Visible:False,Sort:None,Position:23|Column#28=Name:ComponentLink2Description,Fixed:False,Metric:False,Visible:False,Sort:None,Position:21|DocumentPath=sinking-clock_LED-PCB.PcbDoc
 OutputType5=BOM_PartType
 OutputName5=Bill of Materials
 OutputCategory5=Report
 OutputDocumentPath5=sinking-clock_LED-PCB.BomDoc
 OutputVariantName5=
-OutputEnabled5=1
+OutputEnabled5=0
 OutputEnabled5_OutputMedium1=0
 OutputEnabled5_OutputMedium2=0
 OutputEnabled5_OutputMedium3=0
@@ -141,15 +141,21 @@ Configuration5_Item2=OpenExported=False|AddToProject=False|ReportBOMViolationsIn
 Configuration5_Name3=GroupOrder
 Configuration5_Item3=Comment=True|Footprint=True
 Configuration5_Name4=SortOrder
-Configuration5_Item4=Designator=Up|Comment=Up|Footprint=Up
+Configuration5_Item4=Designator=Up
 Configuration5_Name5=VisibleOrder
-Configuration5_Item5=Comment=120|Description=120|Designator=120|Footprint=120|LibRef=120|Quantity=120
+Configuration5_Item5=Line #=59|Designator=120|Quantity=50|MFR=100|MFR PN=100|Footprint=120|Type=53|Value=56|Notes=100
+Configuration5_Name6=VisibleOrder_Base
+Configuration5_Item6=Line #=59|Designator=120|Quantity=50|MFR=100|MFR PN=100|Footprint=120|Type=53|Value=56|Notes=100
+Configuration5_Name7=VisibleOrder_Consolidated
+Configuration5_Item7=Line #=53|Comment=52|Description=79|Designator=77|Quantity=67|Manufacturer 1=99|Manufacturer Part Number 1=166|Manufacturer Lifecycle 1=143|Supplier 1=72|Supplier Part Number 1=139|Supplier Unit Price 1=123|Supplier Subtotal 1=116
+Configuration5_Name8=VisibleOrder_Flat
+Configuration5_Item8=Line #=53|Comment=52|Description=79|Designator=77|Manufacturer 1=99|Manufacturer Part Number 1=166|Manufacturer Lifecycle 1=143|Supplier 1=72|Supplier Part Number 1=139|Supplier Unit Price 1=123|Supplier Subtotal 1=116
 OutputType6=PCBDrawing
 OutputName6=Draftsman
 OutputCategory6=Documentation
 OutputDocumentPath6=sinking-clock_LED-PCB.PCBDwf
 OutputVariantName6=
-OutputEnabled6=0
+OutputEnabled6=1
 OutputEnabled6_OutputMedium1=0
 OutputEnabled6_OutputMedium2=1
 OutputEnabled6_OutputMedium3=0
@@ -159,17 +165,17 @@ OutputDefault6=0
 PageOptions6=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 
 [PublishSettings]
-OutputFilePath2=Project Outputs for Free Documents\.PDF
+OutputFilePath2=C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\Project Outputs for sinking-clock_LED-PCB\Job1.PDF
 ReleaseManaged2=1
 OutputBasePath2=Project Outputs for sinking-clock_LED-PCB
-OutputPathMedia2=
-OutputPathMediaValue2=
+OutputPathMedia2=Drawing
+OutputPathMediaValue2=Drawing
 OutputPathOutputer2=[Output Type]
 OutputPathOutputerPrefix2=
 OutputPathOutputerValue2=
-OutputFileName2=Job1.PDF
+OutputFileName2=ASM.PDF
 OutputFileNameMulti2=
-UseOutputNameForMulti2=1
+UseOutputNameForMulti2=0
 OutputFileNameSpecial2=
 OpenOutput2=1
 PromptOverwrite2=1
@@ -227,7 +233,7 @@ OutputFileNameSpecial5=
 OpenOutput5=1
 
 [GeneratedFilesSettings]
-RelativeOutputPath2=Project Outputs for Free Documents\.PDF
+RelativeOutputPath2=C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\Project Outputs for sinking-clock_LED-PCB\Job1.PDF
 OpenOutputs2=1
 RelativeOutputPath3=C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\Project Outputs for sinking-clock_LED-PCB\
 OpenOutputs3=1

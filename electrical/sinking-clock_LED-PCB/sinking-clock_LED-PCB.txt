@@ -1,8 +1,8 @@
 Board Information Report
 Filename     : C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\sinking-clock_LED-PCB.PcbDoc
-Date         : 10/14/2023
-Time         : 2:53:24 PM
-Time Elapsed : 00:00:01
+Date         : 10/15/2023
+Time         : 12:02:45 PM
+Time Elapsed : 00:00:00
 
 General
     Board Size, 156.7mmx83mm
@@ -19,7 +19,8 @@ count : 4
 Layer, Arcs, Pads, Vias, Tracks, Texts, Fills, Regions, ComponentBodies
     Top Layer, 0, 112, 0, 286, 0, 0, 5, 0
     Bottom Layer, 2, 370, 0, 933, 0, 0, 13, 0
-    Mechanical 1, 0, 0, 0, 32, 3, 0, 0, 105
+    Mechanical 1, 0, 0, 0, 28, 3, 0, 0, 105
+    Outline, 0, 0, 0, 4, 0, 0, 0, 0
     Mechanical 13, 94, 0, 0, 884, 0, 0, 0, 39
     Mechanical 15, 0, 0, 0, 564, 1, 0, 0, 0
     Mechanical 20, 0, 0, 0, 16, 0, 0, 0, 0
@@ -33,7 +34,7 @@ Layer, Arcs, Pads, Vias, Tracks, Texts, Fills, Regions, ComponentBodies
     Drill Guide, 0, 0, 0, 0, 0, 0, 0, 0
     Keep-Out Layer, 0, 0, 0, 0, 0, 0, 0, 0
     Drill Drawing, 0, 0, 0, 0, 0, 0, 0, 0
-count : 16
+count : 17
 
 Drill Pairs, Vias
     Top Layer - Bottom Layer, 126
