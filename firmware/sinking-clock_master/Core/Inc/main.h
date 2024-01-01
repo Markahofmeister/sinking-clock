@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define buzz_test_Pin GPIO_PIN_8
+#define buzz_test_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
