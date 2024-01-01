@@ -1193,9 +1193,9 @@ static void MX_TIM1_Init(void)
  8000824:	4b45      	ldr	r3, [pc, #276]	; (800093c <MX_TIM1_Init+0x14c>)
  8000826:	4a46      	ldr	r2, [pc, #280]	; (8000940 <MX_TIM1_Init+0x150>)
  8000828:	601a      	str	r2, [r3, #0]
-  htim1.Init.Prescaler = 160 - 1;
+  htim1.Init.Prescaler = 80 - 1;
  800082a:	4b44      	ldr	r3, [pc, #272]	; (800093c <MX_TIM1_Init+0x14c>)
- 800082c:	229f      	movs	r2, #159	; 0x9f
+ 800082c:	224f      	movs	r2, #79	; 0x4f
  800082e:	605a      	str	r2, [r3, #4]
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
  8000830:	4b42      	ldr	r3, [pc, #264]	; (800093c <MX_TIM1_Init+0x14c>)
