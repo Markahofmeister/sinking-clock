@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define buzz_test_Pin GPIO_PIN_8
 #define buzz_test_GPIO_Port GPIOA
+#define TEST_DEBOUNCE_Pin GPIO_PIN_6
+#define TEST_DEBOUNCE_GPIO_Port GPIOC
 
 /* USER CODE BEGIN Private defines */
 
