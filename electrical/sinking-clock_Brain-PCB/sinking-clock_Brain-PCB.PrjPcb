@@ -32,6 +32,7 @@ ReportSuppressedErrorsInMessages=0
 FSMCodingStyle=eFMSDropDownList_OneProcess
 FSMEncodingStyle=eFMSDropDownList_OneHot
 IsProjectConflictPreventionWarningsEnabled=0
+ConstraintManagerFlow=0
 IsVirtualBomDocumentRemoved=0
 OutputPath=
 LogFolderPath=
@@ -55,7 +56,7 @@ AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
 AnnotateSuffix=
 AnnotateScope=All
-AnnotateOrder=-1
+AnnotateOrder=0
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
@@ -480,6 +481,18 @@ OutputDocumentPath13=
 OutputVariantName13=
 OutputDefault13=0
 PageOptions13=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
+OutputType14=PCBDrawing
+OutputName14=Draftsman
+OutputDocumentPath14=
+OutputVariantName14=[No Variations]
+OutputDefault14=0
+PageOptions14=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
+OutputType15=PCBDrawing
+OutputName15=Draftsman
+OutputDocumentPath15=
+OutputVariantName15=[No Variations]
+OutputDefault15=0
+PageOptions15=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 
 [OutputGroup4]
 Name=Assembly Outputs
@@ -641,6 +654,12 @@ OutputName8=Report Single Pin Nets
 OutputDocumentPath8=
 OutputVariantName8=[No Variations]
 OutputDefault8=0
+OutputType9=Project History
+OutputName9=Project History
+OutputDocumentPath9=
+OutputVariantName9=[No Variations]
+OutputDefault9=0
+PageOptions9=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=Letter|PaperIndex=1
 
 [OutputGroup7]
 Name=Other Outputs
@@ -991,6 +1010,23 @@ Type116=1
 Type117=1
 Type118=1
 Type119=1
+Type120=1
+Type121=1
+Type122=1
+Type123=1
+Type124=1
+Type125=1
+Type126=1
+Type127=1
+Type128=1
+Type129=1
+Type130=1
+Type131=1
+Type132=1
+Type133=1
+Type134=1
+Type135=1
+Type136=1
 
 [Difference Levels]
 Type1=1
@@ -1061,6 +1097,12 @@ Type65=1
 Type66=1
 Type67=1
 Type68=1
+Type69=1
+Type70=1
+Type71=1
+Type72=1
+Type73=1
+Type74=1
 
 [Electrical Rules Check]
 Type1=1
@@ -1182,6 +1224,7 @@ Type116=2
 Type117=3
 Type118=3
 Type119=3
+MultiChannelAlternate=0
 AlternateItemFail=3
 Type122=2
 Type123=1
@@ -1189,6 +1232,30 @@ Type124=1
 Type125=1
 Type126=1
 Type127=1
+Type128=2
+Type129=2
+Type130=2
+Type131=2
+Type132=2
+Type133=2
+Type134=2
+Type135=2
+Type136=2
+Type137=2
+Type138=1
+Type139=1
+Type140=1
+Type141=1
+Type142=1
+Type143=1
+Type144=1
+Type145=1
+Type146=1
+Type147=2
+Type148=2
+Type149=2
+Type150=2
+Type151=2
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
@@ -1237,11 +1304,11 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=sinking-clock.SchLib
-ComponentDesignItemID0=STM32G031C6T6
-ComponentSymbolReference0=STM32G031C6T6
+ComponentDesignItemID0=TC2030-IDC-NL
+ComponentSymbolReference0=TC2030-IDC-NL
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
-FullReplace=0
+FullReplace=1
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
 PreserveParameterLocations=1
@@ -1266,16 +1333,12 @@ ParameterName4=MFR
 ParameterUpdate4=1
 ParameterName5=MFR PN
 ParameterUpdate5=1
-ParameterName6=Vendor
+ParameterName6=Value
 ParameterUpdate6=1
-ParameterName7=Vendor Link
-ParameterUpdate7=1
-ParameterName8=Vendor PN
-ParameterUpdate8=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=48-LQFP
+ModelName0=TC2030-IDC-NL
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
@@ -1290,7 +1353,7 @@ Net2=NetName=ALARM_EN_BUTTON|NetColor=$00CA9C00
 Net3=NetName=Alarm_LED|NetColor=$0000BE00
 Net4=NetName=ALARM_SET_BUTTON|NetColor=$00CA9C00
 Net5=NetName=AM/PM_LED|NetColor=$0000BE00
-Net6=NetName=BUZZER_OUT|NetColor=$00AD7500
+Net6=NetName=BUZZER_OUT|NetColor=$00FF6E6E
 Net7=NetName=CAPTOUCH_CTRL_SDA|NetColor=$00FF6EFF
 Net8=NetName=CAPTOUCH_EN|NetColor=$00FF6EFF
 Net9=NetName=CAPTOUCH_IN|NetColor=$00FF6EFF
@@ -1302,24 +1365,29 @@ Net14=NetName=DISPLAY_BUTTON|NetColor=$00CA9C00
 Net15=NetName=GND|NetColor=$00747A85
 Net16=NetName=HOUR_SET_BUTTON|NetColor=$00CA9C00
 Net17=NetName=MINUTE_SET_BUTTON|NetColor=$00CA9C00
-Net18=NetName=NetBZ1_P|NetColor=$00AD7500
-Net19=NetName=NetC10_2|NetColor=$00164FDE
-Net20=NetName=NetD?_1|NetColor=$00FF6EFF
-Net21=NetName=NetJ5_1|NetColor=$00164FDE
-Net22=NetName=NetQ?_3|NetColor=$00FF6EFF
-Net23=NetName=NetR?_2|NetColor=$00FF6EFF
-Net24=NetName=NRST|NetColor=clYellow
-Net25=NetName=SHIFT_DATA_CLK|NetColor=$0000BE00
-Net26=NetName=SHIFT_DATA_IN|NetColor=$0000BE00
-Net27=NetName=SHIFT_MCLR|NetColor=$0000BE00
-Net28=NetName=SHIFT_OUTPUT_EN|NetColor=$0000BE00
-Net29=NetName=SHIFT_STORE_CLK|NetColor=$0000BE00
-Net30=NetName=SNOOZE_BUTTON|NetColor=$00CA9C00
-Net31=NetName=SWD_CLK|NetColor=clYellow
-Net32=NetName=SWD_IO|NetColor=clYellow
-Net33=NetName=SWO|NetColor=clYellow
-Net34=NetName=VCC|NetColor=$000083FD
-Net35=NetName=VREG|NetColor=$00FF6EFF
+Net18=NetName=NetBZ1_N|NetColor=$00FF6E6E
+Net19=NetName=NetBZ1_P|NetColor=$00AD7500
+Net20=NetName=NetC10_2|NetColor=$00164FDE
+Net21=NetName=NetD?_1|NetColor=$00FF6EFF
+Net22=NetName=NetJ2_2|NetColor=clYellow
+Net23=NetName=NetJ2_3|NetColor=clYellow
+Net24=NetName=NetJ2_5|NetColor=clYellow
+Net25=NetName=NetJ5_1|NetColor=$00164FDE
+Net26=NetName=NetQ?_3|NetColor=$00FF6EFF
+Net27=NetName=NetQ2_1|NetColor=$00FF6E6E
+Net28=NetName=NetR?_2|NetColor=$00FF6EFF
+Net29=NetName=NRST|NetColor=clYellow
+Net30=NetName=SHIFT_DATA_CLK|NetColor=$0000BE00
+Net31=NetName=SHIFT_DATA_IN|NetColor=$0000BE00
+Net32=NetName=SHIFT_MCLR|NetColor=$0000BE00
+Net33=NetName=SHIFT_OUTPUT_EN|NetColor=$0000BE00
+Net34=NetName=SHIFT_STORE_CLK|NetColor=$0000BE00
+Net35=NetName=SNOOZE_BUTTON|NetColor=$00CA9C00
+Net36=NetName=SWD_CLK|NetColor=clYellow
+Net37=NetName=SWD_IO|NetColor=clYellow
+Net38=NetName=SWO|NetColor=clYellow
+Net39=NetName=VCC|NetColor=$000083FD
+Net40=NetName=VREG|NetColor=$00FF6EFF
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
