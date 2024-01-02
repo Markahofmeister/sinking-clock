@@ -61,6 +61,8 @@ void Error_Handler(void);
 #define buzz_test_GPIO_Port GPIOA
 #define TEST_DEBOUNCE_Pin GPIO_PIN_6
 #define TEST_DEBOUNCE_GPIO_Port GPIOC
+#define CTOUCH_EN_Pin GPIO_PIN_9
+#define CTOUCH_EN_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
