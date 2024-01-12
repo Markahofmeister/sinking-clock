@@ -27,7 +27,13 @@ const uint8_t dispDigits[10] = {0b01111110, 	// 0
 								0b01111111,		// 8
 								0b01111011};	// 9
 
-const uint8_t dig3Seg[2] = {0b00010000, 0b00110000};
+/*
+ * 0b00010000 = Digit 3 LED OFF, LED colons ON, PM LED OFF
+ * 0b00110000 = Digit 3 LED ON, LED colons ON, PM LED OFF
+ * 0b00011000 = Digit 3 LED OFF, LED colons ON, PM LED ON
+ * 0b00111000 = Digit 3 LED ON, LED colons ON, PM LED ON
+ */
+const uint8_t dig3Seg[4] = {0b00010000, 0b00110000, 0b00011000, 0b00111000};
 
 /*
  * Global variables to be initialized with GPIO assignments
@@ -142,12 +148,22 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 	uint8_t sendByte;					// To be used to shift bits
 
+	/*
+	 * If we are in PM, we should reflect this in the PM LED.
+	 * This offset will update the digit 3 shift register value with the correct sequence.
+	 */
+	uint8_t dig3Offset = 0;
+
+	if(updateTime->TimeFormat == RTC_HOURFORMAT12_PM) {
+		dig3Offset = 2;
+	}
+
 	for(int i = 0; i < 4; i++) {
 
 		sendByte = dispDigits[sendTime[i]];
 
 		if(i == 0) {		// If tenth's place of hour, use special values
-			sendByte = dig3Seg[updateTime->Hours / 10];
+			sendByte = dig3Seg[(updateTime->Hours / 10) + dig3Offset];
 		}
 
 		for(int j = 0; j < 8; j++) {

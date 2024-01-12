@@ -603,12 +603,15 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	getRTCTime(&hrtc, &currTime, &currDate);
 	sevSeg_updateDigits(&currTime);
 
-	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
-		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
-	}
-	else {
-		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_RESET);		// Else, it is A.M.
-	}
+	/*
+	 * There is no PM LED anymore
+	 */
+//	if(currTime.TimeFormat == RTC_HOURFORMAT12_PM) {			// If we are in the PM hours
+//		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_SET);			// Turn on PM LED
+//	}
+//	else {
+//		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_RESET);		// Else, it is A.M.
+//	}
 
 	return halRet;
 
