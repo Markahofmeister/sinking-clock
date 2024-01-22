@@ -169,7 +169,7 @@ GenerateClassCluster=0
 DocumentUniqueId=YJLBSPTF
 
 [Document8]
-DocumentPath=CAMtastic1.Cam
+DocumentPath=sinking-clock_Brain-PCB_Mk-II.Cam
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -179,7 +179,7 @@ AnnotateOrder=-1
 DoLibraryUpdate=1
 DoDatabaseUpdate=1
 ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
+ClassGenCCAutoRoomEnabled=0
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0

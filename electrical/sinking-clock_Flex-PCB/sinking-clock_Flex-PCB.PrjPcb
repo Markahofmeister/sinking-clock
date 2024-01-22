@@ -66,8 +66,102 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ARFWHGVT
 
+[Document2]
+DocumentPath=sinking-clock_Flex-PCB.OutJob
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document3]
+DocumentPath=sinking-clock_Flex-PCB.Cam
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [GeneratedDocument1]
 DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Design Rule Check - sinking-clock_Flex-PCB.html
+DItemRevisionGUID=
+
+[GeneratedDocument2]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\NC Drill\sinking-clock_Flex-PCB.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument3]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument4]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GBL
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GBO
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GBS
+DItemRevisionGUID=
+
+[GeneratedDocument7]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GCB1
+DItemRevisionGUID=
+
+[GeneratedDocument8]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GCT1
+DItemRevisionGUID=
+
+[GeneratedDocument9]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GM
+DItemRevisionGUID=
+
+[GeneratedDocument10]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GM1
+DItemRevisionGUID=
+
+[GeneratedDocument11]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GTL
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GTO
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.GTS
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\NC Drill\sinking-clock_Flex-PCB.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\Gerber\sinking-clock_Flex-PCB.REP
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Project Outputs for sinking-clock_Flex-PCB\NC Drill\sinking-clock_Flex-PCB.TXT
 DItemRevisionGUID=
 
 [Configuration1]
