@@ -49,6 +49,8 @@ extern "C" {
 
 /* USER CODE END EM */
 
+void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
+
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -57,10 +59,37 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define buzz_test_Pin GPIO_PIN_8
-#define buzz_test_GPIO_Port GPIOA
-#define TEST_DEBOUNCE_Pin GPIO_PIN_6
-#define TEST_DEBOUNCE_GPIO_Port GPIOC
+#define DEBUG_LED_Pin GPIO_PIN_0
+#define DEBUG_LED_GPIO_Port GPIOA
+#define BUZZER_OUT_Pin GPIO_PIN_8
+#define BUZZER_OUT_GPIO_Port GPIOA
+#define SHIFT_DATA_IN_Pin GPIO_PIN_9
+#define SHIFT_DATA_IN_GPIO_Port GPIOA
+#define SHIFT_OUTPUT_EN_PWM_Pin GPIO_PIN_6
+#define SHIFT_OUTPUT_EN_PWM_GPIO_Port GPIOC
+#define SHIFT_STORE_CLK_Pin GPIO_PIN_7
+#define SHIFT_STORE_CLK_GPIO_Port GPIOC
+#define SHIFT_DATA_CLK_Pin GPIO_PIN_10
+#define SHIFT_DATA_CLK_GPIO_Port GPIOA
+#define SHIFT_MCLR_Pin GPIO_PIN_11
+#define SHIFT_MCLR_GPIO_Port GPIOA
+#define ALARM_LED_Pin GPIO_PIN_12
+#define ALARM_LED_GPIO_Port GPIOA
+#define MINUTE_SET_BUTTON_Pin GPIO_PIN_15
+#define MINUTE_SET_BUTTON_GPIO_Port GPIOA
+#define MINUTE_SET_BUTTON_EXTI_IRQn EXTI4_15_IRQn
+#define HOUR_SET_BUTTON_Pin GPIO_PIN_0
+#define HOUR_SET_BUTTON_GPIO_Port GPIOD
+#define HOUR_SET_BUTTON_EXTI_IRQn EXTI0_1_IRQn
+#define ALARM_SET_BUTTON_Pin GPIO_PIN_1
+#define ALARM_SET_BUTTON_GPIO_Port GPIOD
+#define ALARM_SET_BUTTON_EXTI_IRQn EXTI0_1_IRQn
+#define ALARM_EN_BUTTON_Pin GPIO_PIN_2
+#define ALARM_EN_BUTTON_GPIO_Port GPIOD
+#define ALARM_EN_BUTTON_EXTI_IRQn EXTI2_3_IRQn
+#define DISPLAY_BUTTON_Pin GPIO_PIN_3
+#define DISPLAY_BUTTON_GPIO_Port GPIOD
+#define DISPLAY_BUTTON_EXTI_IRQn EXTI2_3_IRQn
 #define CTOUCH_EN_Pin GPIO_PIN_9
 #define CTOUCH_EN_GPIO_Port GPIOB
 

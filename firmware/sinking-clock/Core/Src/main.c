@@ -62,7 +62,6 @@ TIM_HandleTypeDef *timerDelay = &htim16;
 RTC_TimeTypeDef currTime = {0};
 RTC_DateTypeDef currDate = {0};
 RTC_AlarmTypeDef userAlarmObj = {0};
-
 RTC_TimeTypeDef userAlarmTime = {0};
 
 /* USER CODE END PV */
