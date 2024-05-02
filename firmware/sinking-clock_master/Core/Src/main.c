@@ -207,8 +207,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
+    RTC_TimeTypeDef dummyTime;
+    dummyTime.Hours = 12;
+    dummyTime.Minutes = 34;
+    dummyTime.TimeFormat = RTC_HOURFORMAT12_PM;
+    HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_SET);
+
   while (1)
   {
+
+	  sevSeg_updateDigits(&dummyTime);
 
 
     /* USER CODE END WHILE */
@@ -489,9 +497,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 80;
+  htim2.Init.Prescaler = 800-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 1000;
+  htim2.Init.Period = 99;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
@@ -651,28 +659,28 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
-	  printf("Enter current time minute increment interrupt\n\r");
-
-	  RTC_AlarmTypeDef sAlarm;
-	  getRTCTime(hrtc, &currTime, &currDate);
-
-	  if(sAlarm.AlarmTime.Minutes>58) {
-		sAlarm.AlarmTime.Minutes=0;
-		printf("Reset alarm time\n\r");
-	  } else {
-		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
-	  }
-		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
-
-	  updateAndDisplayTime();
-
-	  printf("Current time: %u : %u : %u\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
-
-	  // If alarm is enabled and current time matches user alarm time, set off the alarm.
-	  if(userAlarmToggle && userAlarmTime.Hours == currTime.Hours
-			  && userAlarmTime.Minutes == currTime.Minutes && userAlarmTime.TimeFormat == currTime.TimeFormat) {
-		  userAlarmBeep();
-	  }
+//	  printf("Enter current time minute increment interrupt\n\r");
+//
+//	  RTC_AlarmTypeDef sAlarm;
+//	  getRTCTime(hrtc, &currTime, &currDate);
+//
+//	  if(sAlarm.AlarmTime.Minutes>58) {
+//		sAlarm.AlarmTime.Minutes=0;
+//		printf("Reset alarm time\n\r");
+//	  } else {
+//		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+//	  }
+//		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
+//
+//	  updateAndDisplayTime();
+//
+//	  printf("Current time: %u : %u : %u\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+//
+//	  // If alarm is enabled and current time matches user alarm time, set off the alarm.
+//	  if(userAlarmToggle && userAlarmTime.Hours == currTime.Hours
+//			  && userAlarmTime.Minutes == currTime.Minutes && userAlarmTime.TimeFormat == currTime.TimeFormat) {
+//		  userAlarmBeep();
+//	  }
 
 }
 

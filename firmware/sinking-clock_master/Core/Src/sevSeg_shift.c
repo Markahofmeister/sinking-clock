@@ -85,7 +85,7 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
 
 	// Set duty cycle to 50%
 
-	sevSeg_setIntensity(htim_PWM, 90);
+	sevSeg_setIntensity(htim_PWM, 50);
 
 	//Flash an initializing "Hof" symbol
 	uint8_t hofSymb[4] = {0b00000000, 0b00110111, 0b00011101, 0b01000111};
@@ -193,8 +193,8 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 void sevSeg_setIntensity(TIM_HandleTypeDef *htim_PWM, uint16_t dutyCycle) {
 
-	__HAL_TIM_SET_COMPARE(htim_PWM, TIM_CHANNEL_2, dutyCycle);
-	HAL_TIM_PWM_Start(htim_PWM, TIM_CHANNEL_2);
+	__HAL_TIM_SET_COMPARE(htim_PWM, TIM_CHANNEL_3, dutyCycle);
+	HAL_TIM_PWM_Start(htim_PWM, TIM_CHANNEL_3);
 
 }
 
