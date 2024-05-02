@@ -1097,18 +1097,18 @@ static void MX_TIM2_Init(void)
  80006be:	2280      	movs	r2, #128	@ 0x80
  80006c0:	05d2      	lsls	r2, r2, #23
  80006c2:	601a      	str	r2, [r3, #0]
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 80;
  80006c4:	4b23      	ldr	r3, [pc, #140]	@ (8000754 <MX_TIM2_Init+0xbc>)
- 80006c6:	2200      	movs	r2, #0
+ 80006c6:	2250      	movs	r2, #80	@ 0x50
  80006c8:	605a      	str	r2, [r3, #4]
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
  80006ca:	4b22      	ldr	r3, [pc, #136]	@ (8000754 <MX_TIM2_Init+0xbc>)
  80006cc:	2200      	movs	r2, #0
  80006ce:	609a      	str	r2, [r3, #8]
-  htim2.Init.Period = 4294967295;
+  htim2.Init.Period = 1000;
  80006d0:	4b20      	ldr	r3, [pc, #128]	@ (8000754 <MX_TIM2_Init+0xbc>)
- 80006d2:	2201      	movs	r2, #1
- 80006d4:	4252      	negs	r2, r2
+ 80006d2:	22fa      	movs	r2, #250	@ 0xfa
+ 80006d4:	0092      	lsls	r2, r2, #2
  80006d6:	60da      	str	r2, [r3, #12]
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
  80006d8:	4b1e      	ldr	r3, [pc, #120]	@ (8000754 <MX_TIM2_Init+0xbc>)
@@ -1211,9 +1211,9 @@ static void MX_TIM14_Init(void)
  800075c:	4b0e      	ldr	r3, [pc, #56]	@ (8000798 <MX_TIM14_Init+0x40>)
  800075e:	4a0f      	ldr	r2, [pc, #60]	@ (800079c <MX_TIM14_Init+0x44>)
  8000760:	601a      	str	r2, [r3, #0]
-  htim14.Init.Prescaler = 0;
+  htim14.Init.Prescaler = 244;
  8000762:	4b0d      	ldr	r3, [pc, #52]	@ (8000798 <MX_TIM14_Init+0x40>)
- 8000764:	2200      	movs	r2, #0
+ 8000764:	22f4      	movs	r2, #244	@ 0xf4
  8000766:	605a      	str	r2, [r3, #4]
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
  8000768:	4b0b      	ldr	r3, [pc, #44]	@ (8000798 <MX_TIM14_Init+0x40>)
@@ -3087,6 +3087,7 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
  80012e4:	681b      	ldr	r3, [r3, #0]
  80012e6:	6a5b      	ldr	r3, [r3, #36]	@ 0x24
  80012e8:	60fb      	str	r3, [r7, #12]
+
 	//Hang in dead loop until 500 ms
 	while(__HAL_TIM_GET_COUNTER(htim) - timerVal <= (65535 / 2)){ timerVal = __HAL_TIM_GET_COUNTER(htim); }
  80012ea:	e003      	b.n	80012f4 <sevSeg_Init+0x1a4>
