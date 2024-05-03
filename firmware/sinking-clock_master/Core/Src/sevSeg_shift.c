@@ -146,8 +146,6 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 	uint8_t sendTime[4] = {updateTime->Hours / 10, updateTime->Hours % 10,
 							updateTime->Minutes / 10, updateTime->Minutes % 10};
 
-	//uint8_t sendTime[4] = {8, 8, 8, 8};
-
 	uint8_t sendByte;					// To be used to shift bits
 
 	/*

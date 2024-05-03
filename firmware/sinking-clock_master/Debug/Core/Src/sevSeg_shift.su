@@ -1,3 +1,3 @@
 ../Core/Src/sevSeg_shift.c:63:6:sevSeg_Init	48	static
 ../Core/Src/sevSeg_shift.c:139:6:sevSeg_updateDigits	40	static
-../Core/Src/sevSeg_shift.c:195:6:sevSeg_setIntensity	24	static
+../Core/Src/sevSeg_shift.c:193:6:sevSeg_setIntensity	24	static
