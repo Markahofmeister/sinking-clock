@@ -142,6 +142,16 @@ HAL_StatusTypeDef hourSetISR(void);
 HAL_StatusTypeDef minuteSetISR(void);
 
 /*
+ * Hour and minute incrementing functions for alarm time and current time
+ *
+ */
+
+void alarmHourInc(void);
+void currHourInc(void);
+void alarmMinuteInc(void);
+void currMinuteInc(void);
+
+/*
  * Enters loop to signal user alarm
  */
 void userAlarmBeep();
@@ -929,25 +939,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
-
-		if(userAlarmTime.Hours >= 12) {
-			userAlarmTime.Hours = 1;
-		}
-		else if(userAlarmTime.Hours == 11) {
-			if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			}
-			else {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-			userAlarmTime.Hours = 12;
-		}
-		else if(userAlarmTime.Hours < 11) {
-			userAlarmTime.Hours = userAlarmTime.Hours + 1;
-		}
-		else {
-			__NOP();
-		}
+		alarmHourInc();
 
 		//printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
 				//userAlarmTime.Minutes, userAlarmTime.Seconds);
@@ -955,26 +947,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 	}
 	else {									// Otherwise, change current time hour.
 
-		getRTCTime(&hrtc, &currTime, &currDate);
-
-		if(currTime.Hours >= 12) {
-			currTime.Hours = 1;
-		}
-		else if(currTime.Hours == 11) {
-			if(currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				currTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			}
-			else {
-				currTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-			currTime.Hours = 12;
-		}
-		else if(userAlarmTime.Hours < 11) {
-			currTime.Hours = currTime.Hours + 1;
-		}
-		else {
-			__NOP();
-		}
+		currHourInc();
 
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
@@ -999,27 +972,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
-		if(userAlarmTime.Minutes >= 59) {
-			userAlarmTime.Minutes = 0;
-			userAlarmTime.Hours = userAlarmTime.Hours + 1;
-			if(userAlarmTime.Hours > 12) {
-				userAlarmTime.Hours = 1;
-			}
-			if(userAlarmTime.Hours == 12 && userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			} else if(userAlarmTime.Hours == 12 && userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-			else {
-				__NOP();
-			}
-		}
-		else if(userAlarmTime.Minutes < 59) {
-			userAlarmTime.Minutes = userAlarmTime.Minutes + 1;
-		}
-		else {
-			__NOP();
-		}
+		alarmMinuteInc();
 
 		//printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
 				//userAlarmTime.Minutes, userAlarmTime.Seconds);
@@ -1027,29 +980,8 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	}
 	else {									// Otherwise, change current time hour.
 
-		getRTCTime(&hrtc, &currTime, &currDate);
+		currMinuteInc();
 
-		if(currTime.Minutes >= 59) {
-			currTime.Minutes = 0;
-			currTime.Hours = currTime.Hours + 1;
-			if(currTime.Hours > 12) {
-				currTime.Hours = 1;
-			}
-			if(currTime.Hours == 12 && currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				currTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			} else if(currTime.Hours == 12 && currTime.TimeFormat == RTC_HOURFORMAT12_PM) {
-				currTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-			else {
-				__NOP();
-			}
-		}
-		else if(currTime.Minutes < 59) {
-			currTime.Minutes = currTime.Minutes + 1;
-		}
-		else {
-			__NOP();
-		}
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
 		updateAndDisplayTime();
@@ -1061,6 +993,86 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	}
 
 	return halRet;
+}
+
+void alarmHourInc(void) {
+
+	if(userAlarmTime.Hours >= 12) {
+		userAlarmTime.Hours = 1;
+	}
+	else if(userAlarmTime.Hours == 11) {
+		if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
+			userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
+		}
+		else {
+			userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+		}
+		userAlarmTime.Hours = 12;
+	}
+	else if(userAlarmTime.Hours < 11) {
+		userAlarmTime.Hours = userAlarmTime.Hours + 1;
+	}
+	else {
+		__NOP();
+	}
+
+}
+
+void currHourInc(void) {
+
+	getRTCTime(&hrtc, &currTime, &currDate);
+
+	if(currTime.Hours >= 12) {
+		currTime.Hours = 1;
+	}
+	else if(currTime.Hours == 11) {
+		if(currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
+			currTime.TimeFormat = RTC_HOURFORMAT12_PM;
+		}
+		else {
+			currTime.TimeFormat = RTC_HOURFORMAT12_AM;
+		}
+		currTime.Hours = 12;
+	}
+	else if(userAlarmTime.Hours < 11) {
+		currTime.Hours = currTime.Hours + 1;
+	}
+	else {
+		__NOP();
+	}
+
+}
+
+void alarmMinuteInc(void) {
+
+	if(userAlarmTime.Minutes >= 59) {
+		alarmHourInc();
+		userAlarmTime.Minutes = 0;
+	}
+	else if(userAlarmTime.Minutes < 59) {
+		userAlarmTime.Minutes = userAlarmTime.Minutes + 1;
+	}
+	else {
+		__NOP();
+	}
+
+}
+
+void currMinuteInc(void) {
+
+	getRTCTime(&hrtc, &currTime, &currDate);
+
+	if(currTime.Minutes >= 59) {
+		currHourInc();
+		currTime.Minutes = 0;
+	}
+	else if(currTime.Minutes < 59) {
+		currTime.Minutes = currTime.Minutes + 1;
+	}
+	else {
+		__NOP();
+	}
+
 }
 
 /* USER CODE END 4 */
