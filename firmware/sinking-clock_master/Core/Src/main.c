@@ -899,7 +899,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 		}while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_RESET);
 
-		HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_RESET);
 
 		sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[1]);			// Turn display back to 50% intensity
 

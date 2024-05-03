@@ -1,2 +1,0 @@
-../Core/Src/alarm.c:18:6:initRTCTime	120	static
-../Core/Src/alarm.c:68:6:getRTCTime	24	static
