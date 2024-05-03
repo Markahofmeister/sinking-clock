@@ -196,9 +196,9 @@ int main(void)
 	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
 	if(halRet != HAL_OK) {		//check HAL
-		printf("HAL Error - TX current time\n\r");
+		//printf("HAL Error - TX current time\n\r");
 	} else {
-		printf("Display Updated with current time\n\r");
+		//printf("Display Updated with current time\n\r");
 	}
 
 	userAlarmToggle = false;			//Default to off
@@ -657,14 +657,14 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
-	  printf("Enter current time minute increment interrupt\n\r");
+	  //printf("Enter current time minute increment interrupt\n\r");
 
 	  RTC_AlarmTypeDef sAlarm;
 	  getRTCTime(hrtc, &currTime, &currDate);
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
 		sAlarm.AlarmTime.Minutes=0;
-		printf("Reset alarm time\n\r");
+		//printf("Reset alarm time\n\r");
 	  } else {
 		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
@@ -672,7 +672,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	  updateAndDisplayTime();
 
-	  printf("Current time: %u : %u : %u\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+	  //printf("Current time: %u : %u : %u\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
 
 	  // If alarm is enabled and current time matches user alarm time, set off the alarm.
 	  if(userAlarmToggle && userAlarmTime.Hours == currTime.Hours
@@ -725,41 +725,41 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 	if(GPIO_Pin == displayButtonPin) {
 		halRet = displayButtonISR();
 		if (halRet != HAL_OK) {
-			printf("Error toggling display.\n\r");
+			//printf("Error toggling display.\n\r");
 		} else {
-			printf("Display intensity toggled.\n\r");
+			//printf("Display intensity toggled.\n\r");
 		}
 	}
 	else if(GPIO_Pin == alarmEnableButtonPin) {
 		halRet = alarmEnableISR();
 		if (halRet != HAL_OK) {
-			printf("Error toggling user alarm.\n\r");
+			//printf("Error toggling user alarm.\n\r");
 		} else {
-			printf("User alarm toggled.\n\r");
+			//printf("User alarm toggled.\n\r");
 		}
 	}
 	else if(GPIO_Pin == alarmSetButtonPin) {
 		halRet = alarmSetISR();
 		if (halRet != HAL_OK) {
-			printf("Error setting user alarm.\n\r");
+			//printf("Error setting user alarm.\n\r");
 		} else {
-			printf("User alarm set.\n\r");
+			//printf("User alarm set.\n\r");
 		}
 	}
 	else if(GPIO_Pin == hourSetButtonPin) {
 		halRet = hourSetISR();
 		if (halRet != HAL_OK) {
-			printf("Error incrementing hour.\n\r");
+			//printf("Error incrementing hour.\n\r");
 		} else {
-			printf("Hour increment ISR success.\n\r");
+			//printf("Hour increment ISR success.\n\r");
 		}
 	}
 	else if(GPIO_Pin == minuteSetButtonPin) {
 		halRet = minuteSetISR();
 		if (halRet != HAL_OK) {
-			printf("Error incrementing minute.\n\r");
+			//printf("Error incrementing minute.\n\r");
 		} else {
-			printf("Minute increment ISR success.\n\r");
+			//printf("Minute increment ISR success.\n\r");
 		}
 	}
 	else {			//Code should never reach here, but do nothing if it does.
@@ -770,7 +770,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 HAL_StatusTypeDef displayButtonISR(void) {
 
-	printf("Entered display toggle ISR\n\r");
+	//printf("Entered display toggle ISR\n\r");
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	updateAndDisplayTime();
@@ -790,7 +790,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 HAL_StatusTypeDef alarmEnableISR(void) {
 
-	printf("Entered alarm toggle ISR\n\r");
+	//printf("Entered alarm toggle ISR\n\r");
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	if(!userAlarmToggle) {					// If alarm is disabled, enable it.
@@ -798,8 +798,8 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_SET);			// Turn on alarm LED
 		userAlarmToggle = true;								// Toggle internal flag to true
 
-		printf("User alarm set to: %u:%u:%u.\n\r", userAlarmTime.Hours,
-								userAlarmTime.Minutes, userAlarmTime.Seconds);
+		//printf("User alarm set to: %u:%u:%u.\n\r", userAlarmTime.Hours,
+								//userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else if (userAlarmToggle) {				// If alarm is enabled, disable it.
@@ -807,7 +807,7 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_RESET);			// Turn off alarm LED
 		userAlarmToggle = false;							// Toggle internal flag to false
 
-		printf("User alarm disabled.\n\r");
+		//printf("User alarm disabled.\n\r");
 	}
 	else {
 		__NOP();							//Code should never reach here.
@@ -819,10 +819,10 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 HAL_StatusTypeDef alarmSetISR(void) {
 
-	printf("Enter user alarm set ISR.\n\r");
+	//printf("Enter user alarm set ISR.\n\r");
 
-	printf("User alarm currently set to %u:%u:%u.\n\r", userAlarmTime.Hours,
-			userAlarmTime.Minutes, userAlarmTime.Seconds);
+	//printf("User alarm currently set to %u:%u:%u.\n\r", userAlarmTime.Hours,
+			//userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
@@ -911,7 +911,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	alarmSetMode = false;		// We have exited alarm set mode
 
-	printf("Current time back to %u:%u:%u.\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
+	//printf("Current time back to %u:%u:%u.\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
 
 	return halRet;
 
@@ -943,8 +943,8 @@ HAL_StatusTypeDef hourSetISR(void) {
 			__NOP();
 		}
 
-		printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
-				userAlarmTime.Minutes, userAlarmTime.Seconds);
+		//printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
+				//userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else {									// Otherwise, change current time hour.
@@ -970,8 +970,8 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		getRTCTime(&hrtc, &currTime, &currDate);
 
-		printf("Current time hour incremented to %u:%u:%u.\n\r", currTime.Hours,
-				currTime.Minutes, currTime.Seconds);
+		//printf("Current time hour incremented to %u:%u:%u.\n\r", currTime.Hours,
+				//currTime.Minutes, currTime.Seconds);
 	}
 
 	return halRet;
@@ -1009,8 +1009,8 @@ HAL_StatusTypeDef minuteSetISR(void) {
 			__NOP();
 		}
 
-		printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
-				userAlarmTime.Minutes, userAlarmTime.Seconds);
+		//printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
+				//userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else {									// Otherwise, change current time hour.
@@ -1044,8 +1044,8 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		getRTCTime(&hrtc, &currTime, &currDate);
 
-		printf("Current time minute incremented to %u:%u:%u.\n\r", currTime.Hours,
-				currTime.Minutes, currTime.Seconds);
+		//printf("Current time minute incremented to %u:%u:%u.\n\r", currTime.Hours,
+				//currTime.Minutes, currTime.Seconds);
 	}
 
 	return halRet;
