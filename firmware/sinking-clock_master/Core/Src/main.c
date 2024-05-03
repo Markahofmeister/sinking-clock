@@ -56,7 +56,8 @@ TIM_HandleTypeDef htim14;
 /* USER CODE BEGIN PV */
 
 TIM_HandleTypeDef *timerDelay = &htim14;
-TIM_HandleTypeDef *timerPWM = &htim2;			// Channel 2
+TIM_HandleTypeDef *timerPWM = &htim2;
+uint32_t tim_PWM_CHANNEL = TIM_CHANNEL_3;
 
 /*
  * RTC access objects
@@ -66,6 +67,11 @@ RTC_TimeTypeDef currTime = {0};
 RTC_DateTypeDef currDate = {0};
 RTC_AlarmTypeDef userAlarmObj = {0};
 RTC_TimeTypeDef userAlarmTime = {0};
+
+/*
+ * State bools
+ */
+bool alarmSetMode = false;
 
 /* USER CODE END PV */
 
@@ -185,7 +191,7 @@ int main(void)
   // Initialize all GPIOs to be used with 7 segment display
     sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 				shiftOutputEnablePin, shiftMCLRPin,
-				GPIOPortArray, timerDelay, timerPWM);
+				GPIOPortArray, timerDelay, timerPWM, tim_PWM_CHANNEL);
 
 	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -489,9 +495,9 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 80;
+  htim2.Init.Prescaler = 800-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 1000;
+  htim2.Init.Period = 100-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
@@ -535,7 +541,7 @@ static void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 244;
+  htim14.Init.Prescaler = 244*4;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 65535;
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -691,7 +697,7 @@ void userAlarmBeep() {
 
 		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 2)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
+			sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
 
 			HAL_GPIO_TogglePin(buzzerPort, buzzerPin);					// Toggle Buzzer
 
@@ -769,7 +775,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	updateAndDisplayTime();
 
-	sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
+	sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
@@ -820,31 +826,91 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
+	/*
+	 * Wait for switch debounce
+	 */
+
+	// First wait for button to deactivate again
+	while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_SET);
+
+	// Go through debounce
 	HAL_TIM_Base_Stop(timerDelay);
-	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
+	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
-	bool displayBlink = false;
 
-	do {											// while the alarm set button is not held down, blink display.
+	do {
 
-		updateAndDisplayAlarm();
+	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 8));
 
-		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
 
-			sevSeg_setIntensity (timerPWM, sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
+	/*
+	 *  Poll for 1 second to see if the alarm set button is pressed again
+	 */
+	HAL_TIM_Base_Stop(timerDelay);
+	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 
-			timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
-			displayBlink = !displayBlink;
+	while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536)) {
 
+		if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET) {
+			alarmSetMode = true;
+//			HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_SET);
+			break;
 		}
 
-	}while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET);
+	}
 
-	sevSeg_setIntensity(timerPWM, sevSeg_intensityDuty[1]);			// Turn display back to full intensity
+	// Go through debounce once again
+	HAL_TIM_Base_Stop(timerDelay);
+	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+
+	do {
+
+	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 4));
+
+	/*
+	 * Then, if we are in alarm set mode, go through the
+	 * alarm set process until the button is pressed again
+	 */
 
 	HAL_TIM_Base_Stop(timerDelay);
+	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 
-	updateAndDisplayTime();
+	if(alarmSetMode) {
+
+		bool displayBlink = false;
+
+		do {											// while the alarm set button is not held down, blink display.
+
+			updateAndDisplayAlarm();
+
+			if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
+
+//				HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+
+				sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
+
+				timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
+				displayBlink = !displayBlink;
+
+			}
+
+		}while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_RESET);
+
+		HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_RESET);
+
+		sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[1]);			// Turn display back to 50% intensity
+
+		HAL_TIM_Base_Stop(timerDelay);
+
+		updateAndDisplayTime();
+
+	}
+
+	alarmSetMode = false;		// We have exited alarm set mode
+
 	printf("Current time back to %u:%u:%u.\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
 
 	return halRet;
@@ -853,11 +919,14 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 HAL_StatusTypeDef hourSetISR(void) {
 
-	printf("Entered hour set ISR.\n\r");
+//	printf("Entered hour set ISR.\n\r");
+//	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
+	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
+
+		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 		if(userAlarmTime.Hours >= 12) {
 			userAlarmTime.Hours = 1;
@@ -906,15 +975,17 @@ HAL_StatusTypeDef hourSetISR(void) {
 	}
 
 	return halRet;
+
 }
 
 HAL_StatusTypeDef minuteSetISR(void) {
 
-	printf("Entered minute set ISR.\n\r");
+//	printf("Entered minute set ISR.\n\r");
+//	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == !GPIO_PIN_SET) {	// If the alarm set button is held down, change user alarm time hour
+	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
 		if(userAlarmTime.Minutes >= 59) {
 			userAlarmTime.Minutes = 0;

@@ -62,7 +62,8 @@ GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
 void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shiftStoreClockPin,
 					uint16_t shiftOutputEnablePin, uint16_t shiftMCLRPin,
-					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM) {
+					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM,
+					uint32_t tim_PWM_CHANNEL) {
 
 	shiftData = shiftDataPin;
 	shiftDataClock = shiftDataClockPin;
@@ -85,7 +86,7 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
 
 	// Set duty cycle to 50%
 
-	sevSeg_setIntensity(htim_PWM, 90);
+	sevSeg_setIntensity(htim_PWM, tim_PWM_CHANNEL, 50);
 
 	//Flash an initializing "Hof" symbol
 	uint8_t hofSymb[4] = {0b00000000, 0b00110111, 0b00011101, 0b01000111};
@@ -191,10 +192,10 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 }
 
-void sevSeg_setIntensity(TIM_HandleTypeDef *htim_PWM, uint16_t dutyCycle) {
+void sevSeg_setIntensity(TIM_HandleTypeDef *htim_PWM, uint32_t tim_PWM_CHANNEL, uint16_t dutyCycle) {
 
-	__HAL_TIM_SET_COMPARE(htim_PWM, TIM_CHANNEL_2, dutyCycle);
-	HAL_TIM_PWM_Start(htim_PWM, TIM_CHANNEL_2);
+	__HAL_TIM_SET_COMPARE(htim_PWM, tim_PWM_CHANNEL, dutyCycle);
+	HAL_TIM_PWM_Start(htim_PWM, tim_PWM_CHANNEL);
 
 }
 
