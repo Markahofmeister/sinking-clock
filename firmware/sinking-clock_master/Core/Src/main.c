@@ -142,6 +142,16 @@ HAL_StatusTypeDef hourSetISR(void);
 HAL_StatusTypeDef minuteSetISR(void);
 
 /*
+ * Hour and minute incrementing functions for alarm time and current time
+ *
+ */
+
+void alarmHourInc(void);
+void currHourInc(void);
+void alarmMinuteInc(void);
+void currMinuteInc(void);
+
+/*
  * Enters loop to signal user alarm
  */
 void userAlarmBeep();
@@ -406,7 +416,7 @@ static void MX_RTC_Init(void)
   /** Initialize RTC Only
   */
   hrtc.Instance = RTC;
-  hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+  hrtc.Init.HourFormat = RTC_HOURFORMAT_12;
   hrtc.Init.AsynchPrediv = 127;
   hrtc.Init.SynchPrediv = 255;
   hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
@@ -425,10 +435,11 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x0;
+  sTime.Hours = 0x1;
   sTime.Minutes = 0x0;
   sTime.Seconds = 0x0;
   sTime.SubSeconds = 0x0;
+  sTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sTime.StoreOperation = RTC_STOREOPERATION_RESET;
   if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
@@ -451,6 +462,7 @@ static void MX_RTC_Init(void)
   sAlarm.AlarmTime.Minutes = 0x1;
   sAlarm.AlarmTime.Seconds = 0x0;
   sAlarm.AlarmTime.SubSeconds = 0x0;
+  sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
   sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
   sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
   sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
@@ -619,7 +631,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(CTOUCH_EN_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
   HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
@@ -922,27 +934,12 @@ HAL_StatusTypeDef hourSetISR(void) {
 //	printf("Entered hour set ISR.\n\r");
 //	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
-	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
-
-		if(userAlarmTime.Hours >= 12) {
-			userAlarmTime.Hours = 1;
-			if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			} else {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-		}
-		else if(userAlarmTime.Hours < 12) {
-			userAlarmTime.Hours = userAlarmTime.Hours + 1;
-		}
-		else {
-			__NOP();
-		}
+		alarmHourInc();
 
 		//printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
 				//userAlarmTime.Minutes, userAlarmTime.Seconds);
@@ -950,21 +947,8 @@ HAL_StatusTypeDef hourSetISR(void) {
 	}
 	else {									// Otherwise, change current time hour.
 
-		getRTCTime(&hrtc, &currTime, &currDate);
-		if(currTime.Hours >= 12) {
-			currTime.Hours = 1;
-			if(currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				currTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			} else {
-				currTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-		}
-		else if(currTime.Hours < 12) {
-			currTime.Hours = currTime.Hours + 1;
-		}
-		else {
-			__NOP();
-		}
+		currHourInc();
+
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
 		updateAndDisplayTime();
@@ -988,27 +972,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
-		if(userAlarmTime.Minutes >= 59) {
-			userAlarmTime.Minutes = 0;
-			userAlarmTime.Hours = userAlarmTime.Hours + 1;
-			if(userAlarmTime.Hours > 12) {
-				userAlarmTime.Hours = 1;
-			}
-			if(userAlarmTime.Hours == 12 && userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			} else if(userAlarmTime.Hours == 12 && userAlarmTime.TimeFormat == RTC_HOURFORMAT12_PM) {
-				userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-			else {
-				__NOP();
-			}
-		}
-		else if(userAlarmTime.Minutes < 59) {
-			userAlarmTime.Minutes = userAlarmTime.Minutes + 1;
-		}
-		else {
-			__NOP();
-		}
+		alarmMinuteInc();
 
 		//printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
 				//userAlarmTime.Minutes, userAlarmTime.Seconds);
@@ -1016,29 +980,8 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	}
 	else {									// Otherwise, change current time hour.
 
-		getRTCTime(&hrtc, &currTime, &currDate);
+		currMinuteInc();
 
-		if(currTime.Minutes >= 59) {
-			currTime.Minutes = 0;
-			currTime.Hours = currTime.Hours + 1;
-			if(currTime.Hours > 12) {
-				currTime.Hours = 1;
-			}
-			if(currTime.Hours == 12 && currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
-				currTime.TimeFormat = RTC_HOURFORMAT12_PM;
-			} else if(currTime.Hours == 12 && currTime.TimeFormat == RTC_HOURFORMAT12_PM) {
-				currTime.TimeFormat = RTC_HOURFORMAT12_AM;
-			}
-			else {
-				__NOP();
-			}
-		}
-		else if(currTime.Minutes < 59) {
-			currTime.Minutes = currTime.Minutes + 1;
-		}
-		else {
-			__NOP();
-		}
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
 		updateAndDisplayTime();
@@ -1050,6 +993,86 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	}
 
 	return halRet;
+}
+
+void alarmHourInc(void) {
+
+	if(userAlarmTime.Hours >= 12) {
+		userAlarmTime.Hours = 1;
+	}
+	else if(userAlarmTime.Hours == 11) {
+		if(userAlarmTime.TimeFormat == RTC_HOURFORMAT12_AM) {
+			userAlarmTime.TimeFormat = RTC_HOURFORMAT12_PM;
+		}
+		else {
+			userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+		}
+		userAlarmTime.Hours = 12;
+	}
+	else if(userAlarmTime.Hours < 11) {
+		userAlarmTime.Hours = userAlarmTime.Hours + 1;
+	}
+	else {
+		__NOP();
+	}
+
+}
+
+void currHourInc(void) {
+
+	getRTCTime(&hrtc, &currTime, &currDate);
+
+	if(currTime.Hours >= 12) {
+		currTime.Hours = 1;
+	}
+	else if(currTime.Hours == 11) {
+		if(currTime.TimeFormat == RTC_HOURFORMAT12_AM) {
+			currTime.TimeFormat = RTC_HOURFORMAT12_PM;
+		}
+		else {
+			currTime.TimeFormat = RTC_HOURFORMAT12_AM;
+		}
+		currTime.Hours = 12;
+	}
+	else if(userAlarmTime.Hours < 11) {
+		currTime.Hours = currTime.Hours + 1;
+	}
+	else {
+		__NOP();
+	}
+
+}
+
+void alarmMinuteInc(void) {
+
+	if(userAlarmTime.Minutes >= 59) {
+		alarmHourInc();
+		userAlarmTime.Minutes = 0;
+	}
+	else if(userAlarmTime.Minutes < 59) {
+		userAlarmTime.Minutes = userAlarmTime.Minutes + 1;
+	}
+	else {
+		__NOP();
+	}
+
+}
+
+void currMinuteInc(void) {
+
+	getRTCTime(&hrtc, &currTime, &currDate);
+
+	if(currTime.Minutes >= 59) {
+		currHourInc();
+		currTime.Minutes = 0;
+	}
+	else if(currTime.Minutes < 59) {
+		currTime.Minutes = currTime.Minutes + 1;
+	}
+	else {
+		__NOP();
+	}
+
 }
 
 /* USER CODE END 4 */

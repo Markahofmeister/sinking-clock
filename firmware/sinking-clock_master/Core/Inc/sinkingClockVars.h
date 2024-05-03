@@ -39,13 +39,13 @@ GPIO_TypeDef *displayButtonPort = GPIOD;
 const uint16_t alarmEnableButtonPin = GPIO_PIN_2;
 GPIO_TypeDef *alarmEnableButtonPort = GPIOD;
 
-const uint16_t alarmSetButtonPin = GPIO_PIN_1;
-GPIO_TypeDef *alarmSetButtonPort = GPIOD;
+const uint16_t alarmSetButtonPin = GPIO_PIN_15;
+GPIO_TypeDef *alarmSetButtonPort = GPIOA;
 
 const uint16_t hourSetButtonPin = GPIO_PIN_0;
 GPIO_TypeDef *hourSetButtonPort = GPIOD;
 
-const uint16_t minuteSetButtonPin = GPIO_PIN_15;
+const uint16_t minuteSetButtonPin = GPIO_PIN_1;
 GPIO_TypeDef *minuteSetButtonPort = GPIOD;
 
 // Capacitive Touch Reset Pin
