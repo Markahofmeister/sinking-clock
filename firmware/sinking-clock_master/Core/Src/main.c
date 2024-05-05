@@ -63,10 +63,10 @@ uint32_t tim_PWM_CHANNEL = TIM_CHANNEL_3;
  * RTC access objects
  */
 
-RTC_TimeTypeDef currTime = {0};
-RTC_DateTypeDef currDate = {0};
-RTC_AlarmTypeDef userAlarmObj = {0};
-RTC_TimeTypeDef userAlarmTime = {0};
+RTC_TimeTypeDef currTime;
+RTC_DateTypeDef currDate;
+RTC_AlarmTypeDef userAlarmObj;
+RTC_TimeTypeDef userAlarmTime;
 
 /*
  * State bools
