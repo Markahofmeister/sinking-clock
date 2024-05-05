@@ -25,7 +25,7 @@
 #include "sevSeg_shift.h"
 #include "alarm.h"
 #include "sinkingClockVars.h"
-//#include "AT42QT1070.h"
+#include "AT42QT1070.h"
 
 /* USER CODE END Includes */
 
@@ -219,8 +219,8 @@ int main(void)
     userAlarmTime.Minutes = 1;
     userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
-//    QT1070 capTouch;
-//    halRet = capTouch_Init(&capTouch, &hi2c1);
+    QT1070 capTouch;
+    halRet = capTouch_Init(&capTouch, &hi2c1);
 
   /* USER CODE END 2 */
 
