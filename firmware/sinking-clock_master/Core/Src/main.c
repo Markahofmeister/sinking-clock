@@ -212,6 +212,12 @@ int main(void)
 		//printf("Display Updated with current time\n\r");
 	}
 
+    /*
+     * Initialize capacitive touch sensor
+     */
+    QT1070 capTouch;
+    halRet = capTouch_Init(&capTouch, &hi2c1);
+
 	userAlarmToggle = false;			//Default to off
 
     // User alarm default value
@@ -219,8 +225,6 @@ int main(void)
     userAlarmTime.Minutes = 1;
     userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
-    QT1070 capTouch;
-    halRet = capTouch_Init(&capTouch, &hi2c1);
 
   /* USER CODE END 2 */
 
@@ -365,7 +369,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x10707DBC;
+  hi2c1.Init.Timing = 0x00602173;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;

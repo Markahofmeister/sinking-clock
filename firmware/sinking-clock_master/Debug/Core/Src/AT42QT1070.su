@@ -1,1 +1,2 @@
-../Core/Src/AT42QT1070.c:14:9:capTouch_Init	48	static
+../Core/Src/AT42QT1070.c:14:9:capTouch_Init	72	static
+../Core/Src/AT42QT1070.c:79:19:capTouch_disableKeys	24	static

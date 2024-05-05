@@ -107,7 +107,9 @@ typedef struct {
  * Error Codes:
  * 		1 = Error Reading device ID
  */
-HAL_StatusTypeDef capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c);
+uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c);
+
+HAL_StatusTypeDef capTouch_disableKeys(uint8_t keys);
 
 
 
