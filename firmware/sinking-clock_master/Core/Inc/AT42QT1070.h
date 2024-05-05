@@ -26,7 +26,7 @@
  * Cap. touch IC hard-coded values
  */
 
-#define DEVICE_ADDRESS 0x1B
+#define DEVICE_ADDRESS 0x1B << 1
 #define DEVICE_ID 0x2E
 
 

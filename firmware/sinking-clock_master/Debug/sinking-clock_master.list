@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   000180a9  00000000  00000000  00038c65  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000a16aa  00000000  00000000  00050d0e  2**0
+ 18 .debug_str    000a16af  00000000  00000000  00050d0e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000f23b8  2**0
+ 19 .comment      00000043  00000000  00000000  000f23bd  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000047ec  00000000  00000000  000f23fc  2**2
+ 20 .debug_frame  000047ec  00000000  00000000  000f2400  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000061  00000000  00000000  000f6be8  2**0
+ 21 .debug_line_str 00000061  00000000  00000000  000f6bec  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -270,11 +270,11 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c) {
  8000248:	9300      	str	r3, [sp, #0]
  800024a:	2301      	movs	r3, #1
  800024c:	2200      	movs	r2, #0
- 800024e:	211b      	movs	r1, #27
+ 800024e:	2136      	movs	r1, #54	@ 0x36
  8000250:	f002 fba2 	bl	8002998 <HAL_I2C_Master_Transmit>
  8000254:	0003      	movs	r3, r0
  8000256:	7023      	strb	r3, [r4, #0]
-										(uint8_t*)capTouch_DeviceIDReg, 1, HAL_MAX_DELAY);
+										capTouch_DeviceIDReg, 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &deviceIDRet, 1, HAL_MAX_DELAY);
  8000258:	687b      	ldr	r3, [r7, #4]
  800025a:	6818      	ldr	r0, [r3, #0]
@@ -284,7 +284,7 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c) {
  8000262:	425b      	negs	r3, r3
  8000264:	9300      	str	r3, [sp, #0]
  8000266:	2301      	movs	r3, #1
- 8000268:	211b      	movs	r1, #27
+ 8000268:	2136      	movs	r1, #54	@ 0x36
  800026a:	f002 fcbf 	bl	8002bec <HAL_I2C_Master_Receive>
  800026e:	0003      	movs	r3, r0
  8000270:	7023      	strb	r3, [r4, #0]
