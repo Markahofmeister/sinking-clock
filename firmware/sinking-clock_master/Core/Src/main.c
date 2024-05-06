@@ -225,6 +225,7 @@ int main(void)
     userAlarmTime.Minutes = 1;
     userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
+    uint16_t count = 0;
 
   /* USER CODE END 2 */
 
@@ -236,6 +237,10 @@ int main(void)
 
 	  uint8_t channelTest = 0x00;
 	  halRet = capTouch_readChannels(&capTouch, &channelTest);
+	  if(channelTest != 0x00) {
+		  HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+		  count++;
+	  }
 
     /* USER CODE END WHILE */
 
