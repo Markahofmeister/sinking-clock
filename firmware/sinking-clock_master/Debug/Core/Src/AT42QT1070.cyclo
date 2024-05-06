@@ -1,2 +1,6 @@
-../Core/Src/AT42QT1070.c:14:9:capTouch_Init	4
-../Core/Src/AT42QT1070.c:79:19:capTouch_disableKeys	1
+../Core/Src/AT42QT1070.c:14:9:capTouch_Init	6
+../Core/Src/AT42QT1070.c:60:19:capTouch_ReadDeviceID	1
+../Core/Src/AT42QT1070.c:76:19:capTouch_Recalibrate	1
+../Core/Src/AT42QT1070.c:93:9:capTouch_checkCal	1
+../Core/Src/AT42QT1070.c:110:19:capTouch_readChannels	1
+../Core/Src/AT42QT1070.c:128:19:capTouch_enableKeys	2

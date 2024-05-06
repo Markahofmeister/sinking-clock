@@ -216,7 +216,7 @@ int main(void)
      * Initialize capacitive touch sensor
      */
     QT1070 capTouch;
-    halRet = capTouch_Init(&capTouch, &hi2c1);
+    halRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
 
 	userAlarmToggle = false;			//Default to off
 

@@ -22,6 +22,7 @@
 //#include "stm32g0xx_hal_conf.h"
 //#endif
 
+
 /*
  * Cap. touch IC hard-coded values
  */
@@ -97,6 +98,10 @@ typedef struct {
 
 	I2C_HandleTypeDef *hi2c;
 
+	uint8_t deviceID;
+
+	uint8_t keys;
+
 } QT1070;
 
 /*
@@ -106,10 +111,49 @@ typedef struct {
  *
  * Error Codes:
  * 		1 = Error Reading device ID
+ * 		2 = Error entering calibration sequence
+ * 		3 = Error reading key status registers
+ * 		4 = Error enabling/disabling keys
+ *
+ * KeyEnFlags is a single byte containing enable/disable data for the 7 available channels.
+ * 	A 0 bit disables a channel
+ * 	A 1 bit enables a channel
+ * 	bits 0-6 (LSB - MSB) control Keys 0-6, respectively.
+ * 	bit 7 = don't care, i.e.: 0bX1010101 to enable channels 0, 2, 4, 6 and disable the rest.
+ *
+ *
  */
-uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c);
+uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFlags);
 
-HAL_StatusTypeDef capTouch_disableKeys(uint8_t keys);
+
+/*
+ * Reads device ID and returns 8-bit value in data buffer
+ */
+HAL_StatusTypeDef capTouch_ReadDeviceID(QT1070 *capTouch, uint8_t *dataBuff);
+
+/*
+ * Forces the sensor to enter a reclaibration sequence
+ */
+HAL_StatusTypeDef capTouch_Recalibrate(QT1070 *capTouch);
+
+/*
+ * Checks the status of the calibration flag
+ * Return 1 = device is in calibration mode
+ * Return 2 = device has exited calibration mode and is ready to use
+ */
+uint8_t capTouch_checkCal(QT1070 *capTouch);
+
+/*
+ * Returns the value in the keyStatus register.
+ * Bytes 0-6 of dataBuff indicate which of channels 0-6 are in detection.
+ */
+HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff);
+
+/*
+ * References the 8-bit data buffer to enable/disable channels, which is done
+ * by setting the averaging value for disabled channels to 0 in the averaging register.
+ */
+HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff);
 
 
 
