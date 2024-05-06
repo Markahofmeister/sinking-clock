@@ -43,15 +43,7 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFl
 		return 3;
 	}
 
-	uint8_t avgRet[7] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-	uint8_t avgRegs[1] = {capTouch_AvgFactor0Reg};
-
-	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-								&(avgRegs[0]), 1, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
-
-//	halRet = capTouch_enableKeys(capTouch, keyEnFlags);
+	halRet = capTouch_enableKeys(capTouch, keyEnFlags);
 
 	return 0;
 
@@ -63,8 +55,10 @@ HAL_StatusTypeDef capTouch_ReadDeviceID(QT1070 *capTouch, uint8_t *dataBuff) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
+	uint8_t capTouch_DeviceIDReg_TX[1] = {capTouch_DeviceIDReg};
+
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-										capTouch_DeviceIDReg, 1, HAL_MAX_DELAY);
+										&(capTouch_DeviceIDReg_TX[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &deviceIDRet_I2C, 1, HAL_MAX_DELAY);
 
 	*dataBuff = deviceIDRet_I2C;
@@ -84,7 +78,7 @@ HAL_StatusTypeDef capTouch_Recalibrate(QT1070 *capTouch) {
 
 	uint8_t deviceCal[2] = {capTouch_CalibrateReg, 0xFF};
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-									deviceCal, 1, HAL_MAX_DELAY);
+									deviceCal, 2, HAL_MAX_DELAY);
 
 	return halRet;
 
@@ -97,8 +91,10 @@ uint8_t capTouch_checkCal(QT1070 *capTouch) {
 	uint8_t detectionStatusRet = 0x00;
 	uint8_t calibrationFlag;
 
+	uint8_t capTouch_DetectionStatusReg_I2C[1] = {capTouch_DetectionStatusReg};
+
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-									(uint8_t*)capTouch_DetectionStatusReg, 1, HAL_MAX_DELAY);
+									&(capTouch_DetectionStatusReg_I2C[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &detectionStatusRet, 1, HAL_MAX_DELAY);
 
 	calibrationFlag = (detectionStatusRet & 0b10000000) >> 7;
@@ -136,20 +132,37 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 	 */
 	uint8_t avgRet[7] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
+	uint8_t avgRegs[7] = {capTouch_AvgFactor0Reg, capTouch_AvgFactor1Reg, capTouch_AvgFactor2Reg,
+			capTouch_AvgFactor3Reg, capTouch_AvgFactor4Reg, capTouch_AvgFactor5Reg, capTouch_AvgFactor6Reg};
+
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-							(uint8_t*)capTouch_AvgFactor0Reg, 1, HAL_MAX_DELAY);
+								&(avgRegs[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 
-	uint8_t avgNew[7];
+	/*
+	 * Populate new register values
+	 * Enabled channels will be set with its previous averaging value,
+	 * Disabled channels will have an averaging value of 0.
+	 */
+	uint8_t avgNew, i;
+	uint8_t avgRegNew[2] = {0x00, 0x00};
 
-	uint8_t i;
 	for(i = 0; i <= 6; i++) {
 
-		avgNew[i] = avgRet[i] * ((dataBuff >> i) & 0b00000001);
+		avgNew = avgRet[i] * ((dataBuff >> i) & 0b00000001);
+
+		avgRegNew[0] = avgRegs[i];
+		avgRegNew[1] = avgNew;
+
+		halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+									avgRegNew, 2, HAL_MAX_DELAY);
 
 	}
 
-
+	// Debug check that avg register values have been set successfully
+	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+									&(avgRegs[0]), 1, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 
 	return halRet;
 

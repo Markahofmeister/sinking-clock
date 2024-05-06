@@ -234,6 +234,8 @@ int main(void)
   while (1)
   {
 
+	  uint8_t channelTest = 0x00;
+	  halRet = capTouch_readChannels(&capTouch, &channelTest);
 
     /* USER CODE END WHILE */
 
