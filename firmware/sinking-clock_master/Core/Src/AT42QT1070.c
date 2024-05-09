@@ -44,6 +44,10 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFl
 	}
 
 	halRet = capTouch_enableKeys(capTouch, keyEnFlags);
+	if(halRet != HAL_OK) {
+		return 4;
+	}
+	capTouch->keys = keyEnFlags;
 
 	return 0;
 
@@ -163,6 +167,63 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									&(avgRegs[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
+
+	return halRet;
+
+}
+
+HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuff) {
+
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	/*
+	 *  Read in current averaging values for each key
+	 *  The device will automatically increment register addressing for subsequent reads,
+	 *  so only one Master Transmit call is required.
+	 */
+	uint8_t avgRet[7] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+	uint8_t avgRegs[7] = {capTouch_AvgFactor0Reg, capTouch_AvgFactor1Reg, capTouch_AvgFactor2Reg,
+			capTouch_AvgFactor3Reg, capTouch_AvgFactor4Reg, capTouch_AvgFactor5Reg, capTouch_AvgFactor6Reg};
+
+	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+								&(avgRegs[0]), 1, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
+
+
+	// 2-byte buffer to specify register address and new averaging factor
+	uint8_t avgRegNew[2] = {0x00, 0x00};
+	uint8_t avgNew = 0x00;
+	uint8_t i;
+
+	for(i = 0; i <= 6; i++) {
+
+		/*
+		 * New register value should only modify bits 2-6.
+		 * Bits 0-1 contain adjacent key suppression information,
+		 * which is independent of the averaging factor.
+		 */
+
+		// Clear bits 2-6
+		avgNew = avgRet[i] & 0b00000011;
+		// Set bits 0-1 with new averaging factor
+		avgNew = avgNew | (*(dataBuff + i) << 2);
+		// ^^ Is the above way of referring to a pointer a problem?
+
+		// Throw error if the requested averaging factor is not a power of 2
+//		if(!(ceil(log2(avgNew)) == floor(log2(avgNew)))) {
+//			halRet = HAL_ERROR;
+//			return halRet;
+//		}
+		// ^^ Kills memory
+
+		avgRegNew[0] = avgRegs[i];
+		avgRegNew[1] = avgNew;
+
+		halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+									avgRegNew, 2, HAL_MAX_DELAY);
+
+	}
 
 	return halRet;
 

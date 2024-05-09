@@ -22,6 +22,10 @@
 //#include "stm32g0xx_hal_conf.h"
 //#endif
 
+#ifndef MATH_H
+#include "math.h"
+#endif
+
 
 /*
  * Cap. touch IC hard-coded values
@@ -108,6 +112,7 @@ typedef struct {
  * Sensor Initialization
  * QT1070 *capTouch = Pointer to capcitive touch struct handle
  * I2C_HandleTypeDef *hi2c = I2C handle through which to talk to cap. touch sensor
+ * Returns 0 on success, nonzero on error.
  *
  * Error Codes:
  * 		1 = Error Reading device ID
@@ -155,7 +160,11 @@ HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff);
  */
 HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff);
 
-
+/*
+ * Accepts a 7-byte wide array with each byte containing an averaging factor for each key.
+ * Valid averaging factors are 1, 2, 4, 8, 16, and 32, so only the 5 LSB of each byte are used.
+ */
+HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuff);
 
 
 #endif /* INC_AT42QT1070_H_ */
