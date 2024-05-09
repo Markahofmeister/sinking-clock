@@ -143,30 +143,21 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 								&(avgRegs[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 
-	/*
-	 * Populate new register values
-	 * Enabled channels will be set with its previous averaging value,
-	 * Disabled channels will have an averaging value of 0.
-	 */
-	uint8_t avgNew, i;
-	uint8_t avgRegNew[2] = {0x00, 0x00};
+	int i, temp;
 
 	for(i = 0; i <= 6; i++) {
 
-		avgNew = avgRet[i] * ((dataBuff >> i) & 0b00000001);
+		// New value to pass only changes bits 2-6.
+		// If bit i of dataBuff = 0, set these bits to 0, else leave them.
 
-		avgRegNew[0] = avgRegs[i];
-		avgRegNew[1] = avgNew;
-
-		halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-									avgRegNew, 2, HAL_MAX_DELAY);
+		// Extract bits 2-6 and multiply by 0 or 1
+		temp = (avgRet[i] >> 2) * ((dataBuff >> i) & 0b00000001);
+		avgRet[i] = (avgRet[i] & 0b00000011) | (temp << 2);
 
 	}
 
-	// Debug check that avg register values have been set successfully
-	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
-									&(avgRegs[0]), 1, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
+	halRet = capTouch_SetAveragingFactor(capTouch, avgRet);
+
 
 	return halRet;
 
@@ -207,7 +198,8 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 		// Clear bits 2-6
 		avgNew = avgRet[i] & 0b00000011;
 		// Set bits 0-1 with new averaging factor
-		avgNew = avgNew | (*(dataBuff + i) << 2);
+		uint8_t avgMask = ((dataBuff[i]) << 2);
+		avgNew = avgNew | avgMask;
 		// ^^ Is the above way of referring to a pointer a problem?
 
 		// Throw error if the requested averaging factor is not a power of 2
@@ -224,6 +216,11 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 									avgRegNew, 2, HAL_MAX_DELAY);
 
 	}
+
+	// Debug check that avg register values have been set successfully
+	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+									&(avgRegs[0]), 1, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 
 	return halRet;
 

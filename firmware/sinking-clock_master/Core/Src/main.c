@@ -217,7 +217,7 @@ int main(void)
      */
     QT1070 capTouch;
     halRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
-    uint8_t avgFactors_New = {32, 32, 32, 32, 0, 0, 0};
+    uint8_t avgFactors_New[7] = {32, 32, 32, 32, 0, 0, 0};
     halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
 
 	userAlarmToggle = false;			//Default to off

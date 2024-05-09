@@ -4,4 +4,4 @@
 ../Core/Src/AT42QT1070.c:91:9:capTouch_checkCal	1
 ../Core/Src/AT42QT1070.c:110:19:capTouch_readChannels	1
 ../Core/Src/AT42QT1070.c:128:19:capTouch_enableKeys	2
-../Core/Src/AT42QT1070.c:175:19:capTouch_SetAveragingFactor	2
+../Core/Src/AT42QT1070.c:166:19:capTouch_SetAveragingFactor	2
