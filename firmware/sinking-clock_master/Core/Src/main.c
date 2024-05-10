@@ -74,6 +74,11 @@ RTC_TimeTypeDef userAlarmTime = {0};
  */
 bool alarmSetMode = false;
 
+/*
+ * Cap. touch struct
+ */
+QT1070 capTouch;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -215,7 +220,7 @@ int main(void)
     /*
      * Initialize capacitive touch sensor
      */
-    QT1070 capTouch;
+
     halRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
 
     // Max. out averaging factor
@@ -233,26 +238,22 @@ int main(void)
     userAlarmTime.Minutes = 1;
     userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
-    uint16_t count = 0;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  /* USER CODE BEGIN WHILE
+   * */
 
   while (1) {
 
-	  uint8_t channelTest = 0x00;
-	  halRet = capTouch_readChannels(&capTouch, &channelTest);
-	  if(channelTest != 0x00) {
-		  HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
-		  count++;
+
+
   }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
   /* USER CODE END 3 */
 }
 
@@ -723,8 +724,6 @@ void userAlarmBeep() {
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
-	uint8_t i = 0;
-
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
 		updateAndDisplayTime();				// Update to current time and display
@@ -739,16 +738,15 @@ void userAlarmBeep() {
 
 			displayBlink = !displayBlink;							// Toggle display blink counter
 
-			//printf("Display Blink = %u\n\r", displayBlink);
-
 		}
 
-		i++;		// Get rid of. This is just for testing.
 
-//	} while(capTouchTrigger(snoozeButtonPin));
-	} while(i < 5);
+	} while(capTouch_readChannels(&capTouch) == 0x00);
 
 	HAL_TIM_Base_Stop(timerDelay);
+	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
+
+	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 }
 

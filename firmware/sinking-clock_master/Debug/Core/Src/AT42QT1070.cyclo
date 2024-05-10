@@ -1,8 +1,8 @@
 ../Core/Src/AT42QT1070.c:14:9:capTouch_Init	7
-../Core/Src/AT42QT1070.c:56:19:capTouch_ReadDeviceID	2
-../Core/Src/AT42QT1070.c:76:19:capTouch_Recalibrate	1
-../Core/Src/AT42QT1070.c:93:9:capTouch_checkCal	1
-../Core/Src/AT42QT1070.c:112:19:capTouch_readChannels	2
-../Core/Src/AT42QT1070.c:134:19:capTouch_enableKeys	3
-../Core/Src/AT42QT1070.c:176:19:capTouch_SetAveragingFactor	3
-../Core/Src/AT42QT1070.c:241:19:capTouch_SetDetectionIntegrator	2
+../Core/Src/AT42QT1070.c:55:19:capTouch_ReadDeviceID	2
+../Core/Src/AT42QT1070.c:75:19:capTouch_Recalibrate	1
+../Core/Src/AT42QT1070.c:92:9:capTouch_checkCal	1
+../Core/Src/AT42QT1070.c:111:9:capTouch_readChannels	1
+../Core/Src/AT42QT1070.c:129:19:capTouch_enableKeys	3
+../Core/Src/AT42QT1070.c:171:19:capTouch_SetAveragingFactor	3
+../Core/Src/AT42QT1070.c:236:19:capTouch_SetDetectionIntegrator	2

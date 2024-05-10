@@ -37,8 +37,7 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFl
 	while(capTouch_checkCal(capTouch)) {}
 
 	// Get initial reading of channels
-	uint8_t keyStatus = 0x00;
-	halRet = capTouch_readChannels(capTouch, &keyStatus);
+	uint8_t keyStatus = capTouch_readChannels(capTouch);
 	if(halRet != HAL_OK) {
 		return 3;
 	}
@@ -109,7 +108,7 @@ uint8_t capTouch_checkCal(QT1070 *capTouch) {
 
 }
 
-HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff) {
+uint8_t capTouch_readChannels(QT1070 *capTouch) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
@@ -120,14 +119,10 @@ HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff) {
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									&(keyStatReg[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &keyStatusRet, 1, HAL_MAX_DELAY);
-	if(halRet != HAL_OK)
-		return halRet;
 
 	keyStatusRet = keyStatusRet & 0b01111111;
 
-	*dataBuff = keyStatusRet;
-
-	return halRet;
+	return keyStatusRet;
 
 }
 

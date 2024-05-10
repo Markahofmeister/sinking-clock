@@ -152,7 +152,7 @@ uint8_t capTouch_checkCal(QT1070 *capTouch);
  * Returns the value in the keyStatus register.
  * Bytes 0-6 of dataBuff indicate which of channels 0-6 are in detection.
  */
-HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff);
+uint8_t capTouch_readChannels(QT1070 *capTouch);
 
 /*
  * References the 8-bit data buffer to enable/disable channels, which is done
