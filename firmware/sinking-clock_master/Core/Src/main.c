@@ -248,7 +248,6 @@ int main(void)
   while (1) {
 
 
-
   }
 
     /* USER CODE END WHILE */
@@ -745,6 +744,9 @@ void userAlarmBeep() {
 
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
+	updateAndDisplayTime();				// Update to current time and display
+	sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
+
 
 	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
