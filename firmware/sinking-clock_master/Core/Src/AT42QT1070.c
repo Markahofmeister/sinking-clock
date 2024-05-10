@@ -64,6 +64,8 @@ HAL_StatusTypeDef capTouch_ReadDeviceID(QT1070 *capTouch, uint8_t *dataBuff) {
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 										&(capTouch_DeviceIDReg_TX[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &deviceIDRet_I2C, 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 
 	*dataBuff = deviceIDRet_I2C;
 
@@ -118,6 +120,8 @@ HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff) {
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									&(keyStatReg[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &keyStatusRet, 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 
 	keyStatusRet = keyStatusRet & 0b01111111;
 
@@ -144,23 +148,26 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 								&(avgRegs[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 
 	int i; //temp;
 
 	for(i = 0; i <= 6; i++) {
 
+		// If the averaging factor is to be enabled but was previously disabled,
+		// set it back to the default value of 8.
+//		if ( ((avgRet[i] >> 2) == 0x00) && (((dataBuff >> i) & 0b00000001) == 1) ) {
+//			avgRet[i] = avgRet[i] | 0b00100000;
+//		}
+
 		// New value to pass only changes bits 2-6.
 		// If bit i of dataBuff = 0, set these bits to 0, else leave them.
-
-		// Extract bits 2-6 and multiply by 0 or 1
-//		temp = (avgRet[i] >> 2) * ((dataBuff >> i) & 0b00000001);
-//		avgRet[i] = (avgRet[i] & 0b00000011) | (temp << 2);
 		avgRet[i] = (avgRet[i] >> 2) * ((dataBuff >> i) & 0b00000001);
 
 	}
 
 	halRet = capTouch_SetAveragingFactor(capTouch, avgRet);
-
 
 	return halRet;
 
@@ -183,6 +190,8 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 								&(avgRegs[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 
 
 	// 2-byte buffer to specify register address and new averaging factor
