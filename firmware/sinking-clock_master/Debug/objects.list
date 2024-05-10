@@ -1,3 +1,4 @@
+"./Core/Src/AT42QT1070.o"
 "./Core/Src/alarm.o"
 "./Core/Src/main.o"
 "./Core/Src/sevSeg_shift.o"

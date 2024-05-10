@@ -25,6 +25,7 @@
 #include "sevSeg_shift.h"
 #include "alarm.h"
 #include "sinkingClockVars.h"
+#include "AT42QT1070.h"
 
 /* USER CODE END Includes */
 
@@ -72,6 +73,11 @@ RTC_TimeTypeDef userAlarmTime = {0};
  * State bools
  */
 bool alarmSetMode = false;
+
+/*
+ * Cap. touch struct
+ */
+QT1070 capTouch;
 
 /* USER CODE END PV */
 
@@ -211,6 +217,20 @@ int main(void)
 		//printf("Display Updated with current time\n\r");
 	}
 
+    /*
+     * Initialize capacitive touch sensor
+     */
+
+    halRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
+
+    // Max. out averaging factor
+    uint8_t avgFactors_New[7] = {32, 32, 32, 32, 0, 0, 0};
+    halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
+
+    // Set detection integration factors
+    uint8_t detIntFactors_New[7] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
+    halRet = capTouch_SetDetectionIntegrator(&capTouch, detIntFactors_New);
+
 	userAlarmToggle = false;			//Default to off
 
     // User alarm default value
@@ -218,19 +238,22 @@ int main(void)
     userAlarmTime.Minutes = 1;
     userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
 
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  /* USER CODE BEGIN WHILE
+   * */
 
-  while (1)
-  {
+  while (1) {
 
+
+
+  }
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
   /* USER CODE END 3 */
 }
 
@@ -361,7 +384,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x10707DBC;
+  hi2c1.Init.Timing = 0x00602173;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -701,8 +724,6 @@ void userAlarmBeep() {
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
-	uint8_t i = 0;
-
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
 		updateAndDisplayTime();				// Update to current time and display
@@ -717,16 +738,15 @@ void userAlarmBeep() {
 
 			displayBlink = !displayBlink;							// Toggle display blink counter
 
-			//printf("Display Blink = %u\n\r", displayBlink);
-
 		}
 
-		i++;		// Get rid of. This is just for testing.
 
-//	} while(capTouchTrigger(snoozeButtonPin));
-	} while(i < 5);
+	} while(capTouch_readChannels(&capTouch) == 0x00);
 
 	HAL_TIM_Base_Stop(timerDelay);
+	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
+
+	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 }
 

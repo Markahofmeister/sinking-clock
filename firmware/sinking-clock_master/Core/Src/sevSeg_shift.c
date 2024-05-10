@@ -122,7 +122,9 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(htim);	// Get initial timer value to compare to
 
 	//Hang in dead loop until 500 ms
-	while(__HAL_TIM_GET_COUNTER(htim) - timerVal <= (65535 / 2)){ timerVal = __HAL_TIM_GET_COUNTER(htim); }
+	while(__HAL_TIM_GET_COUNTER(htim) - timerVal <= (65535 / 4)){
+//		timerVal = __HAL_TIM_GET_COUNTER(htim);
+	}
 
 	HAL_TIM_Base_Stop(htim);
 
