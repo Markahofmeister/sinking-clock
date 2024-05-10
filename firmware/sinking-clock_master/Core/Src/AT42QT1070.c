@@ -119,6 +119,8 @@ HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch, uint8_t *dataBuff) {
 									&(keyStatReg[0]), 1, HAL_MAX_DELAY);
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &keyStatusRet, 1, HAL_MAX_DELAY);
 
+	keyStatusRet = keyStatusRet & 0b01111111;
+
 	*dataBuff = keyStatusRet;
 
 	return halRet;
@@ -227,4 +229,33 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 
 }
 
+HAL_StatusTypeDef capTouch_SetDetectionIntegrator(QT1070 *capTouch, uint8_t *dataBuff) {
 
+	HAL_StatusTypeDef halRet = HAL_OK;
+
+	uint8_t detIntRegs[7] = {capTouch_DetInteg0Reg, capTouch_DetInteg1Reg, capTouch_DetInteg2Reg,
+						capTouch_DetInteg3Reg, capTouch_DetInteg4Reg, capTouch_DetInteg5Reg, capTouch_DetInteg6Reg};
+
+	// 2-byte buffer to specify register address and new averaging factor
+	uint8_t detIntRegNew[2] = {0x00, 0x00};
+	uint8_t i;
+
+	for(i = 0; i <= 6; i++) {
+
+		detIntRegNew[0] = detIntRegs[i];
+		detIntRegNew[1] = dataBuff[i];
+
+		halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+										detIntRegNew, 2, HAL_MAX_DELAY);
+
+	}
+
+	// Debug check that avg register values have been set successfully
+	uint8_t detIntRet[7] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
+									&(detIntRegs[0]), 1, HAL_MAX_DELAY);
+	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, detIntRet, 7, HAL_MAX_DELAY);
+
+	return halRet;
+
+}

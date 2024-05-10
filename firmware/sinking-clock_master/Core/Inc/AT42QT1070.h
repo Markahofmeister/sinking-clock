@@ -166,5 +166,10 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff);
  */
 HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuff);
 
+/*
+ * Accepts a 7-byte wide array with each byte containing a detection integrator for each key.
+ * Valid integrator factors are 2-256.
+ */
+HAL_StatusTypeDef capTouch_SetDetectionIntegrator(QT1070 *capTouch, uint8_t *dataBuff);
 
 #endif /* INC_AT42QT1070_H_ */

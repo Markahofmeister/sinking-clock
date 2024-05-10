@@ -217,8 +217,14 @@ int main(void)
      */
     QT1070 capTouch;
     halRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
+
+    // Max. out averaging factor
     uint8_t avgFactors_New[7] = {32, 32, 32, 32, 0, 0, 0};
     halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
+
+    // Set detection integration factors
+    uint8_t detIntFactors_New[7] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
+    halRet = capTouch_SetDetectionIntegrator(&capTouch, detIntFactors_New);
 
 	userAlarmToggle = false;			//Default to off
 

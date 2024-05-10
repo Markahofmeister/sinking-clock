@@ -3,5 +3,6 @@
 ../Core/Src/AT42QT1070.c:74:19:capTouch_Recalibrate	48	static
 ../Core/Src/AT42QT1070.c:91:9:capTouch_checkCal	48	static
 ../Core/Src/AT42QT1070.c:110:19:capTouch_readChannels	48	static
-../Core/Src/AT42QT1070.c:128:19:capTouch_enableKeys	64	static
-../Core/Src/AT42QT1070.c:167:19:capTouch_SetAveragingFactor	64	static
+../Core/Src/AT42QT1070.c:130:19:capTouch_enableKeys	64	static
+../Core/Src/AT42QT1070.c:169:19:capTouch_SetAveragingFactor	64	static
+../Core/Src/AT42QT1070.c:232:19:capTouch_SetDetectionIntegrator	64	static
