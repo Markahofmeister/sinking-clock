@@ -155,6 +155,19 @@ void RTC_TAMP_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles RCC global interrupt.
+  */
+void RCC_IRQHandler(void)
+{
+  /* USER CODE BEGIN RCC_IRQn 0 */
+
+  /* USER CODE END RCC_IRQn 0 */
+  /* USER CODE BEGIN RCC_IRQn 1 */
+
+  /* USER CODE END RCC_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line 0 and line 1 interrupts.
   */
 void EXTI0_1_IRQHandler(void)

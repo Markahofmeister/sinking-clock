@@ -242,14 +242,11 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE
-   * */
-
-  while (1) {
-
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
 
   }
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -702,7 +699,9 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  } else {
 		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
-		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
+		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
+			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+		}
 
 	  updateAndDisplayTime();
 
