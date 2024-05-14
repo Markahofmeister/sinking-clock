@@ -20,6 +20,13 @@
 #endif
 
 /*
+ * Alarm specification macros
+ */
+#define internalAlarm 	RTC_ALARM_A
+#define RTCTimeFormat	RTC_FORMAT_BIN
+
+
+/*
  * Declare RTC time and date to defaults and update RTC with values configured in .c file.
  *
  * @param STM32 HAL RTC handling object pointer

@@ -16,6 +16,15 @@
 #include <stdio.h>
 #endif
 
+//typedef struct {
+//
+//	uint16_t shiftDataPin;
+//	uint16_t shiftDataClockPin;
+//	uint16_t shiftStoreClockPin;
+//	uint16_t shiftMCLRPin;
+//	GPIO_TypeDef
+//
+//} quadSevSeg;
 
 /*
  * - Clears any existing shift register data

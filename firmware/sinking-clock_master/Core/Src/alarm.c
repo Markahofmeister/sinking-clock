@@ -7,13 +7,6 @@
 
 #include "../Inc/alarm.h"
 
-/*
- * Alarm specification macros
- */
-#define internalAlarm 	RTC_ALARM_A
-#define RTCTimeFormat	RTC_FORMAT_BIN
-
-
 
 void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
@@ -30,12 +23,12 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 	halRet = HAL_RTC_SetTime(hrtc, currTime, RTCTimeFormat);
 	halRet = HAL_RTC_SetDate(hrtc, currDate, RTCTimeFormat);
 
-	if(halRet == HAL_OK) {
-		printf("Current time defaulted to: %u:%u:%u\n\r", currTime->Hours, currTime->Minutes, currTime->Seconds);
-	}
-	else {
-		printf("Error defaulting RTC time.\n\r");
-	}
+//	if(halRet == HAL_OK) {
+//		printf("Current time defaulted to: %u:%u:%u\n\r", currTime->Hours, currTime->Minutes, currTime->Seconds);
+//	}
+//	else {
+//		printf("Error defaulting RTC time.\n\r");
+//	}
 
 	RTC_AlarmTypeDef internalAlarm_init = {0};
 	internalAlarm_init.AlarmTime.Hours = currTime->Hours;
@@ -56,12 +49,12 @@ void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTyp
 	halRet = HAL_RTC_SetAlarm_IT(hrtc, &internalAlarm_init, RTCTimeFormat);
 
 	RTC_AlarmTypeDef internalAlarm_initTest;
-	HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTCTimeFormat);
+	halRet = HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTCTimeFormat);
 
-	if(halRet == HAL_OK) {
-		printf("Internal alarm A defaulted to %u:%u:%u.\n\r", internalAlarm_initTest.AlarmTime.Hours,
-				internalAlarm_initTest.AlarmTime.Minutes, internalAlarm_initTest.AlarmTime.Seconds);
-	}
+//	if(halRet == HAL_OK) {
+//		printf("Internal alarm A defaulted to %u:%u:%u.\n\r", internalAlarm_initTest.AlarmTime.Hours,
+//				internalAlarm_initTest.AlarmTime.Minutes, internalAlarm_initTest.AlarmTime.Seconds);
+//	}
 
 }
 
