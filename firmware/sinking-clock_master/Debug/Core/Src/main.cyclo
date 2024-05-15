@@ -21,4 +21,4 @@
 ../Core/Src/main.c:1080:6:alarmMinuteInc	3
 ../Core/Src/main.c:1095:6:currMinuteInc	3
 ../Core/Src/main.c:1112:6:dispError	4
-../Core/Src/main.c:1187:6:Error_Handler	1
+../Core/Src/main.c:1186:6:Error_Handler	1

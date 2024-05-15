@@ -256,7 +256,7 @@ int main(void)
   while (1)
   {
 
-	  dispError();
+	  //dispError();
 
   }
     /* USER CODE END WHILE */
@@ -1136,32 +1136,31 @@ void dispError(void) {
 
 	uint8_t sendByte;					// To be used to shift bits
 
+	for(int i = 0; i <= 3; i++) {
+
+		sendByte = errorSymb[i];
+
+		for(int j = 0; j < 8; j++) {
+
+			// Write data pin with LSB of data
+			HAL_GPIO_WritePin(portArray[0], shiftDataPin, GPIOPinSet[sendByte & 1]);
+
+			// Toggle clock GPIO to shift bit into register
+			HAL_GPIO_WritePin(portArray[1], shiftDataClockPin, GPIOPinSet[1]);
+			HAL_GPIO_WritePin(portArray[1], shiftDataClockPin, GPIOPinSet[0]);
+
+			// Once data pin has been written and shifted out, shift data right by one bit.
+			sendByte >>= 1;
+
+		}
+	}
+
+	// Once all data has been shifted out, toggle store clock register to display data.
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClockPin, GPIOPinSet[1]);
+	HAL_GPIO_WritePin(portArray[2], shiftStoreClockPin, GPIOPinSet[0]);
+
 
 	do {
-
-		for(int i = 0; i <= 3; i++) {
-
-			sendByte = errorSymb[i];
-
-			for(int j = 0; j < 8; j++) {
-
-				// Write data pin with LSB of data
-				HAL_GPIO_WritePin(portArray[0], shiftDataPin, GPIOPinSet[sendByte & 1]);
-
-				// Toggle clock GPIO to shift bit into register
-				HAL_GPIO_WritePin(portArray[1], shiftDataClockPin, GPIOPinSet[1]);
-				HAL_GPIO_WritePin(portArray[1], shiftDataClockPin, GPIOPinSet[0]);
-
-				// Once data pin has been written and shifted out, shift data right by one bit.
-				sendByte >>= 1;
-
-			}
-		}
-
-			// Once all data has been shifted out, toggle store clock register to display data.
-			HAL_GPIO_WritePin(portArray[2], shiftStoreClockPin, GPIOPinSet[1]);
-			HAL_GPIO_WritePin(portArray[2], shiftStoreClockPin, GPIOPinSet[0]);
-
 
 		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 2)) {		// Use hardware timer to blink/beep display
 

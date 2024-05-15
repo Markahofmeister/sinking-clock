@@ -21,4 +21,4 @@
 ../Core/Src/main.c:1080:6:alarmMinuteInc	8	static,ignoring_inline_asm
 ../Core/Src/main.c:1095:6:currMinuteInc	8	static,ignoring_inline_asm
 ../Core/Src/main.c:1112:6:dispError	72	static
-../Core/Src/main.c:1187:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:1186:6:Error_Handler	8	static,ignoring_inline_asm
