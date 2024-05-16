@@ -209,6 +209,8 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+  uint8_t initRet = 0;
+
   initRTCTime(&hrtc, &currTime, &currDate);
 
   // Initialize all GPIOs to be used with 7 segment display
@@ -218,18 +220,13 @@ int main(void)
 
 	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
-	if(halRet != HAL_OK) {		//check HAL
-		//printf("HAL Error - TX current time\n\r");
-	} else {
-		//printf("Display Updated with current time\n\r");
-	}
-
     /*
      * Initialize capacitive touch sensor
      */
 
-    uint8_t initRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
-    if(initRet) {
+    initRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
+
+    if(initRet != 0) {
     	dispError();
     }
 
@@ -237,9 +234,16 @@ int main(void)
     uint8_t avgFactors_New[7] = {32, 32, 32, 32, 0, 0, 0};
     halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
 
+    if(halRet != HAL_OK) {
+    	dispError();
+    }
+
     // Set detection integration factors
     uint8_t detIntFactors_New[7] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
     halRet = capTouch_SetDetectionIntegrator(&capTouch, detIntFactors_New);
+    if(halRet != HAL_OK) {
+    	dispError();
+    }
 
 	userAlarmToggle = false;			//Default to off
 
@@ -256,7 +260,7 @@ int main(void)
   while (1)
   {
 
-	  //dispError();
+
 
   }
     /* USER CODE END WHILE */
@@ -735,6 +739,8 @@ void userAlarmBeep() {
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
+	uint8_t channelRead = 0x00;
+
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
 		updateAndDisplayTime();				// Update to current time and display
@@ -752,7 +758,9 @@ void userAlarmBeep() {
 		}
 
 
-	} while(capTouch_readChannels(&capTouch) == 0x00);
+		channelRead = capTouch_readChannels(&capTouch);
+
+	} while(channelRead == 0x00);
 
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
@@ -1111,64 +1119,23 @@ void currMinuteInc(void) {
 
 void dispError(void) {
 
-	/*
-	 * Array of GPIO ports to be initialized for each shift register GPIO
-	 * GPIO Port A values are placeholders
-	 * Order:
-	 * [0] = shift data pin port
-	 * [1] = shift data clock pin port
-	 * [2] = shift store clock pin port
-	 * [3] = shift output enable pin port
-	 * [4] = shift master clear pin port
-	 */
-	GPIO_TypeDef *portArray[5] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA};
-
-	// Used to avoid conditionals
-	GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
-
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
-	//Flash an Error Message
-	uint8_t errorSymb[4] = {0b00000000, 0b00110111, 0b00011101, 0b01000111};
-
-	uint8_t sendByte;					// To be used to shift bits
-
-	for(int i = 0; i <= 3; i++) {
-
-		sendByte = errorSymb[i];
-
-		for(int j = 0; j < 8; j++) {
-
-			// Write data pin with LSB of data
-			HAL_GPIO_WritePin(portArray[0], shiftDataPin, GPIOPinSet[sendByte & 1]);
-
-			// Toggle clock GPIO to shift bit into register
-			HAL_GPIO_WritePin(portArray[1], shiftDataClockPin, GPIOPinSet[1]);
-			HAL_GPIO_WritePin(portArray[1], shiftDataClockPin, GPIOPinSet[0]);
-
-			// Once data pin has been written and shifted out, shift data right by one bit.
-			sendByte >>= 1;
-
-		}
-	}
-
-	// Once all data has been shifted out, toggle store clock register to display data.
-	HAL_GPIO_WritePin(portArray[2], shiftStoreClockPin, GPIOPinSet[1]);
-	HAL_GPIO_WritePin(portArray[2], shiftStoreClockPin, GPIOPinSet[0]);
-
 
 	do {
 
-		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 2)) {		// Use hardware timer to blink/beep display
+		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 4)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
+			HAL_GPIO_TogglePin(alarmLEDPort, alarmLEDPin);
 
 			timerVal = __HAL_TIM_GET_COUNTER(timerDelay);				// Update timer value
 
 			displayBlink = !displayBlink;							// Toggle display blink counter
+
+
 
 		}
 

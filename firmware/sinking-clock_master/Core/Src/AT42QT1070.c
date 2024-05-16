@@ -62,9 +62,9 @@ HAL_StatusTypeDef capTouch_ReadDeviceID(QT1070 *capTouch, uint8_t *dataBuff) {
 
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 										&(capTouch_DeviceIDReg_TX[0]), 1, HAL_MAX_DELAY);
-	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &deviceIDRet_I2C, 1, HAL_MAX_DELAY);
 	if(halRet != HAL_OK)
 		return halRet;
+	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &deviceIDRet_I2C, 1, HAL_MAX_DELAY);
 
 	*dataBuff = deviceIDRet_I2C;
 
@@ -100,6 +100,8 @@ uint8_t capTouch_checkCal(QT1070 *capTouch) {
 
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									&(capTouch_DetectionStatusReg_I2C[0]), 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &detectionStatusRet, 1, HAL_MAX_DELAY);
 
 	calibrationFlag = (detectionStatusRet & 0b10000000) >> 7;
@@ -118,6 +120,8 @@ uint8_t capTouch_readChannels(QT1070 *capTouch) {
 
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									&(keyStatReg[0]), 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &keyStatusRet, 1, HAL_MAX_DELAY);
 
 	keyStatusRet = keyStatusRet & 0b01111111;
@@ -142,6 +146,8 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 								&(avgRegs[0]), 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 	if(halRet != HAL_OK)
 		return halRet;
@@ -184,6 +190,8 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 								&(avgRegs[0]), 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 	if(halRet != HAL_OK)
 		return halRet;
@@ -221,12 +229,16 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 
 		halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									avgRegNew, 2, HAL_MAX_DELAY);
+		if(halRet != HAL_OK)
+			return halRet;
 
 	}
 
 	// Debug check that avg register values have been set successfully
 	halRet = HAL_I2C_Master_Transmit(capTouch->hi2c, DEVICE_ADDRESS,
 									&(avgRegs[0]), 1, HAL_MAX_DELAY);
+	if(halRet != HAL_OK)
+		return halRet;
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 
 	return halRet;
