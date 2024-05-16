@@ -1318,8 +1318,8 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=sinking-clock.SchLib
-ComponentDesignItemID0=SCREW CONN 4 POS
-ComponentSymbolReference0=SCREW CONN 4 POS
+ComponentDesignItemID0=TC2030-IDC
+ComponentSymbolReference0=TC2030-IDC
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=1
@@ -1335,24 +1335,22 @@ RemoveParameters=0
 AddModels=1
 RemoveModels=1
 UpdateCurrentModels=1
-ParameterName0=ClassName
+ParameterName0=Comment
 ParameterUpdate0=1
-ParameterName1=Comment
+ParameterName1=Component Kind
 ParameterUpdate1=1
-ParameterName2=Component Kind
+ParameterName2=Description
 ParameterUpdate2=1
-ParameterName3=Description
+ParameterName3=Library Reference
 ParameterUpdate3=1
-ParameterName4=Library Reference
+ParameterName4=MFR
 ParameterUpdate4=1
-ParameterName5=MFR
+ParameterName5=MFR PN
 ParameterUpdate5=1
-ParameterName6=MFR PN
-ParameterUpdate6=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=1935187
+ModelName0=TAG CONNECT TC2030IDC - NO 3D MODEL
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
@@ -1368,54 +1366,58 @@ Net3=NetName=Alarm_LED|NetColor=$0000BE00
 Net4=NetName=ALARM_SET_BUTTON|NetColor=$00CA9C00
 Net5=NetName=AM/PM_LED|NetColor=$0000BE00
 Net6=NetName=BUZZER_OUT|NetColor=$00FF6E6E
-Net7=NetName=CAPTOUCH_CTRL_SDA|NetColor=$00FF6EFF
-Net8=NetName=CAPTOUCH_EN|NetColor=$00FF6EFF
-Net9=NetName=CAPTOUCH_IN|NetColor=$00FF6EFF
-Net10=NetName=CAPTOUCH_OUT|NetColor=$00FF6EFF
-Net11=NetName=CAPTOUCH_OUT_SCL|NetColor=$00FF6EFF
-Net12=NetName=CAPTOUCH_RESET|NetColor=$00FF6EFF
-Net13=NetName=CAPTOUCH_SCL|NetColor=$00FF6EFF
-Net14=NetName=CAPTOUCH_SDA|NetColor=$00FF6EFF
-Net15=NetName=CTOUCH_CTRL_SDA|NetColor=$00FF6EFF
-Net16=NetName=CTOUCH_SDA|NetColor=$00FF6EFF
-Net17=NetName=DISPLAY_BUTTON|NetColor=$00CA9C00
-Net18=NetName=GND|NetColor=$00747A85
-Net19=NetName=HOUR_SET_BUTTON|NetColor=$00CA9C00
-Net20=NetName=Key0|NetColor=$006EFF6E
-Net21=NetName=Key1|NetColor=$006EFF6E
-Net22=NetName=Key2|NetColor=$006EFF6E
-Net23=NetName=Key3|NetColor=$006EFF6E
-Net24=NetName=MINUTE_SET_BUTTON|NetColor=$00CA9C00
-Net25=NetName=NetBZ1_N|NetColor=$00FF6E6E
-Net26=NetName=NetBZ1_P|NetColor=$00AD7500
-Net27=NetName=NetC10_2|NetColor=$00164FDE
-Net28=NetName=NetD?_1|NetColor=$00FF6EFF
-Net29=NetName=NetJ2_2|NetColor=clYellow
-Net30=NetName=NetJ2_3|NetColor=clYellow
-Net31=NetName=NetJ2_5|NetColor=clYellow
-Net32=NetName=NetJ5_1|NetColor=$00164FDE
-Net33=NetName=NetQ?_1|NetColor=$00FF6EFF
-Net34=NetName=NetQ?_3|NetColor=$00FF6EFF
-Net35=NetName=NetQ2_1|NetColor=$00FF6E6E
-Net36=NetName=NetR?_1|NetColor=$00FF6EFF
-Net37=NetName=NetR?_2|NetColor=$00FF6EFF
-Net38=NetName=NetR11_2|NetColor=$006EFF6E
-Net39=NetName=NetR16_2|NetColor=$006EFF6E
-Net40=NetName=NetR2_2|NetColor=$006EFF6E
-Net41=NetName=NetR5_2|NetColor=$006EFF6E
-Net42=NetName=NRST|NetColor=clYellow
-Net43=NetName=RTC_CAL|NetColor=$00FFFF6E
-Net44=NetName=SHIFT_DATA_CLK|NetColor=$0000BE00
-Net45=NetName=SHIFT_DATA_IN|NetColor=$0000BE00
-Net46=NetName=SHIFT_MCLR|NetColor=$0000BE00
-Net47=NetName=SHIFT_OUTPUT_EN|NetColor=$0000BE00
-Net48=NetName=SHIFT_STORE_CLK|NetColor=$0000BE00
-Net49=NetName=SNOOZE_BUTTON|NetColor=$00CA9C00
-Net50=NetName=SWD_CLK|NetColor=clYellow
-Net51=NetName=SWD_IO|NetColor=clYellow
-Net52=NetName=SWO|NetColor=clYellow
-Net53=NetName=VCC|NetColor=$000083FD
-Net54=NetName=VREG|NetColor=$00FF6EFF
+Net7=NetName=CAPTOUCH_CHANGE|NetColor=$00FF6EFF
+Net8=NetName=CAPTOUCH_CTRL_SDA|NetColor=$00FF6EFF
+Net9=NetName=CAPTOUCH_EN|NetColor=$00FF6EFF
+Net10=NetName=CAPTOUCH_IN|NetColor=$00FF6EFF
+Net11=NetName=CAPTOUCH_OUT|NetColor=$00FF6EFF
+Net12=NetName=CAPTOUCH_OUT_SCL|NetColor=$00FF6EFF
+Net13=NetName=CAPTOUCH_RESET|NetColor=$00FF6EFF
+Net14=NetName=CAPTOUCH_SCL|NetColor=$00FF6EFF
+Net15=NetName=CAPTOUCH_SDA|NetColor=$00FF6EFF
+Net16=NetName=CTOUCH_CTRL_SDA|NetColor=$00FF6EFF
+Net17=NetName=CTOUCH_SDA|NetColor=$00FF6EFF
+Net18=NetName=DISPLAY_BUTTON|NetColor=$00CA9C00
+Net19=NetName=GND|NetColor=$00747A85
+Net20=NetName=HOUR_SET_BUTTON|NetColor=$00CA9C00
+Net21=NetName=Key0|NetColor=$006EFF6E
+Net22=NetName=Key1|NetColor=$006EFF6E
+Net23=NetName=Key2|NetColor=$006EFF6E
+Net24=NetName=Key3|NetColor=$006EFF6E
+Net25=NetName=MINUTE_SET_BUTTON|NetColor=$00CA9C00
+Net26=NetName=NetBZ1_N|NetColor=$00FF6E6E
+Net27=NetName=NetBZ1_P|NetColor=$00AD7500
+Net28=NetName=NetC10_2|NetColor=$00164FDE
+Net29=NetName=NetD?_1|NetColor=$00FF6EFF
+Net30=NetName=NetJ2_2|NetColor=clYellow
+Net31=NetName=NetJ2_3|NetColor=clYellow
+Net32=NetName=NetJ2_4|NetColor=clYellow
+Net33=NetName=NetJ2_5|NetColor=clYellow
+Net34=NetName=NetJ5_1|NetColor=$00164FDE
+Net35=NetName=NetQ?_1|NetColor=$00FF6EFF
+Net36=NetName=NetQ?_3|NetColor=$00FF6EFF
+Net37=NetName=NetQ1_1|NetColor=$00FF6EFF
+Net38=NetName=NetQ1_3|NetColor=$00FF6EFF
+Net39=NetName=NetQ2_1|NetColor=$00FF6E6E
+Net40=NetName=NetR?_1|NetColor=$00FF6EFF
+Net41=NetName=NetR?_2|NetColor=$00FF6EFF
+Net42=NetName=NetR11_2|NetColor=$006EFF6E
+Net43=NetName=NetR16_2|NetColor=$006EFF6E
+Net44=NetName=NetR2_2|NetColor=$006EFF6E
+Net45=NetName=NetR5_2|NetColor=$006EFF6E
+Net46=NetName=NRST|NetColor=clYellow
+Net47=NetName=RTC_CAL|NetColor=$00FFFF6E
+Net48=NetName=SHIFT_DATA_CLK|NetColor=$0000BE00
+Net49=NetName=SHIFT_DATA_IN|NetColor=$0000BE00
+Net50=NetName=SHIFT_MCLR|NetColor=$0000BE00
+Net51=NetName=SHIFT_OUTPUT_EN|NetColor=$0000BE00
+Net52=NetName=SHIFT_STORE_CLK|NetColor=$0000BE00
+Net53=NetName=SNOOZE_BUTTON|NetColor=$00CA9C00
+Net54=NetName=SWD_CLK|NetColor=clYellow
+Net55=NetName=SWD_IO|NetColor=clYellow
+Net56=NetName=SWO|NetColor=clYellow
+Net57=NetName=VCC|NetColor=$000083FD
+Net58=NetName=VREG|NetColor=$00FF6EFF
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
