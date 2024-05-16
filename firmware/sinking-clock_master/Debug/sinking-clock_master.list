@@ -2011,7 +2011,7 @@ static void MX_I2C1_Init(void)
  8000c78:	4b1b      	ldr	r3, [pc, #108]	@ (8000ce8 <MX_I2C1_Init+0x74>)
  8000c7a:	4a1c      	ldr	r2, [pc, #112]	@ (8000cec <MX_I2C1_Init+0x78>)
  8000c7c:	601a      	str	r2, [r3, #0]
-  hi2c1.Init.Timing = 0x00602173;
+  hi2c1.Init.Timing = 0x10707DBC;
  8000c7e:	4b1a      	ldr	r3, [pc, #104]	@ (8000ce8 <MX_I2C1_Init+0x74>)
  8000c80:	4a1b      	ldr	r2, [pc, #108]	@ (8000cf0 <MX_I2C1_Init+0x7c>)
  8000c82:	605a      	str	r2, [r3, #4]
@@ -2091,7 +2091,7 @@ static void MX_I2C1_Init(void)
  8000ce6:	bd80      	pop	{r7, pc}
  8000ce8:	200000d8 	.word	0x200000d8
  8000cec:	40005400 	.word	0x40005400
- 8000cf0:	00602173 	.word	0x00602173
+ 8000cf0:	10707dbc 	.word	0x10707dbc
 
 08000cf4 <MX_RTC_Init>:
   * @brief RTC Initialization Function
