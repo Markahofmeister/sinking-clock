@@ -213,10 +213,23 @@ int main(void)
 
   initRTCTime(&hrtc, &currTime, &currDate);
 
+  // Reset cap. touch?
+  HAL_GPIO_WritePin(capTouchResetPort, capTouchResetPin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(capTouchResetPort, capTouchResetPin, GPIO_PIN_RESET);
+
+  // Delay for 500 ms using hardware timer
+	HAL_TIM_Base_Stop(timerDelay);
+	HAL_TIM_Base_Start(timerDelay);							// Begin timer counting
+	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+
+	//Hang in dead loop until 500 ms
+	while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65535 / 2)){ }
+
   // Initialize all GPIOs to be used with 7 segment display
     sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 				shiftOutputEnablePin, shiftMCLRPin,
 				GPIOPortArray, timerDelay, timerPWM, tim_PWM_CHANNEL);
+
 
 	HAL_StatusTypeDef halRet = updateAndDisplayTime();
 
@@ -396,7 +409,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x10707DBC;
+  hi2c1.Init.Timing = 0x00602173;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -628,7 +641,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(SHIFT_STORE_CLK_GPIO_Port, SHIFT_STORE_CLK_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(CTOUCH_EN_GPIO_Port, CTOUCH_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(CTOUCH_RST_GPIO_Port, CTOUCH_RST_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : DEBUG_LED_Pin BUZZER_OUT_Pin SHIFT_DATA_IN_Pin SHIFT_DATA_CLK_Pin
                            SHIFT_MCLR_Pin ALARM_LED_Pin */
@@ -658,12 +671,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : CTOUCH_EN_Pin */
-  GPIO_InitStruct.Pin = CTOUCH_EN_Pin;
+  /*Configure GPIO pin : CTOUCH_RST_Pin */
+  GPIO_InitStruct.Pin = CTOUCH_RST_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(CTOUCH_EN_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(CTOUCH_RST_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);

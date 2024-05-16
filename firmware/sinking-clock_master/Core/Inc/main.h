@@ -90,8 +90,8 @@ void Error_Handler(void);
 #define DISPLAY_BUTTON_Pin GPIO_PIN_3
 #define DISPLAY_BUTTON_GPIO_Port GPIOD
 #define DISPLAY_BUTTON_EXTI_IRQn EXTI2_3_IRQn
-#define CTOUCH_EN_Pin GPIO_PIN_9
-#define CTOUCH_EN_GPIO_Port GPIOB
+#define CTOUCH_RST_Pin GPIO_PIN_8
+#define CTOUCH_RST_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
