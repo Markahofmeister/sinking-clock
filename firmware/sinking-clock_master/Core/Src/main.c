@@ -247,7 +247,7 @@ int main(void)
     	dispError();
     }
 
-	userAlarmToggle = false;			//Default to off
+    userAlarmToggle = false;			//Default to off
 
     // User alarm default value
     userAlarmTime.Hours = 1;
@@ -261,7 +261,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
 
 
   }

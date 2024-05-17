@@ -1732,7 +1732,7 @@ int main(void)
  8000afe:	f000 fef1 	bl	80018e4 <dispError>
     }
 
-	userAlarmToggle = false;			//Default to off
+    userAlarmToggle = false;			//Default to off
  8000b02:	4b13      	ldr	r3, [pc, #76]	@ (8000b50 <main+0x15c>)
  8000b04:	2200      	movs	r2, #0
  8000b06:	701a      	strb	r2, [r3, #0]
