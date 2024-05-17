@@ -11,11 +11,31 @@
 #include "AT42QT1070.h"
 
 
-uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFlags) {
+uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, TIM_HandleTypeDef *htimDelay,
+					GPIO_TypeDef **capTouchResetPort, uint16_t capTouchResetPin, uint8_t keyEnFlags) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
+	// Assign handlers and GPIO pins for specific instance
 	capTouch->hi2c = hi2c;
+
+	capTouch->delayTimer = htimDelay;
+
+	capTouch->resetPort = capTouchResetPort;
+	capTouch->resetPin = capTouchResetPin;
+
+	// Hardware reset device
+	// Assumes active-high hardware configuration
+	HAL_GPIO_WritePin(*capTouch->resetPort, capTouch->resetPin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(*capTouch->resetPort, capTouch->resetPin, GPIO_PIN_RESET);
+
+	// Delay for 500 ms using hardware timer
+	HAL_TIM_Base_Stop(capTouch->delayTimer);
+	HAL_TIM_Base_Start(capTouch->delayTimer);							// Begin timer counting
+	uint32_t timerVal = __HAL_TIM_GET_COUNTER(capTouch->delayTimer);	// Get initial timer value to compare to
+
+	//Hang in dead loop until 500 ms
+	while(__HAL_TIM_GET_COUNTER(capTouch->delayTimer) - timerVal <= (65535 / 2)){ }
 
 	// Verify device ID
 	uint8_t deviceIDRet = 0x00;
@@ -37,7 +57,7 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFl
 	while(capTouch_checkCal(capTouch)) {}
 
 	// Get initial reading of channels
-	uint8_t keyStatus = capTouch_readChannels(capTouch);
+	halRet = capTouch_readChannels(capTouch);
 	if(halRet != HAL_OK) {
 		return 3;
 	}
@@ -110,7 +130,7 @@ uint8_t capTouch_checkCal(QT1070 *capTouch) {
 
 }
 
-uint8_t capTouch_readChannels(QT1070 *capTouch) {
+HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
@@ -124,9 +144,9 @@ uint8_t capTouch_readChannels(QT1070 *capTouch) {
 		return halRet;
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, &keyStatusRet, 1, HAL_MAX_DELAY);
 
-	keyStatusRet = keyStatusRet & 0b01111111;
+	capTouch->keyStat = keyStatusRet & 0b01111111;
 
-	return keyStatusRet;
+	return halRet;
 
 }
 

@@ -213,18 +213,6 @@ int main(void)
 
   initRTCTime(&hrtc, &currTime, &currDate);
 
-  // Reset cap. touch?
-  HAL_GPIO_WritePin(capTouchResetPort, capTouchResetPin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(capTouchResetPort, capTouchResetPin, GPIO_PIN_RESET);
-
-  // Delay for 500 ms using hardware timer
-	HAL_TIM_Base_Stop(timerDelay);
-	HAL_TIM_Base_Start(timerDelay);							// Begin timer counting
-	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
-
-	//Hang in dead loop until 500 ms
-	while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65535 / 2)){ }
-
   // Initialize all GPIOs to be used with 7 segment display
     sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
 				shiftOutputEnablePin, shiftMCLRPin,
@@ -237,7 +225,8 @@ int main(void)
      * Initialize capacitive touch sensor
      */
 
-    initRet = capTouch_Init(&capTouch, &hi2c1, 0b00001111);
+    initRet = capTouch_Init(&capTouch, &hi2c1, timerDelay,
+    						&capTouchResetPort, capTouchResetPin, 0b00001111);
 
     if(initRet != 0) {
     	dispError();
@@ -752,8 +741,6 @@ void userAlarmBeep() {
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
-	uint8_t channelRead = 0x00;
-
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
 		updateAndDisplayTime();				// Update to current time and display
@@ -771,9 +758,11 @@ void userAlarmBeep() {
 		}
 
 
-		channelRead = capTouch_readChannels(&capTouch);
+		HAL_StatusTypeDef halRet = capTouch_readChannels(&capTouch);
+		if(halRet != HAL_OK)
+			dispError();
 
-	} while(channelRead == 0x00);
+	} while(capTouch.keyStat == 0x00);
 
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);

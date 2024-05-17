@@ -102,9 +102,17 @@ typedef struct {
 
 	I2C_HandleTypeDef *hi2c;
 
+	TIM_HandleTypeDef *delayTimer;
+
+	GPIO_TypeDef **resetPort;
+
+	uint16_t resetPin;
+
 	uint8_t deviceID;
 
 	uint8_t keys;
+
+	uint8_t keyStat;
 
 } QT1070;
 
@@ -128,7 +136,8 @@ typedef struct {
  *
  *
  */
-uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, uint8_t keyEnFlags);
+uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, TIM_HandleTypeDef *htimDelay,
+					GPIO_TypeDef **capTouchResetPort, uint16_t capTouchResetPin, uint8_t keyEnFlags);
 
 
 /*
@@ -152,7 +161,7 @@ uint8_t capTouch_checkCal(QT1070 *capTouch);
  * Returns the value in the keyStatus register.
  * Bytes 0-6 of dataBuff indicate which of channels 0-6 are in detection.
  */
-uint8_t capTouch_readChannels(QT1070 *capTouch);
+HAL_StatusTypeDef capTouch_readChannels(QT1070 *capTouch);
 
 /*
  * References the 8-bit data buffer to enable/disable channels, which is done
