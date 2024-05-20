@@ -172,7 +172,7 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 	if(halRet != HAL_OK)
 		return halRet;
 
-	int i; //temp;
+	uint8_t i;
 
 	for(i = 0; i <= 6; i++) {
 

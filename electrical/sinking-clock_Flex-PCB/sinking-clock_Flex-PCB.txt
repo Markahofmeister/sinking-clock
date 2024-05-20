@@ -1,0 +1,154 @@
+Board Information Report
+Filename     : C:\Lab\sinking-clock\electrical\sinking-clock_Flex-PCB\sinking-clock_Flex-PCB.PcbDoc
+Date         : 5/20/2024
+Time         : 3:26:21 PM
+Time Elapsed : 00:00:00
+
+General
+    Board Size, 67.0105mmx32mm
+    Components on board, 0
+count : 2
+
+Routing Information
+    Routing completion, 100.00%
+    Connections, -4
+    Connections routed, -4
+    Connections remaining, 0
+count : 4
+
+Layer, Arcs, Pads, Vias, Tracks, Texts, Fills, Regions, ComponentBodies
+    Top Layer, 77, 0, 0, 670, 0, 0, 4, 0
+    Bottom Layer, 0, 0, 0, 0, 0, 0, 4, 0
+    Outline, 15, 0, 0, 18, 0, 0, 0, 0
+    Board Layer Stack Top Coverlay (Flex Stack), 0, 0, 0, 0, 0, 0, 5, 0
+    Board Layer Stack Bottom Coverlay (Flex Stack), 0, 0, 0, 0, 0, 0, 5, 0
+    Multi-Layer, 0, 0, 8, 0, 0, 0, 1, 0
+    Top Paste, 0, 0, 0, 0, 0, 0, 0, 0
+    Board Layer Stack Top Overlay, 0, 0, 0, 0, 4, 0, 0, 0
+    Board Layer Stack Top Coverlay, 0, 0, 0, 0, 0, 0, 0, 0
+    Board Layer Stack Bottom Coverlay, 0, 0, 0, 0, 0, 0, 0, 0
+    Board Layer Stack Bottom Overlay, 0, 0, 0, 0, 1, 0, 0, 0
+    Bottom Paste, 0, 0, 0, 0, 0, 0, 0, 0
+    Drill Guide, 0, 0, 0, 0, 0, 0, 0, 0
+    Keep-Out Layer, 0, 0, 0, 0, 0, 0, 0, 0
+    Drill Drawing, 0, 0, 0, 0, 0, 0, 0, 0
+count : 15
+
+Drill Pairs, Vias
+    Top Layer - Bottom Layer, 8
+count : 1
+
+Layer, Sq.In., Sq.MM., Percent of layer
+    Top Layer, 0.646, 416.791, 30%
+    Bottom Layer, 0.08, 51.57, 4%
+count : 2
+
+Non-Plated Hole Size, Pads, Vias
+count : 0
+
+Plated Hole Size, Pads, Vias
+    0.2794mm, 0, 8
+count : 1
+
+Non-Plated Slot Size / Length, Pads
+count : 0
+
+Plated Slot Size / Length, Pads
+count : 0
+
+Non-Plated Square Hole Size, Pads
+count : 0
+
+Plated Square Hole Size, Pads
+count : 0
+
+Top Layer Annular Ring Size, Count
+    0.2794mm, 8
+count : 1
+
+Mid Layer Annular Ring Size, Count
+    0.2794mm, 8
+count : 1
+
+Bottom Layer Annular Ring Size, Count
+    0.2794mm, 8
+count : 1
+
+Pad Solder Mask, Count
+count : 0
+
+Via Solder Mask, Count
+    0mm, 8
+count : 1
+
+Via Pwr/Gnd Expansion, Count
+    0.508mm, 8
+count : 1
+
+Track Width, Count
+    0.1mm, 18
+    0.1524mm, 1
+    0.2032mm, 656
+    0.4064mm, 13
+count : 4
+
+Arc Line Width, Count
+    0.1mm, 14
+    0.1524mm, 1
+    0.2032mm, 69
+    0.25mm, 1
+    0.4064mm, 7
+count : 5
+
+Arc Radius, Count
+    0.25mm, 14
+    0.29mm, 10
+    0.2905mm, 8
+    0.4mm, 1
+    0.4308mm, 13
+    0.4828mm, 1
+    0.4828mm, 1
+    0.5mm, 1
+    0.5536mm, 1
+    0.6mm, 1
+    0.8mm, 1
+    1.2071mm, 1
+    13mm, 38
+    16mm, 1
+count : 14
+
+Arc Degrees, Count
+    4, 25
+    5, 7
+    9, 3
+    13, 1
+    18, 1
+    19, 1
+    22, 19
+    23, 2
+    31, 1
+    44, 2
+    45, 5
+    67, 1
+    70, 1
+    89, 1
+    90, 21
+    293, 1
+count : 16
+
+Text Height, Count
+    1.5mm, 4
+    2mm, 1
+count : 2
+
+Text Width, Count
+    0.254mm, 5
+count : 1
+
+Net Track Width, Count
+    0.1524mm, 4
+count : 1
+
+Net Via Size, Count
+    1.27mm, 4
+count : 1

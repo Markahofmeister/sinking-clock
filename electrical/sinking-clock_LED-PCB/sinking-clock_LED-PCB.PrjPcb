@@ -236,6 +236,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YVNSIQOI
 
+[Document12]
+DocumentPath=sinking-clock_LED-PCB.Cam
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [GeneratedDocument1]
 DocumentPath=Project Outputs for sinking-clock_LED-PCB\BOM\Bill of Materials-sinking-clock_LED-PCB.xlsx
 DItemRevisionGUID=
@@ -277,54 +294,62 @@ DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-
 DItemRevisionGUID=
 
 [GeneratedDocument11]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM1
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM
 DItemRevisionGUID=
 
 [GeneratedDocument12]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM2
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM1
 DItemRevisionGUID=
 
 [GeneratedDocument13]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM15
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM2
 DItemRevisionGUID=
 
 [GeneratedDocument14]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GPB
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM15
 DItemRevisionGUID=
 
 [GeneratedDocument15]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GPT
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GM20
 DItemRevisionGUID=
 
 [GeneratedDocument16]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTL
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GPB
 DItemRevisionGUID=
 
 [GeneratedDocument17]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTO
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GPT
 DItemRevisionGUID=
 
 [GeneratedDocument18]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTP
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTL
 DItemRevisionGUID=
 
 [GeneratedDocument19]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTS
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTO
 DItemRevisionGUID=
 
 [GeneratedDocument20]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\NC Drill\sinking-clock_LED-PCB.LDP
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTP
 DItemRevisionGUID=
 
 [GeneratedDocument21]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.REP
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.GTS
 DItemRevisionGUID=
 
 [GeneratedDocument22]
-DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.RUL
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\NC Drill\sinking-clock_LED-PCB.LDP
 DItemRevisionGUID=
 
 [GeneratedDocument23]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.REP
+DItemRevisionGUID=
+
+[GeneratedDocument24]
+DocumentPath=Project Outputs for sinking-clock_LED-PCB\Gerber\sinking-clock_LED-PCB.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument25]
 DocumentPath=Project Outputs for sinking-clock_LED-PCB\NC Drill\sinking-clock_LED-PCB.TXT
 DItemRevisionGUID=
 
