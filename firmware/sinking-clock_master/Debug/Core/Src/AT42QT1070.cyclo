@@ -3,6 +3,6 @@
 ../Core/Src/AT42QT1070.c:95:19:capTouch_Recalibrate	1
 ../Core/Src/AT42QT1070.c:112:9:capTouch_checkCal	2
 ../Core/Src/AT42QT1070.c:133:19:capTouch_readChannels	2
-../Core/Src/AT42QT1070.c:153:19:capTouch_enableKeys	6
+../Core/Src/AT42QT1070.c:153:19:capTouch_enableKeys	4
 ../Core/Src/AT42QT1070.c:197:19:capTouch_SetAveragingFactor	6
 ../Core/Src/AT42QT1070.c:268:19:capTouch_SetDetectionIntegrator	2
