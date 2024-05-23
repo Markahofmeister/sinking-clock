@@ -1047,6 +1047,8 @@ void currMinuteInc(void) {
 
 	getRTCTime(&hrtc, &currTime, &currDate);
 
+	// If current time is going to rollover,
+	// increment the hour and reset the minute.
 	if(currTime.Minutes >= 59) {
 		currHourInc();
 		currTime.Minutes = 0;
