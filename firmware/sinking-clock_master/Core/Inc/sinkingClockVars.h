@@ -52,6 +52,19 @@ GPIO_TypeDef *minuteSetButtonPort = GPIOD;
 const uint16_t capTouchResetPin = GPIO_PIN_8;
 GPIO_TypeDef *capTouchResetPort = GPIOB;
 
+// Specifies which channels of cap. touch IC to be used
+uint8_t capTouchChannels = 0b00001111;
+
+/*
+ * Specifies averaging values for each cap. touch IC channel
+ * This value will be right-shifted twice and must be a power of 2
+ */
+uint8_t AVGFact = 32;
+
+// Specifies detection integration values for each cap. touch IC channel
+uint8_t DIFact = 0x04;
+
+
 /*
  * Map GPIOS to some LED outputs
  */
@@ -106,5 +119,20 @@ GPIO_TypeDef *debugLEDPort = GPIOA;
 
 // RTC Calibration Value
 uint32_t rtcCalVal = 0x0144;
+
+
+/*
+ * ST Peripheral Handles
+ */
+uint32_t tim_PWM_CHANNEL = TIM_CHANNEL_3;
+
+/*
+ * RTC access objects
+ */
+
+RTC_TimeTypeDef currTime = {0};
+RTC_DateTypeDef currDate = {0};
+RTC_AlarmTypeDef userAlarmObj = {0};
+RTC_TimeTypeDef userAlarmTime = {0};
 
 #endif /* INC_SINKINGCLOCKVARS_H_ */

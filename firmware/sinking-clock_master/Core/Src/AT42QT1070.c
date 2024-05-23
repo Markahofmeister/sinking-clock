@@ -235,7 +235,6 @@ HAL_StatusTypeDef capTouch_SetAveragingFactor(QT1070 *capTouch, uint8_t *dataBuf
 		// Set bits 2-6 with new averaging factor
 		uint8_t avgMask = ((dataBuff[i]) << 2);
 		avgNew = avgNew | avgMask;
-		// ^^ Is the above way of referring to a pointer a problem?
 
 		// Throw error if the requested averaging factor is not a power of 2
 //		if(!(ceil(log2(avgNew)) == floor(log2(avgNew)))) {

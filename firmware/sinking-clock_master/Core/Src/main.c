@@ -57,16 +57,7 @@ TIM_HandleTypeDef htim14;
 
 TIM_HandleTypeDef *timerDelay = &htim14;
 TIM_HandleTypeDef *timerPWM = &htim2;
-uint32_t tim_PWM_CHANNEL = TIM_CHANNEL_3;
 
-/*
- * RTC access objects
- */
-
-RTC_TimeTypeDef currTime = {0};
-RTC_DateTypeDef currDate = {0};
-RTC_AlarmTypeDef userAlarmObj = {0};
-RTC_TimeTypeDef userAlarmTime = {0};
 
 /*
  * State bools
@@ -227,14 +218,14 @@ int main(void)
      */
 
     initRet = capTouch_Init(&capTouch, &hi2c1, timerDelay,
-    						&capTouchResetPort, capTouchResetPin, 0b00001111);
+    						&capTouchResetPort, capTouchResetPin, capTouchChannels);
 
     if(initRet != 0) {
     	dispError();
     }
 
     // Max. out averaging factor
-    uint8_t avgFactors_New[7] = {32, 32, 32, 32, 0, 0, 0};
+    uint8_t avgFactors_New[7] = {AVGFact, AVGFact, AVGFact, AVGFact, 0, 0, 0};
     halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
 
     if(halRet != HAL_OK) {
@@ -242,7 +233,7 @@ int main(void)
     }
 
     // Set detection integration factors
-    uint8_t detIntFactors_New[7] = {0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04};
+    uint8_t detIntFactors_New[7] = {DIFact, DIFact, DIFact, DIFact, DIFact, DIFact, DIFact};
     halRet = capTouch_SetDetectionIntegrator(&capTouch, detIntFactors_New);
     if(halRet != HAL_OK) {
     	dispError();
