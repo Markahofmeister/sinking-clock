@@ -206,6 +206,10 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+  // Set Smooth Calibration Value
+    HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
+    							RTC_SMOOTHCALIB_PLUSPULSES_RESET, rtcCalVal);
+
   uint8_t initRet = 0;
 
   initRTCTime(&hrtc, &currTime, &currDate);
