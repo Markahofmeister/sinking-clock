@@ -198,7 +198,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Set Smooth Calibration Value
-    HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
+  HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
     							RTC_SMOOTHCALIB_PLUSPULSES_RESET, rtcCalVal);
 
   uint8_t initRet = 0;
@@ -649,9 +649,9 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	  //printf("Enter current time minute increment interrupt\n\r");
 
-	  RTC_AlarmTypeDef sAlarm;
+	  RTC_AlarmTypeDef sAlarm = {0};
 	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
-//	  getRTCTime(hrtc, &currTime, &currDate);
+
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
 		sAlarm.AlarmTime.Minutes=0;
@@ -936,6 +936,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
+
 		updateAndDisplayTime();
 
 		getRTCTime(&hrtc, &currTime, &currDate);
@@ -969,7 +970,23 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
-		HAL_RTC_AlarmAEventCallback(&hrtc);
+		/*
+		 * Change internal RTC alarm to keep it triggering
+		 */
+
+		RTC_AlarmTypeDef sAlarm = {0};
+		HAL_RTC_GetAlarm(&hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
+
+		if(sAlarm.AlarmTime.Minutes>58) {
+			sAlarm.AlarmTime.Minutes=0;
+			//printf("Reset alarm time\n\r");
+		} else {
+			sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+		}
+		while(HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
+			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+		}
+
 
 		updateAndDisplayTime();
 

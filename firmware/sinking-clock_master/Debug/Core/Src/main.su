@@ -14,10 +14,10 @@
 ../Core/Src/main.c:788:19:alarmEnableISR	16	static,ignoring_inline_asm
 ../Core/Src/main.c:817:19:alarmSetISR	16	static
 ../Core/Src/main.c:917:19:hourSetISR	16	static
-../Core/Src/main.c:951:19:minuteSetISR	16	static
-../Core/Src/main.c:985:6:alarmHourInc	8	static,ignoring_inline_asm
-../Core/Src/main.c:1008:6:currHourInc	8	static,ignoring_inline_asm
-../Core/Src/main.c:1033:6:alarmMinuteInc	8	static,ignoring_inline_asm
-../Core/Src/main.c:1048:6:currMinuteInc	8	static,ignoring_inline_asm
-../Core/Src/main.c:1067:6:dispError	16	static
-../Core/Src/main.c:1100:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:952:19:minuteSetISR	56	static
+../Core/Src/main.c:1002:6:alarmHourInc	8	static,ignoring_inline_asm
+../Core/Src/main.c:1025:6:currHourInc	8	static,ignoring_inline_asm
+../Core/Src/main.c:1050:6:alarmMinuteInc	8	static,ignoring_inline_asm
+../Core/Src/main.c:1065:6:currMinuteInc	8	static,ignoring_inline_asm
+../Core/Src/main.c:1084:6:dispError	16	static
+../Core/Src/main.c:1117:6:Error_Handler	8	static,ignoring_inline_asm
