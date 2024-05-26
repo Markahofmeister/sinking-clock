@@ -651,7 +651,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	  RTC_AlarmTypeDef sAlarm;
 	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
-	  getRTCTime(hrtc, &currTime, &currDate);
+//	  getRTCTime(hrtc, &currTime, &currDate);
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
 		sAlarm.AlarmTime.Minutes=0;
@@ -968,6 +968,8 @@ HAL_StatusTypeDef minuteSetISR(void) {
 		currMinuteInc();
 
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
+
+		HAL_RTC_AlarmAEventCallback(&hrtc);
 
 		updateAndDisplayTime();
 

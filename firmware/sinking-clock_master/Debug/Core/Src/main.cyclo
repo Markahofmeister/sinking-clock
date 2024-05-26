@@ -15,9 +15,9 @@
 ../Core/Src/main.c:817:19:alarmSetISR	9
 ../Core/Src/main.c:917:19:hourSetISR	2
 ../Core/Src/main.c:951:19:minuteSetISR	2
-../Core/Src/main.c:983:6:alarmHourInc	5
-../Core/Src/main.c:1006:6:currHourInc	5
-../Core/Src/main.c:1031:6:alarmMinuteInc	3
-../Core/Src/main.c:1046:6:currMinuteInc	3
-../Core/Src/main.c:1065:6:dispError	2
-../Core/Src/main.c:1098:6:Error_Handler	1
+../Core/Src/main.c:985:6:alarmHourInc	5
+../Core/Src/main.c:1008:6:currHourInc	5
+../Core/Src/main.c:1033:6:alarmMinuteInc	3
+../Core/Src/main.c:1048:6:currMinuteInc	3
+../Core/Src/main.c:1067:6:dispError	2
+../Core/Src/main.c:1100:6:Error_Handler	1
