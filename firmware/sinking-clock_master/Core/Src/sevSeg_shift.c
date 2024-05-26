@@ -45,6 +45,12 @@ uint16_t shiftOutputEnable;
 uint16_t shiftMCLR;
 
 /*
+ * Global variable to be initialized with delay timer
+ */
+TIM_HandleTypeDef htim_PWM;
+uint32_t tim_PWM_CHANNEL_shift;
+
+/*
  * Array of GPIO ports to be initialized for each shift register GPIO
  * GPIO Port A values are placeholders
  * Order:
@@ -62,14 +68,17 @@ GPIO_PinState GPIOPinSet[2] = {GPIO_PIN_RESET, GPIO_PIN_SET};
 
 void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shiftStoreClockPin,
 					uint16_t shiftOutputEnablePin, uint16_t shiftMCLRPin,
-					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM,
-					uint32_t tim_PWM_CHANNEL) {
+					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM_pass,
+					uint32_t tim_PWM_CHANNEL_pass) {
 
 	shiftData = shiftDataPin;
 	shiftDataClock = shiftDataClockPin;
 	shiftStoreClock = shiftStoreClockPin;
 	shiftOutputEnable = shiftOutputEnablePin;
 	shiftMCLR = shiftMCLRPin;
+
+	htim_PWM = *htim_PWM_pass;
+	tim_PWM_CHANNEL_shift = tim_PWM_CHANNEL_pass;
 
 	for(int i = 0; i < 5; i++) {
 		portArray[i] = GPIOPortArray[i];
@@ -86,7 +95,7 @@ void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shi
 
 	// Set duty cycle to 50%
 
-	sevSeg_setIntensity(htim_PWM, tim_PWM_CHANNEL, 50);
+	sevSeg_setIntensity(50);
 
 	//Flash an initializing "Hof" symbol
 	uint8_t hofSymb[4] = {0b00000000, 0b00110111, 0b00011101, 0b01000111};
@@ -192,10 +201,10 @@ void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime) {
 
 }
 
-void sevSeg_setIntensity(TIM_HandleTypeDef *htim_PWM, uint32_t tim_PWM_CHANNEL, uint16_t dutyCycle) {
+void sevSeg_setIntensity(uint16_t dutyCycle) {
 
-	__HAL_TIM_SET_COMPARE(htim_PWM, tim_PWM_CHANNEL, dutyCycle);
-	HAL_TIM_PWM_Start(htim_PWM, tim_PWM_CHANNEL);
+	__HAL_TIM_SET_COMPARE(&htim_PWM, tim_PWM_CHANNEL_shift, dutyCycle);
+	HAL_TIM_PWM_Start(&htim_PWM, tim_PWM_CHANNEL_shift);
 
 }
 

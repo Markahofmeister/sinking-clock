@@ -34,14 +34,14 @@
 
 void sevSeg_Init(uint16_t shiftDataPin, uint16_t shiftDataClockPin, uint16_t shiftStoreClockPin,
 					uint16_t shiftOutputEnablePin, uint16_t shiftMCLRPin,
-					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM,
-					uint32_t tim_PWM_CHANNEL);
+					GPIO_TypeDef **GPIOPortArray, TIM_HandleTypeDef *htim, TIM_HandleTypeDef *htim_PWM_pass,
+					uint32_t tim_PWM_CHANNEL_pass);
 
 
 void sevSeg_updateDigits(RTC_TimeTypeDef *updateTime);
 
 
-void sevSeg_setIntensity(TIM_HandleTypeDef *htim, uint32_t tim_PWM_CHANNEL, uint16_t dutyCycle);
+void sevSeg_setIntensity(uint16_t dutyCycle);
 
 
 #endif /* INC_SEVSEG_SHIFT_H_ */

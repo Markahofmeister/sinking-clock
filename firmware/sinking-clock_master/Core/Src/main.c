@@ -688,7 +688,7 @@ void userAlarmBeep() {
 
 		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 2)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
+			sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
 
 			HAL_GPIO_TogglePin(buzzerPort, buzzerPin);					// Toggle Buzzer
 
@@ -708,7 +708,7 @@ void userAlarmBeep() {
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
 	updateAndDisplayTime();				// Update to current time and display
-	sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
+	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
 
 
 	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
@@ -772,7 +772,7 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	updateAndDisplayTime();
 
-	sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
+	sevSeg_setIntensity(sevSeg_intensityDuty[displayToggle]);		//Turn display to proper duty cycle
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
@@ -887,7 +887,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 //				HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
-				sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
+				sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
 
 				timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
 				displayBlink = !displayBlink;
@@ -898,7 +898,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 //		HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_RESET);
 
-		sevSeg_setIntensity(timerPWM, tim_PWM_CHANNEL, sevSeg_intensityDuty[1]);			// Turn display back to 50% intensity
+		sevSeg_setIntensity(sevSeg_intensityDuty[1]);			// Turn display back to 50% intensity
 
 		HAL_TIM_Base_Stop(timerDelay);
 
