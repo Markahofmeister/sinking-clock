@@ -19,5 +19,5 @@
 ../Core/Src/main.c:1025:6:currHourInc	8	static,ignoring_inline_asm
 ../Core/Src/main.c:1050:6:alarmMinuteInc	8	static,ignoring_inline_asm
 ../Core/Src/main.c:1065:6:currMinuteInc	8	static,ignoring_inline_asm
-../Core/Src/main.c:1084:6:dispError	16	static
-../Core/Src/main.c:1117:6:Error_Handler	8	static,ignoring_inline_asm
+../Core/Src/main.c:1087:6:dispError	16	static
+../Core/Src/main.c:1120:6:Error_Handler	8	static,ignoring_inline_asm

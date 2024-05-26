@@ -1045,6 +1045,10 @@ void currHourInc(void) {
 		__NOP();
 	}
 
+	// Reset seconds
+	currTime.Seconds = 0;
+	currTime.SecondFraction = 0;
+
 }
 
 void alarmMinuteInc(void) {
@@ -1078,6 +1082,10 @@ void currMinuteInc(void) {
 	else {
 		__NOP();
 	}
+
+	// Reset seconds
+	currTime.Seconds = 0;
+	currTime.SecondFraction = 0;
 
 }
 
