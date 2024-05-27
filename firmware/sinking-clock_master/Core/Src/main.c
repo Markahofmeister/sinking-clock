@@ -420,6 +420,7 @@ static void MX_RTC_Init(void)
 //    Error_Handler();
 //  }
 
+  // Do not initialize time - pull from whatever is in register
   HAL_RTC_GetTime(&hrtc, &currTime, RTCTimeFormat);
 
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
