@@ -156,6 +156,11 @@ void userAlarmBeep(void);
  */
 void dispError();
 
+/*
+ * Updates RTC Backup Registers with user alarm time
+ */
+void updateRTCBackupReg(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -243,10 +248,29 @@ int main(void)
 
     userAlarmToggle = false;			//Default to off
 
-    // User alarm default value
-    userAlarmTime.Hours = 1;
-    userAlarmTime.Minutes = 1;
-    userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+
+    /*
+     * If the bootstrap backup register reads 0x00 (never written to,)
+     * initialize the alarm time to a default value.
+     *
+     * Else, initialize to whatever is stored in backup registers.
+     */
+//    j
+
+    if((uint8_t)HAL_RTCEx_BKUPRead(&hrtc, bootstrapBackupReg) == 0) {
+
+    	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmHourBackupReg, 0x01);
+    	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmMinuteBackupReg, 0x00);
+    	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmTFBackupReg, RTC_HOURFORMAT12_AM);
+
+    	HAL_RTCEx_BKUPWrite(&hrtc, bootstrapBackupReg, 0xFFFFFFFF);
+
+    }
+
+	userAlarmTime.Hours = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmHourBackupReg);
+	userAlarmTime.Minutes = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmMinuteBackupReg);
+	userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
+
 
 
   /* USER CODE END 2 */
@@ -932,9 +956,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		alarmHourInc();
 
-		//printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
-				//userAlarmTime.Minutes, userAlarmTime.Seconds);
-
 	}
 	else {									// Otherwise, change current time hour.
 
@@ -963,9 +984,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
 		alarmMinuteInc();
-
-		//printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
-				//userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else {									// Otherwise, change current time hour.
@@ -1025,6 +1043,9 @@ void alarmHourInc(void) {
 		__NOP();
 	}
 
+	// Update RTC backup registers with new user alarm time
+	updateRTCBackupReg();
+
 }
 
 void currHourInc(void) {
@@ -1068,6 +1089,9 @@ void alarmMinuteInc(void) {
 	else {
 		__NOP();
 	}
+
+	// Update RTC backup registers with new user alarm time
+	updateRTCBackupReg();
 
 }
 
@@ -1121,6 +1145,13 @@ void dispError(void) {
 
 }
 
+void updateRTCBackupReg(void) {
+
+	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmHourBackupReg, userAlarmTime.Hours);
+	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmMinuteBackupReg, userAlarmTime.Minutes);
+	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmTFBackupReg, userAlarmTime.TimeFormat);
+
+}
 /* USER CODE END 4 */
 
 /**

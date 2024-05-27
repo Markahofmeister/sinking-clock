@@ -135,4 +135,15 @@ RTC_DateTypeDef currDate = {0};
 RTC_AlarmTypeDef userAlarmObj = {0};
 RTC_TimeTypeDef userAlarmTime = {0};
 
+/*
+ * User alarm backup register locations
+ */
+
+uint32_t userAlarmHourBackupReg = RTC_BKP_DR0;
+uint32_t userAlarmMinuteBackupReg = RTC_BKP_DR1;
+uint32_t userAlarmTFBackupReg = RTC_BKP_DR2;
+uint32_t bootstrapBackupReg = RTC_BKP_DR3;
+
+
+
 #endif /* INC_SINKINGCLOCKVARS_H_ */
