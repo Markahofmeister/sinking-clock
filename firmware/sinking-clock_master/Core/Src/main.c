@@ -250,21 +250,22 @@ int main(void)
      *
      * Else, initialize to whatever is stored in backup registers.
      */
+//    HAL_RTCEx_BKUPWrite(&hrtc, bootstrapBackupReg, 0x00);
+
     if((uint8_t)HAL_RTCEx_BKUPRead(&hrtc, bootstrapBackupReg) == 0) {
 
-    	userAlarmTime.Hours = 1;
-    	userAlarmTime.Minutes = 0;
-    	userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+    	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmHourBackupReg, 0x01);
+    	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmMinuteBackupReg, 0x00);
+    	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmTFBackupReg, RTC_HOURFORMAT12_AM);
+
     	HAL_RTCEx_BKUPWrite(&hrtc, bootstrapBackupReg, 0xFFFFFFFF);
 
     }
-    else {
 
-		userAlarmTime.Hours = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmHourBackupReg);
-		userAlarmTime.Minutes = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmMinuteBackupReg);
-		userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
+	userAlarmTime.Hours = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmHourBackupReg);
+	userAlarmTime.Minutes = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmMinuteBackupReg);
+	userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
 
-    }
 
 
   /* USER CODE END 2 */
