@@ -204,7 +204,8 @@ int main(void)
 
   uint8_t initRet = 0;
 
-  initRTCTime(&hrtc, &currTime, &currDate);
+  // Init the internal RTC alarm time to track the current time
+  initRTCInternalAlarm(&hrtc, &currTime, &currDate);
 
   // Initialize all GPIOs to be used with 7 segment display
     sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
@@ -717,7 +718,6 @@ void userAlarmBeep() {
 	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
 
 
-	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 }
 

@@ -8,7 +8,7 @@
 #include "../Inc/alarm.h"
 
 
-void initRTCTime(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
+void initRTCInternalAlarm(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
 
 	RTC_AlarmTypeDef internalAlarm_init = {0};
 	internalAlarm_init.AlarmTime.Hours = currTime->Hours;
