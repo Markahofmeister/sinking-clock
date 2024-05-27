@@ -82,7 +82,7 @@ const uint16_t shiftDataPin = GPIO_PIN_9;
 const uint16_t shiftDataClockPin = GPIO_PIN_10;
 const uint16_t shiftStoreClockPin = GPIO_PIN_7;
 const uint16_t shiftOutputEnablePin = GPIO_PIN_6;
-const uint16_t shiftMCLRPin = GPIO_PIN_11;			// Or 9. Unclear.
+const uint16_t shiftMCLRPin = GPIO_PIN_11;
 GPIO_TypeDef *GPIOPortArray[5] = {GPIOA, GPIOA, GPIOC, GPIOC, GPIOA};
 
 /*

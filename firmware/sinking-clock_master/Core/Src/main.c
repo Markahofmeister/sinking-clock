@@ -198,7 +198,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Set Smooth Calibration Value
-    HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
+
+  HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
     							RTC_SMOOTHCALIB_PLUSPULSES_RESET, rtcCalVal);
 
   uint8_t initRet = 0;
@@ -407,17 +408,21 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x1;
-  sTime.Minutes = 0x0;
-  sTime.Seconds = 0x0;
-  sTime.SubSeconds = 0x0;
-  sTime.TimeFormat = RTC_HOURFORMAT12_AM;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  sTime.Hours = 0x1;
+//  sTime.Minutes = 0x0;
+//  sTime.Seconds = 0x0;
+//  sTime.SubSeconds = 0x0;
+//  sTime.TimeFormat = RTC_HOURFORMAT12_AM;
+//  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+//  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+//  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+
+  // Do not initialize time - pull from whatever is in register
+  HAL_RTC_GetTime(&hrtc, &currTime, RTCTimeFormat);
+
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
   sDate.Month = RTC_MONTH_JANUARY;
   sDate.Date = 0x1;
@@ -649,9 +654,9 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	  //printf("Enter current time minute increment interrupt\n\r");
 
-	  RTC_AlarmTypeDef sAlarm;
+	  RTC_AlarmTypeDef sAlarm = {0};
 	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
-	  getRTCTime(hrtc, &currTime, &currDate);
+
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
 		sAlarm.AlarmTime.Minutes=0;
@@ -672,6 +677,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 			  && userAlarmTime.Minutes == currTime.Minutes && userAlarmTime.TimeFormat == currTime.TimeFormat) {
 		  userAlarmBeep();
 	  }
+
 
 }
 
@@ -936,6 +942,7 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
+
 		updateAndDisplayTime();
 
 		getRTCTime(&hrtc, &currTime, &currDate);
@@ -950,8 +957,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 HAL_StatusTypeDef minuteSetISR(void) {
 
-//	printf("Entered minute set ISR.\n\r");
-//	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
@@ -969,6 +974,24 @@ HAL_StatusTypeDef minuteSetISR(void) {
 
 		HAL_RTC_SetTime(&hrtc, &currTime, RTCTimeFormat);
 
+		/*
+		 * Change internal RTC alarm to keep it triggering
+		 */
+
+		RTC_AlarmTypeDef sAlarm = {0};
+		HAL_RTC_GetAlarm(&hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
+
+		if(sAlarm.AlarmTime.Minutes>58) {
+			sAlarm.AlarmTime.Minutes=0;
+			//printf("Reset alarm time\n\r");
+		} else {
+			sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+		}
+		while(HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
+			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+		}
+
+
 		updateAndDisplayTime();
 
 		getRTCTime(&hrtc, &currTime, &currDate);
@@ -976,6 +999,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 		//printf("Current time minute incremented to %u:%u:%u.\n\r", currTime.Hours,
 				//currTime.Minutes, currTime.Seconds);
 	}
+
 
 	return halRet;
 }
@@ -1026,6 +1050,10 @@ void currHourInc(void) {
 		__NOP();
 	}
 
+	// Reset seconds
+	currTime.Seconds = 0;
+	currTime.SecondFraction = 0;
+
 }
 
 void alarmMinuteInc(void) {
@@ -1059,6 +1087,10 @@ void currMinuteInc(void) {
 	else {
 		__NOP();
 	}
+
+	// Reset seconds
+	currTime.Seconds = 0;
+	currTime.SecondFraction = 0;
 
 }
 
