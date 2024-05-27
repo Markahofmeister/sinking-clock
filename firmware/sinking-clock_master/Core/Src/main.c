@@ -243,10 +243,28 @@ int main(void)
 
     userAlarmToggle = false;			//Default to off
 
-    // User alarm default value
-    userAlarmTime.Hours = 1;
-    userAlarmTime.Minutes = 1;
-    userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+
+    /*
+     * If the bootstrap backup register reads 0x00 (never written to,)
+     * initialize the alarm time to a default value.
+     *
+     * Else, initialize to whatever is stored in backup registers.
+     */
+    if((uint8_t)HAL_RTCEx_BKUPRead(&hrtc, bootstrapBackupReg) == 0) {
+
+    	userAlarmTime.Hours = 1;
+    	userAlarmTime.Minutes = 0;
+    	userAlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+    	HAL_RTCEx_BKUPWrite(&hrtc, bootstrapBackupReg, 0xFFFFFFFF);
+
+    }
+    else {
+
+		userAlarmTime.Hours = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmHourBackupReg);
+		userAlarmTime.Minutes = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmMinuteBackupReg);
+		userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
+
+    }
 
 
   /* USER CODE END 2 */
@@ -932,9 +950,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 		alarmHourInc();
 
-		//printf("User alarm hour incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
-				//userAlarmTime.Minutes, userAlarmTime.Seconds);
-
 	}
 	else {									// Otherwise, change current time hour.
 
@@ -963,9 +978,6 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	if(alarmSetMode) {	// If the clock is in alarm set mode, change user alarm time hour
 
 		alarmMinuteInc();
-
-		//printf("User alarm minute incremented to %u:%u:%u\n\r", userAlarmTime.Hours,
-				//userAlarmTime.Minutes, userAlarmTime.Seconds);
 
 	}
 	else {									// Otherwise, change current time hour.
