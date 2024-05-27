@@ -198,6 +198,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   // Set Smooth Calibration Value
+
   HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
     							RTC_SMOOTHCALIB_PLUSPULSES_RESET, rtcCalVal);
 
@@ -645,7 +646,7 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 }
 
-void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
+void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {\
 
 	  //printf("Enter current time minute increment interrupt\n\r");
 
@@ -672,6 +673,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 			  && userAlarmTime.Minutes == currTime.Minutes && userAlarmTime.TimeFormat == currTime.TimeFormat) {
 		  userAlarmBeep();
 	  }
+
 
 }
 
@@ -951,8 +953,6 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 HAL_StatusTypeDef minuteSetISR(void) {
 
-//	printf("Entered minute set ISR.\n\r");
-//	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 	HAL_StatusTypeDef halRet = HAL_OK;
 
@@ -995,6 +995,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 		//printf("Current time minute incremented to %u:%u:%u.\n\r", currTime.Hours,
 				//currTime.Minutes, currTime.Seconds);
 	}
+
 
 	return halRet;
 }
