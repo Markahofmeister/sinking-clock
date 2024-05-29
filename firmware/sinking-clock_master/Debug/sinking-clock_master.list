@@ -37,11 +37,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  00018116  00000000  00000000  0001e1a0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000164b9  00000000  00000000  000362b6  2**0
+ 17 .debug_line   000164b7  00000000  00000000  000362b6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000983f2  00000000  00000000  0004c76f  2**0
+ 18 .debug_str    000983f2  00000000  00000000  0004c76d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000e4b61  2**0
+ 19 .comment      00000043  00000000  00000000  000e4b5f  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00004178  00000000  00000000  000e4ba4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -2188,125 +2188,126 @@ static void MX_RTC_Init(void)
 //    Error_Handler();
 //  }
 
-  // Do not initialize time - pull from whatever is in register
-  HAL_RTC_GetTime(&hrtc, &currTime, RTCTimeFormat);
- 8000dcc:	492e      	ldr	r1, [pc, #184]	@ (8000e88 <MX_RTC_Init+0x130>)
- 8000dce:	4b2c      	ldr	r3, [pc, #176]	@ (8000e80 <MX_RTC_Init+0x128>)
- 8000dd0:	2200      	movs	r2, #0
- 8000dd2:	0018      	movs	r0, r3
- 8000dd4:	f003 fba6 	bl	8004524 <HAL_RTC_GetTime>
 
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
- 8000dd8:	2128      	movs	r1, #40	@ 0x28
+ 8000dcc:	2128      	movs	r1, #40	@ 0x28
+ 8000dce:	187b      	adds	r3, r7, r1
+ 8000dd0:	2201      	movs	r2, #1
+ 8000dd2:	701a      	strb	r2, [r3, #0]
+  sDate.Month = RTC_MONTH_JANUARY;
+ 8000dd4:	187b      	adds	r3, r7, r1
+ 8000dd6:	2201      	movs	r2, #1
+ 8000dd8:	705a      	strb	r2, [r3, #1]
+  sDate.Date = 0x1;
  8000dda:	187b      	adds	r3, r7, r1
  8000ddc:	2201      	movs	r2, #1
- 8000dde:	701a      	strb	r2, [r3, #0]
-  sDate.Month = RTC_MONTH_JANUARY;
- 8000de0:	187b      	adds	r3, r7, r1
- 8000de2:	2201      	movs	r2, #1
- 8000de4:	705a      	strb	r2, [r3, #1]
-  sDate.Date = 0x1;
- 8000de6:	187b      	adds	r3, r7, r1
- 8000de8:	2201      	movs	r2, #1
- 8000dea:	709a      	strb	r2, [r3, #2]
+ 8000dde:	709a      	strb	r2, [r3, #2]
   sDate.Year = 0x0;
- 8000dec:	187b      	adds	r3, r7, r1
- 8000dee:	2200      	movs	r2, #0
- 8000df0:	70da      	strb	r2, [r3, #3]
+ 8000de0:	187b      	adds	r3, r7, r1
+ 8000de2:	2200      	movs	r2, #0
+ 8000de4:	70da      	strb	r2, [r3, #3]
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
- 8000df2:	1879      	adds	r1, r7, r1
- 8000df4:	4b22      	ldr	r3, [pc, #136]	@ (8000e80 <MX_RTC_Init+0x128>)
- 8000df6:	2201      	movs	r2, #1
- 8000df8:	0018      	movs	r0, r3
- 8000dfa:	f003 fbef 	bl	80045dc <HAL_RTC_SetDate>
- 8000dfe:	1e03      	subs	r3, r0, #0
- 8000e00:	d001      	beq.n	8000e06 <MX_RTC_Init+0xae>
+ 8000de6:	1879      	adds	r1, r7, r1
+ 8000de8:	4b25      	ldr	r3, [pc, #148]	@ (8000e80 <MX_RTC_Init+0x128>)
+ 8000dea:	2201      	movs	r2, #1
+ 8000dec:	0018      	movs	r0, r3
+ 8000dee:	f003 fbf5 	bl	80045dc <HAL_RTC_SetDate>
+ 8000df2:	1e03      	subs	r3, r0, #0
+ 8000df4:	d001      	beq.n	8000dfa <MX_RTC_Init+0xa2>
   {
     Error_Handler();
- 8000e02:	f000 fdd1 	bl	80019a8 <Error_Handler>
+ 8000df6:	f000 fdd7 	bl	80019a8 <Error_Handler>
   }
 
   /** Enable the Alarm A
   */
   sAlarm.AlarmTime.Hours = 0x1;
- 8000e06:	003b      	movs	r3, r7
- 8000e08:	2201      	movs	r2, #1
- 8000e0a:	701a      	strb	r2, [r3, #0]
+ 8000dfa:	003b      	movs	r3, r7
+ 8000dfc:	2201      	movs	r2, #1
+ 8000dfe:	701a      	strb	r2, [r3, #0]
   sAlarm.AlarmTime.Minutes = 0x1;
- 8000e0c:	003b      	movs	r3, r7
- 8000e0e:	2201      	movs	r2, #1
- 8000e10:	705a      	strb	r2, [r3, #1]
+ 8000e00:	003b      	movs	r3, r7
+ 8000e02:	2201      	movs	r2, #1
+ 8000e04:	705a      	strb	r2, [r3, #1]
   sAlarm.AlarmTime.Seconds = 0x0;
+ 8000e06:	003b      	movs	r3, r7
+ 8000e08:	2200      	movs	r2, #0
+ 8000e0a:	709a      	strb	r2, [r3, #2]
+  sAlarm.AlarmTime.SubSeconds = 0x0;
+ 8000e0c:	003b      	movs	r3, r7
+ 8000e0e:	2200      	movs	r2, #0
+ 8000e10:	605a      	str	r2, [r3, #4]
+  sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
  8000e12:	003b      	movs	r3, r7
  8000e14:	2200      	movs	r2, #0
- 8000e16:	709a      	strb	r2, [r3, #2]
-  sAlarm.AlarmTime.SubSeconds = 0x0;
+ 8000e16:	70da      	strb	r2, [r3, #3]
+  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
  8000e18:	003b      	movs	r3, r7
  8000e1a:	2200      	movs	r2, #0
- 8000e1c:	605a      	str	r2, [r3, #4]
-  sAlarm.AlarmTime.TimeFormat = RTC_HOURFORMAT12_AM;
+ 8000e1c:	60da      	str	r2, [r3, #12]
+  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
  8000e1e:	003b      	movs	r3, r7
  8000e20:	2200      	movs	r2, #0
- 8000e22:	70da      	strb	r2, [r3, #3]
-  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
- 8000e24:	003b      	movs	r3, r7
- 8000e26:	2200      	movs	r2, #0
- 8000e28:	60da      	str	r2, [r3, #12]
-  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
- 8000e2a:	003b      	movs	r3, r7
- 8000e2c:	2200      	movs	r2, #0
- 8000e2e:	611a      	str	r2, [r3, #16]
+ 8000e22:	611a      	str	r2, [r3, #16]
   sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
- 8000e30:	003b      	movs	r3, r7
- 8000e32:	4a16      	ldr	r2, [pc, #88]	@ (8000e8c <MX_RTC_Init+0x134>)
- 8000e34:	615a      	str	r2, [r3, #20]
+ 8000e24:	003b      	movs	r3, r7
+ 8000e26:	4a18      	ldr	r2, [pc, #96]	@ (8000e88 <MX_RTC_Init+0x130>)
+ 8000e28:	615a      	str	r2, [r3, #20]
                               |RTC_ALARMMASK_SECONDS;
   sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
- 8000e36:	003b      	movs	r3, r7
- 8000e38:	2200      	movs	r2, #0
- 8000e3a:	619a      	str	r2, [r3, #24]
+ 8000e2a:	003b      	movs	r3, r7
+ 8000e2c:	2200      	movs	r2, #0
+ 8000e2e:	619a      	str	r2, [r3, #24]
   sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
- 8000e3c:	003b      	movs	r3, r7
- 8000e3e:	2200      	movs	r2, #0
- 8000e40:	61da      	str	r2, [r3, #28]
+ 8000e30:	003b      	movs	r3, r7
+ 8000e32:	2200      	movs	r2, #0
+ 8000e34:	61da      	str	r2, [r3, #28]
   sAlarm.AlarmDateWeekDay = 0x1;
- 8000e42:	003b      	movs	r3, r7
- 8000e44:	2220      	movs	r2, #32
- 8000e46:	2101      	movs	r1, #1
- 8000e48:	5499      	strb	r1, [r3, r2]
+ 8000e36:	003b      	movs	r3, r7
+ 8000e38:	2220      	movs	r2, #32
+ 8000e3a:	2101      	movs	r1, #1
+ 8000e3c:	5499      	strb	r1, [r3, r2]
   sAlarm.Alarm = RTC_ALARM_A;
- 8000e4a:	003b      	movs	r3, r7
- 8000e4c:	2280      	movs	r2, #128	@ 0x80
- 8000e4e:	0052      	lsls	r2, r2, #1
- 8000e50:	625a      	str	r2, [r3, #36]	@ 0x24
+ 8000e3e:	003b      	movs	r3, r7
+ 8000e40:	2280      	movs	r2, #128	@ 0x80
+ 8000e42:	0052      	lsls	r2, r2, #1
+ 8000e44:	625a      	str	r2, [r3, #36]	@ 0x24
   if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
- 8000e52:	0039      	movs	r1, r7
- 8000e54:	4b0a      	ldr	r3, [pc, #40]	@ (8000e80 <MX_RTC_Init+0x128>)
- 8000e56:	2201      	movs	r2, #1
- 8000e58:	0018      	movs	r0, r3
- 8000e5a:	f003 fc9f 	bl	800479c <HAL_RTC_SetAlarm_IT>
- 8000e5e:	1e03      	subs	r3, r0, #0
- 8000e60:	d001      	beq.n	8000e66 <MX_RTC_Init+0x10e>
+ 8000e46:	0039      	movs	r1, r7
+ 8000e48:	4b0d      	ldr	r3, [pc, #52]	@ (8000e80 <MX_RTC_Init+0x128>)
+ 8000e4a:	2201      	movs	r2, #1
+ 8000e4c:	0018      	movs	r0, r3
+ 8000e4e:	f003 fca5 	bl	800479c <HAL_RTC_SetAlarm_IT>
+ 8000e52:	1e03      	subs	r3, r0, #0
+ 8000e54:	d001      	beq.n	8000e5a <MX_RTC_Init+0x102>
   {
     Error_Handler();
- 8000e62:	f000 fda1 	bl	80019a8 <Error_Handler>
+ 8000e56:	f000 fda7 	bl	80019a8 <Error_Handler>
   }
 
   /** Enable Calibration
   */
   if (HAL_RTCEx_SetCalibrationOutPut(&hrtc, RTC_CALIBOUTPUT_512HZ) != HAL_OK)
- 8000e66:	4b06      	ldr	r3, [pc, #24]	@ (8000e80 <MX_RTC_Init+0x128>)
- 8000e68:	2100      	movs	r1, #0
- 8000e6a:	0018      	movs	r0, r3
- 8000e6c:	f004 f82e 	bl	8004ecc <HAL_RTCEx_SetCalibrationOutPut>
- 8000e70:	1e03      	subs	r3, r0, #0
- 8000e72:	d001      	beq.n	8000e78 <MX_RTC_Init+0x120>
+ 8000e5a:	4b09      	ldr	r3, [pc, #36]	@ (8000e80 <MX_RTC_Init+0x128>)
+ 8000e5c:	2100      	movs	r1, #0
+ 8000e5e:	0018      	movs	r0, r3
+ 8000e60:	f004 f834 	bl	8004ecc <HAL_RTCEx_SetCalibrationOutPut>
+ 8000e64:	1e03      	subs	r3, r0, #0
+ 8000e66:	d001      	beq.n	8000e6c <MX_RTC_Init+0x114>
   {
     Error_Handler();
- 8000e74:	f000 fd98 	bl	80019a8 <Error_Handler>
+ 8000e68:	f000 fd9e 	bl	80019a8 <Error_Handler>
   }
   /* USER CODE BEGIN RTC_Init 2 */
+
+  // Do not initialize time - pull from whatever is in register
+    HAL_RTC_GetTime(&hrtc, &currTime, RTCTimeFormat);
+ 8000e6c:	4907      	ldr	r1, [pc, #28]	@ (8000e8c <MX_RTC_Init+0x134>)
+ 8000e6e:	4b04      	ldr	r3, [pc, #16]	@ (8000e80 <MX_RTC_Init+0x128>)
+ 8000e70:	2200      	movs	r2, #0
+ 8000e72:	0018      	movs	r0, r3
+ 8000e74:	f003 fb56 	bl	8004524 <HAL_RTC_GetTime>
 
   /* USER CODE END RTC_Init 2 */
 
@@ -2317,8 +2318,8 @@ static void MX_RTC_Init(void)
  8000e7e:	bd80      	pop	{r7, pc}
  8000e80:	20000110 	.word	0x20000110
  8000e84:	40002800 	.word	0x40002800
- 8000e88:	2000008c 	.word	0x2000008c
- 8000e8c:	80800080 	.word	0x80800080
+ 8000e88:	80800080 	.word	0x80800080
+ 8000e8c:	2000008c 	.word	0x2000008c
 
 08000e90 <MX_TIM2_Init>:
   * @brief TIM2 Initialization Function

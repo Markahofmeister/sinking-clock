@@ -8,6 +8,7 @@ if(Alarm SET button LOW?) then (yes)
 else(no)
   :Get current time;
   :Increment current time minute;
+  :Update RTC internal alarm;
   :call RTC Interrupt ISR;
 endif
 stop

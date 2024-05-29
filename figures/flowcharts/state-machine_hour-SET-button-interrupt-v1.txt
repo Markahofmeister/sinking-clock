@@ -1,13 +1,14 @@
 @startuml
 #Red:Hour SET Button Interrupt;
 partition "Hour SET Button ISR" {
-if(Alarm SET button LOW?) then (yes)
+if(Alarm SET State?) then (yes)
   :Get current alarm time;
   :Increment current alarm time hour;
   :Send updated alarm time to RTC;
 else(no)
   :Get current time;
   :Increment current time hour;
+  :Update RTC internal alarm;
   :call RTC Interrupt ISR;
 endif
 stop

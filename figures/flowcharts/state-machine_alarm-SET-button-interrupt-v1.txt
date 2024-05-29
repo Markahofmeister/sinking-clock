@@ -6,7 +6,7 @@
   :Load Timer 1 channel 1 to create 500ms 
 counter;
     if ( ) then ( )
-|#lightgray|"Main ISR Thread"|
+|#lightgray|Main ISR Thread|
   partition "Alarm SET Button ISR" {
   repeat
     :Display Current Alarm Time;
