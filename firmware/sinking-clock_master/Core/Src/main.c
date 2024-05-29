@@ -445,8 +445,6 @@ static void MX_RTC_Init(void)
 //    Error_Handler();
 //  }
 
-  // Do not initialize time - pull from whatever is in register
-  HAL_RTC_GetTime(&hrtc, &currTime, RTCTimeFormat);
 
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
   sDate.Month = RTC_MONTH_JANUARY;
@@ -485,6 +483,9 @@ static void MX_RTC_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN RTC_Init 2 */
+
+  // Do not initialize time - pull from whatever is in register
+    HAL_RTC_GetTime(&hrtc, &currTime, RTCTimeFormat);
 
   /* USER CODE END RTC_Init 2 */
 
