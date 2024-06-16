@@ -65,7 +65,16 @@ TIM_HandleTypeDef *timerSnooze = &htim16;
 /*
  * State bools
  */
+
+// Used to blare alarm if enabled
 bool alarmSetMode = false;
+
+/*
+ * Used to indicate whether the clock is in a
+ * state to sound a snoozed alarm again after 10 minutes.
+ * false = regular operation, true = 10-minute snooze period
+ */
+bool secondSnooze = false;
 
 /*
  * Cap. touch struct
@@ -276,10 +285,6 @@ int main(void)
 	userAlarmTime.Hours = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmHourBackupReg);
 	userAlarmTime.Minutes = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmMinuteBackupReg);
 	userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
-
-
-	// Start snooze timer to trigger every 1 second
-	HAL_TIM_Base_Start_IT(timerSnooze);
 
   /* USER CODE END 2 */
 
@@ -594,7 +599,7 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 58595 / 600;
+  htim16.Init.Prescaler = 58595 / (600 / 5);
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -776,12 +781,37 @@ void userAlarmBeep() {
 
 	} while(capTouch.keyStat == 0x00);
 
+	// If this is the first snooze,
+	if(!secondSnooze) {
+
+		// Start the snooze timer to trigger an interrupt after 10 minutes
+		HAL_TIM_Base_Start_IT(timerSnooze);
+
+		// Set flag
+		secondSnooze = true;
+
+	} else if (secondSnooze) { 		// If the user has already snoozed once,
+
+		// Stop the timer and
+		HAL_TIM_Base_Stop_IT(timerSnooze);
+
+		/*
+		 * Apparently this resets the timer
+		 */
+		timerSnooze->Instance->ARR = 0;
+		timerSnooze->Instance->CR1 &= ~TIM_CR1_UDIS;
+		timerSnooze->Instance->EGR = TIM_EGR_UG;
+		timerSnooze->Instance->CR1 = TIM_CR1_UDIS;
+
+		// Reset flag
+		secondSnooze = false;
+
+	}
+
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
 	updateAndDisplayTime();				// Update to current time and display
 	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
-
-
 
 }
 
@@ -837,9 +867,11 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
-	if(htim == timerSnooze) {
+	if(htim == timerSnooze && secondSnooze) {
 
 		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+
+		userAlarmBeep();
 
 	}
 
@@ -889,6 +921,9 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 	else {
 		__NOP();							//Code should never reach here.
 	}
+
+	// Reset snooze time
+	secondSnooze = false;
 
 	return halRet;
 
