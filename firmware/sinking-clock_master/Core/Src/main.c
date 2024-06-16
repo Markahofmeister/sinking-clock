@@ -278,6 +278,8 @@ int main(void)
 	userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
 
 
+	// Start snooze timer to trigger every 1 second
+	HAL_TIM_Base_Start_IT(timerSnooze);
 
   /* USER CODE END 2 */
 
@@ -592,7 +594,7 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 58595;
+  htim16.Init.Prescaler = 58595 / 600;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -833,6 +835,15 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 }
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+
+	if(htim == timerSnooze) {
+
+		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+
+	}
+
+}
 
 HAL_StatusTypeDef displayButtonISR(void) {
 
@@ -954,8 +965,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 			if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
 
-//				HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
-
 				sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
 
 				timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
@@ -984,9 +993,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 }
 
 HAL_StatusTypeDef hourSetISR(void) {
-
-//	printf("Entered hour set ISR.\n\r");
-//	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 
 	HAL_StatusTypeDef halRet = HAL_OK;
