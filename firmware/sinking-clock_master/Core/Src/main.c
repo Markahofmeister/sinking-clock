@@ -52,11 +52,14 @@ RTC_HandleTypeDef hrtc;
 
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim14;
+TIM_HandleTypeDef htim16;
 
 /* USER CODE BEGIN PV */
 
-TIM_HandleTypeDef *timerDelay = &htim14;
 TIM_HandleTypeDef *timerPWM = &htim2;
+TIM_HandleTypeDef *timerDelay = &htim14;
+TIM_HandleTypeDef *timerSnooze = &htim16;
+
 
 
 /*
@@ -78,6 +81,7 @@ static void MX_RTC_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_TIM14_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_TIM16_Init(void);
 /* USER CODE BEGIN PFP */
 
 /*
@@ -200,6 +204,7 @@ int main(void)
   MX_I2C1_Init();
   MX_TIM14_Init();
   MX_TIM2_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
   // Set Smooth Calibration Value
@@ -263,6 +268,7 @@ int main(void)
     	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmMinuteBackupReg, 0x00);
     	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmTFBackupReg, RTC_HOURFORMAT12_AM);
 
+    	// Write backup register with a non-zero value to signify that it has been initialized before
     	HAL_RTCEx_BKUPWrite(&hrtc, bootstrapBackupReg, 0xFFFFFFFF);
 
     }
@@ -403,7 +409,6 @@ static void MX_RTC_Init(void)
 
   /* USER CODE END RTC_Init 0 */
 
-  RTC_TimeTypeDef sTime = {0};
   RTC_DateTypeDef sDate = {0};
   RTC_AlarmTypeDef sAlarm = {0};
 
@@ -568,6 +573,38 @@ static void MX_TIM14_Init(void)
   /* USER CODE BEGIN TIM14_Init 2 */
 
   /* USER CODE END TIM14_Init 2 */
+
+}
+
+/**
+  * @brief TIM16 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM16_Init(void)
+{
+
+  /* USER CODE BEGIN TIM16_Init 0 */
+
+  /* USER CODE END TIM16_Init 0 */
+
+  /* USER CODE BEGIN TIM16_Init 1 */
+
+  /* USER CODE END TIM16_Init 1 */
+  htim16.Instance = TIM16;
+  htim16.Init.Prescaler = 58595;
+  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim16.Init.Period = 65535;
+  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim16.Init.RepetitionCounter = 10;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM16_Init 2 */
+
+  /* USER CODE END TIM16_Init 2 */
 
 }
 
@@ -795,6 +832,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 	}
 
 }
+
 
 HAL_StatusTypeDef displayButtonISR(void) {
 
