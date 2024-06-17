@@ -599,17 +599,21 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 58595 / (600 / 50);
+  htim16.Init.Prescaler = 58595 / (600 / 20) - 1;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim16.Init.RepetitionCounter = 10;
-  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN TIM16_Init 2 */
+
+  // Clear SR interrupts
+  __HAL_TIM_CLEAR_IT(timerSnooze, TIM_IT_UPDATE);
+
 
   /* USER CODE END TIM16_Init 2 */
 
@@ -803,13 +807,16 @@ void userAlarmBeep() {
 		// Stop the timer and
 		HAL_TIM_Base_Stop_IT(timerSnooze);
 
-		/*
-		 * Apparently this resets the timer
-		 */
-//		timerSnooze->Instance->ARR = 0;
-//		timerSnooze->Instance->CR1 &= ~TIM_CR1_UDIS;
-//		timerSnooze->Instance->EGR = TIM_EGR_UG;
-//		timerSnooze->Instance->CR1 = TIM_CR1_UDIS;
+		// Reset count to 0
+		// only bits 0 - 15 should be changed.
+		timerSnooze->Instance->CNT &= 0xFFFF0000;
+
+		// Reset interrupt status register
+		timerSnooze->Instance->SR &= 0xFFFC;
+
+		// Re-write RCR with 10
+		timerSnooze->Instance->RCR &= 0xFF00;
+		timerSnooze->Instance->RCR |= 0x000A;
 
 		// Reset flag
 		secondSnooze = false;
