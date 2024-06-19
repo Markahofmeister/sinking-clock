@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000028  00000000  00000000  00008070  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00012cb8  00000000  00000000  00008098  2**0
+ 12 .debug_info   00012ccf  00000000  00000000  00008098  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002bbf  00000000  00000000  0001ad50  2**0
+ 13 .debug_abbrev 00002bbf  00000000  00000000  0001ad67  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00001230  00000000  00000000  0001d910  2**3
+ 14 .debug_aranges 00001230  00000000  00000000  0001d928  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000e2b  00000000  00000000  0001eb40  2**0
+ 15 .debug_rnglists 00000e2b  00000000  00000000  0001eb58  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00018116  00000000  00000000  0001f96b  2**0
+ 16 .debug_macro  00018116  00000000  00000000  0001f983  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000165c2  00000000  00000000  00037a81  2**0
+ 17 .debug_line   000165c8  00000000  00000000  00037a99  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00098431  00000000  00000000  0004e043  2**0
+ 18 .debug_str    00098441  00000000  00000000  0004e061  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000e6474  2**0
+ 19 .comment      00000043  00000000  00000000  000e64a2  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000041d0  00000000  00000000  000e64b8  2**2
+ 20 .debug_frame  000041d0  00000000  00000000  000e64e8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000061  00000000  00000000  000ea688  2**0
+ 21 .debug_line_str 00000061  00000000  00000000  000ea6b8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2529,84 +2529,84 @@ static void MX_TIM16_Init(void)
  8000f94:	4b1d      	ldr	r3, [pc, #116]	@ (800100c <MX_TIM16_Init+0x7c>)
  8000f96:	4a1e      	ldr	r2, [pc, #120]	@ (8001010 <MX_TIM16_Init+0x80>)
  8000f98:	601a      	str	r2, [r3, #0]
-  htim16.Init.Prescaler = 58595 / (600 / 20) - 1;
+  htim16.Init.Prescaler = 58595 / (600 / 20 * 10) - 1;
  8000f9a:	4b1c      	ldr	r3, [pc, #112]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000f9c:	22f4      	movs	r2, #244	@ 0xf4
- 8000f9e:	00d2      	lsls	r2, r2, #3
- 8000fa0:	605a      	str	r2, [r3, #4]
+ 8000f9c:	22c2      	movs	r2, #194	@ 0xc2
+ 8000f9e:	605a      	str	r2, [r3, #4]
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
- 8000fa2:	4b1a      	ldr	r3, [pc, #104]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000fa4:	2200      	movs	r2, #0
- 8000fa6:	609a      	str	r2, [r3, #8]
+ 8000fa0:	4b1a      	ldr	r3, [pc, #104]	@ (800100c <MX_TIM16_Init+0x7c>)
+ 8000fa2:	2200      	movs	r2, #0
+ 8000fa4:	609a      	str	r2, [r3, #8]
   htim16.Init.Period = 65535;
- 8000fa8:	4b18      	ldr	r3, [pc, #96]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000faa:	4a1a      	ldr	r2, [pc, #104]	@ (8001014 <MX_TIM16_Init+0x84>)
- 8000fac:	60da      	str	r2, [r3, #12]
+ 8000fa6:	4b19      	ldr	r3, [pc, #100]	@ (800100c <MX_TIM16_Init+0x7c>)
+ 8000fa8:	4a1a      	ldr	r2, [pc, #104]	@ (8001014 <MX_TIM16_Init+0x84>)
+ 8000faa:	60da      	str	r2, [r3, #12]
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
- 8000fae:	4b17      	ldr	r3, [pc, #92]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000fb0:	2200      	movs	r2, #0
- 8000fb2:	611a      	str	r2, [r3, #16]
-  htim16.Init.RepetitionCounter = 10;
- 8000fb4:	4b15      	ldr	r3, [pc, #84]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000fb6:	220a      	movs	r2, #10
- 8000fb8:	615a      	str	r2, [r3, #20]
+ 8000fac:	4b17      	ldr	r3, [pc, #92]	@ (800100c <MX_TIM16_Init+0x7c>)
+ 8000fae:	2200      	movs	r2, #0
+ 8000fb0:	611a      	str	r2, [r3, #16]
+  htim16.Init.RepetitionCounter = 100;
+ 8000fb2:	4b16      	ldr	r3, [pc, #88]	@ (800100c <MX_TIM16_Init+0x7c>)
+ 8000fb4:	2264      	movs	r2, #100	@ 0x64
+ 8000fb6:	615a      	str	r2, [r3, #20]
   htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
- 8000fba:	4b14      	ldr	r3, [pc, #80]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000fbc:	2200      	movs	r2, #0
- 8000fbe:	619a      	str	r2, [r3, #24]
+ 8000fb8:	4b14      	ldr	r3, [pc, #80]	@ (800100c <MX_TIM16_Init+0x7c>)
+ 8000fba:	2200      	movs	r2, #0
+ 8000fbc:	619a      	str	r2, [r3, #24]
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
- 8000fc0:	4b12      	ldr	r3, [pc, #72]	@ (800100c <MX_TIM16_Init+0x7c>)
- 8000fc2:	0018      	movs	r0, r3
- 8000fc4:	f004 f8dc 	bl	8005180 <HAL_TIM_Base_Init>
- 8000fc8:	1e03      	subs	r3, r0, #0
- 8000fca:	d001      	beq.n	8000fd0 <MX_TIM16_Init+0x40>
+ 8000fbe:	4b13      	ldr	r3, [pc, #76]	@ (800100c <MX_TIM16_Init+0x7c>)
+ 8000fc0:	0018      	movs	r0, r3
+ 8000fc2:	f004 f8dd 	bl	8005180 <HAL_TIM_Base_Init>
+ 8000fc6:	1e03      	subs	r3, r0, #0
+ 8000fc8:	d001      	beq.n	8000fce <MX_TIM16_Init+0x3e>
   {
     Error_Handler();
- 8000fcc:	f000 fd92 	bl	8001af4 <Error_Handler>
+ 8000fca:	f000 fd93 	bl	8001af4 <Error_Handler>
   }
   /* USER CODE BEGIN TIM16_Init 2 */
 
   // Clear SR interrupts
   __HAL_TIM_CLEAR_IT(timerSnooze, TIM_IT_UPDATE);
- 8000fd0:	4b11      	ldr	r3, [pc, #68]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fce:	4b12      	ldr	r3, [pc, #72]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fd0:	681b      	ldr	r3, [r3, #0]
  8000fd2:	681b      	ldr	r3, [r3, #0]
- 8000fd4:	681b      	ldr	r3, [r3, #0]
- 8000fd6:	2202      	movs	r2, #2
- 8000fd8:	4252      	negs	r2, r2
- 8000fda:	611a      	str	r2, [r3, #16]
+ 8000fd4:	2202      	movs	r2, #2
+ 8000fd6:	4252      	negs	r2, r2
+ 8000fd8:	611a      	str	r2, [r3, #16]
 
   // Re-write RCR with 10
 	timerSnooze->Instance->RCR &= 0xFF00;
- 8000fdc:	4b0e      	ldr	r3, [pc, #56]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fda:	4b0f      	ldr	r3, [pc, #60]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fdc:	681b      	ldr	r3, [r3, #0]
  8000fde:	681b      	ldr	r3, [r3, #0]
- 8000fe0:	681b      	ldr	r3, [r3, #0]
- 8000fe2:	6b19      	ldr	r1, [r3, #48]	@ 0x30
- 8000fe4:	4b0c      	ldr	r3, [pc, #48]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fe0:	6b19      	ldr	r1, [r3, #48]	@ 0x30
+ 8000fe2:	4b0d      	ldr	r3, [pc, #52]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fe4:	681b      	ldr	r3, [r3, #0]
  8000fe6:	681b      	ldr	r3, [r3, #0]
- 8000fe8:	681b      	ldr	r3, [r3, #0]
- 8000fea:	22ff      	movs	r2, #255	@ 0xff
- 8000fec:	0212      	lsls	r2, r2, #8
- 8000fee:	400a      	ands	r2, r1
- 8000ff0:	631a      	str	r2, [r3, #48]	@ 0x30
-	timerSnooze->Instance->RCR |= 0x000A;
- 8000ff2:	4b09      	ldr	r3, [pc, #36]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000fe8:	22ff      	movs	r2, #255	@ 0xff
+ 8000fea:	0212      	lsls	r2, r2, #8
+ 8000fec:	400a      	ands	r2, r1
+ 8000fee:	631a      	str	r2, [r3, #48]	@ 0x30
+	timerSnooze->Instance->RCR |= timerSnooze_RCR;
+ 8000ff0:	4b09      	ldr	r3, [pc, #36]	@ (8001018 <MX_TIM16_Init+0x88>)
+ 8000ff2:	681b      	ldr	r3, [r3, #0]
  8000ff4:	681b      	ldr	r3, [r3, #0]
- 8000ff6:	681b      	ldr	r3, [r3, #0]
- 8000ff8:	6b1a      	ldr	r2, [r3, #48]	@ 0x30
+ 8000ff6:	6b1a      	ldr	r2, [r3, #48]	@ 0x30
+ 8000ff8:	2164      	movs	r1, #100	@ 0x64
  8000ffa:	4b07      	ldr	r3, [pc, #28]	@ (8001018 <MX_TIM16_Init+0x88>)
  8000ffc:	681b      	ldr	r3, [r3, #0]
  8000ffe:	681b      	ldr	r3, [r3, #0]
- 8001000:	210a      	movs	r1, #10
- 8001002:	430a      	orrs	r2, r1
- 8001004:	631a      	str	r2, [r3, #48]	@ 0x30
+ 8001000:	430a      	orrs	r2, r1
+ 8001002:	631a      	str	r2, [r3, #48]	@ 0x30
 
 
   /* USER CODE END TIM16_Init 2 */
 
 }
- 8001006:	46c0      	nop			@ (mov r8, r8)
- 8001008:	46bd      	mov	sp, r7
- 800100a:	bd80      	pop	{r7, pc}
+ 8001004:	46c0      	nop			@ (mov r8, r8)
+ 8001006:	46bd      	mov	sp, r7
+ 8001008:	bd80      	pop	{r7, pc}
+ 800100a:	46c0      	nop			@ (mov r8, r8)
  800100c:	200001d8 	.word	0x200001d8
  8001010:	40014400 	.word	0x40014400
  8001014:	0000ffff 	.word	0x0000ffff
@@ -3130,15 +3130,15 @@ void userAlarmBeep() {
  800132c:	0212      	lsls	r2, r2, #8
  800132e:	400a      	ands	r2, r1
  8001330:	631a      	str	r2, [r3, #48]	@ 0x30
-			timerSnooze->Instance->RCR |= 0x000A;
+			timerSnooze->Instance->RCR |= timerSnooze_RCR;
  8001332:	4b43      	ldr	r3, [pc, #268]	@ (8001440 <userAlarmBeep+0x164>)
  8001334:	681b      	ldr	r3, [r3, #0]
  8001336:	681b      	ldr	r3, [r3, #0]
  8001338:	6b1a      	ldr	r2, [r3, #48]	@ 0x30
- 800133a:	4b41      	ldr	r3, [pc, #260]	@ (8001440 <userAlarmBeep+0x164>)
- 800133c:	681b      	ldr	r3, [r3, #0]
+ 800133a:	2164      	movs	r1, #100	@ 0x64
+ 800133c:	4b40      	ldr	r3, [pc, #256]	@ (8001440 <userAlarmBeep+0x164>)
  800133e:	681b      	ldr	r3, [r3, #0]
- 8001340:	210a      	movs	r1, #10
+ 8001340:	681b      	ldr	r3, [r3, #0]
  8001342:	430a      	orrs	r2, r1
  8001344:	631a      	str	r2, [r3, #48]	@ 0x30
 
@@ -3291,7 +3291,7 @@ void userAlarmBeep() {
  8001426:	4b05      	ldr	r3, [pc, #20]	@ (800143c <userAlarmBeep+0x160>)
  8001428:	2201      	movs	r2, #1
  800142a:	701a      	strb	r2, [r3, #0]
-		 * This must be done here because if it's done in
+		 * in the top conditional, the secondSnooze is always true;
 		 */
 		secondSnooze = false;
 
