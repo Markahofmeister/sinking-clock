@@ -614,6 +614,10 @@ static void MX_TIM16_Init(void)
   // Clear SR interrupts
   __HAL_TIM_CLEAR_IT(timerSnooze, TIM_IT_UPDATE);
 
+  // Re-write RCR with 10
+	timerSnooze->Instance->RCR &= 0xFF00;
+	timerSnooze->Instance->RCR |= 0x000A;
+
 
   /* USER CODE END TIM16_Init 2 */
 
@@ -757,6 +761,24 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 void userAlarmBeep() {
 
+	if (secondSnooze) { 		//If the user has already snoozed once,
+
+			// Stop the timer and
+			HAL_TIM_Base_Stop_IT(timerSnooze);
+
+			// Reset count to 0
+			// only bits 0 - 15 should be changed.
+			timerSnooze->Instance->CNT &= 0xFFFF0000;
+
+			// Reset interrupt status register
+			timerSnooze->Instance->SR &= 0xFFFC;
+
+			// Re-write RCR with 10
+			timerSnooze->Instance->RCR &= 0xFF00;
+			timerSnooze->Instance->RCR |= 0x000A;
+
+		}
+
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
@@ -802,27 +824,16 @@ void userAlarmBeep() {
 		// Set flag
 		secondSnooze = true;
 
-	} else if (secondSnooze) { 		// Else, if the user has already snoozed once,
-
-		// Stop the timer and
-		HAL_TIM_Base_Stop_IT(timerSnooze);
-
-		// Reset count to 0
-		// only bits 0 - 15 should be changed.
-		timerSnooze->Instance->CNT &= 0xFFFF0000;
-
-		// Reset interrupt status register
-		timerSnooze->Instance->SR &= 0xFFFC;
-
-		// Re-write RCR with 10
-		timerSnooze->Instance->RCR &= 0xFF00;
-		timerSnooze->Instance->RCR |= 0x000A;
+	} else {
 
 		// Reset flag
+		/*
+		 * This must be done here because if it's done
+		 * in the top conditional, the secondSnooze is always true;
+		 */
 		secondSnooze = false;
 
 	}
-
 }
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
