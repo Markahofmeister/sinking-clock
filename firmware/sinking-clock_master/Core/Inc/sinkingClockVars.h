@@ -89,7 +89,7 @@ GPIO_TypeDef *GPIOPortArray[5] = {GPIOA, GPIOA, GPIOC, GPIOC, GPIOA};
  * Array of all duty cycles used - 0%, 50%, 100%.
  */
 
-const uint8_t sevSeg_intensityDuty[3] = {100, 90, 0};
+const uint8_t sevSeg_intensityDuty[3] = {100, 90, 50};
 
 /*
  * Toggle Variables

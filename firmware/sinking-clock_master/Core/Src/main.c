@@ -60,12 +60,23 @@ TIM_HandleTypeDef *timerPWM = &htim2;
 TIM_HandleTypeDef *timerDelay = &htim14;
 TIM_HandleTypeDef *timerSnooze = &htim16;
 
+const uint32_t timerSnooze_RCR = 100;
+
 
 
 /*
  * State bools
  */
+
+// Used to blare alarm if enabled
 bool alarmSetMode = false;
+
+/*
+ * Used to indicate whether the clock is in a
+ * state to sound a snoozed alarm again after 10 minutes.
+ * false = regular operation, true = 10-minute snooze period
+ */
+bool secondSnooze = false;
 
 /*
  * Cap. touch struct
@@ -276,8 +287,6 @@ int main(void)
 	userAlarmTime.Hours = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmHourBackupReg);
 	userAlarmTime.Minutes = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmMinuteBackupReg);
 	userAlarmTime.TimeFormat = (uint8_t)HAL_RTCEx_BKUPRead(&hrtc, userAlarmTFBackupReg);
-
-
 
   /* USER CODE END 2 */
 
@@ -592,17 +601,25 @@ static void MX_TIM16_Init(void)
 
   /* USER CODE END TIM16_Init 1 */
   htim16.Instance = TIM16;
-  htim16.Init.Prescaler = 58595;
+  htim16.Init.Prescaler = (58595 / 10) - 1;
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim16.Init.RepetitionCounter = 10;
+  htim16.Init.RepetitionCounter = timerSnooze_RCR;
   htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
   {
     Error_Handler();
   }
   /* USER CODE BEGIN TIM16_Init 2 */
+
+  // Clear SR interrupts
+  __HAL_TIM_CLEAR_IT(timerSnooze, TIM_IT_UPDATE);
+
+  // Re-write RCR with 10
+	timerSnooze->Instance->RCR &= 0xFF00;
+	timerSnooze->Instance->RCR |= timerSnooze_RCR;
+
 
   /* USER CODE END TIM16_Init 2 */
 
@@ -728,7 +745,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
 		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
-			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+//			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 		}
 
 	  updateAndDisplayTime();
@@ -745,6 +762,24 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 }
 
 void userAlarmBeep() {
+
+	if (secondSnooze) { 		//If the user has already snoozed once,
+
+			// Stop the timer and
+			HAL_TIM_Base_Stop_IT(timerSnooze);
+
+			// Reset count to 0
+			// only bits 0 - 15 should be changed.
+			timerSnooze->Instance->CNT &= 0xFFFF0000;
+
+			// Reset interrupt status register
+			timerSnooze->Instance->SR &= 0xFFFC;
+
+			// Re-write RCR with 10
+			timerSnooze->Instance->RCR &= 0xFF00;
+			timerSnooze->Instance->RCR |= timerSnooze_RCR;
+
+		}
 
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
@@ -774,13 +809,33 @@ void userAlarmBeep() {
 
 	} while(capTouch.keyStat == 0x00);
 
+	/*
+	 * Stop blinking, turn off buzzer, set 50% duty cycle, update time
+	 */
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
 	updateAndDisplayTime();				// Update to current time and display
 	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
 
+	// If this is the first snooze,
+	if(!secondSnooze) {
 
+		// Start the snooze timer to trigger an interrupt after 10 minutes
+		HAL_TIM_Base_Start_IT(timerSnooze);
 
+		// Set flag
+		secondSnooze = true;
+
+	} else {
+
+		// Reset flag
+		/*
+		 * This must be done here because if it's done
+		 * in the top conditional, the secondSnooze is always true;
+		 */
+		secondSnooze = false;
+
+	}
 }
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
@@ -833,6 +888,17 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 }
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+
+	if((htim == timerSnooze) && (secondSnooze == true)) {
+
+		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+
+		userAlarmBeep();
+
+	}
+
+}
 
 HAL_StatusTypeDef displayButtonISR(void) {
 
@@ -878,6 +944,9 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 	else {
 		__NOP();							//Code should never reach here.
 	}
+
+	// Reset snooze time
+	secondSnooze = false;
 
 	return halRet;
 
@@ -954,8 +1023,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 			if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
 
-//				HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
-
 				sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
 
 				timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
@@ -984,9 +1051,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 }
 
 HAL_StatusTypeDef hourSetISR(void) {
-
-//	printf("Entered hour set ISR.\n\r");
-//	HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 
 	HAL_StatusTypeDef halRet = HAL_OK;
