@@ -1,7 +1,7 @@
 
 <Desc.>
 
-#### A full detailing can be found [here](www.markhofmeister.com/) 
+#### A full detailing can be found [here](www.markhofmeister.com/sinking-clock) 
 
 ## Directory Structure 
 
