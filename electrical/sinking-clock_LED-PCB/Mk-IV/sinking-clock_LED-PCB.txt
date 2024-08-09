@@ -1,0 +1,10 @@
+Board Information Report
+Filename     : C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\sinking-clock_LED-PCB.PcbDoc
+Date         : 5/26/2024
+Time         : 1:46:39 PM
+Time Elapsed : 00:00:00
+
+General
+    Board Size, 156.4162mmx83mm
+    Components on board, 145
+count : 2
