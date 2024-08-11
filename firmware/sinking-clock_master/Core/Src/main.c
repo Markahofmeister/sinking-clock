@@ -954,70 +954,102 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 HAL_StatusTypeDef alarmSetISR(void) {
 
-	//printf("Enter user alarm set ISR.\n\r");
-
-	//printf("User alarm currently set to %u:%u:%u.\n\r", userAlarmTime.Hours,
-			//userAlarmTime.Minutes, userAlarmTime.Seconds);
-
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	/*
-	 * Wait for switch debounce
-	 */
-
-	// First wait for button to deactivate again
-	while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_SET);
-
-	// Go through debounce
-	HAL_TIM_Base_Stop(timerDelay);
-	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
-
-	do {
-
-	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 8));
-
 
 	/*
-	 *  Poll for 1 second to see if the alarm set button is pressed again
+	 * Wait for 3 seconds to see if alarm set button is still pressed
 	 */
-	HAL_TIM_Base_Stop(timerDelay);
-	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 
-	while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536)) {
+	// Delay for 3 * 1s intervals
+	for(uint8_t i = 0; i < 3; i++) {
 
-		if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET) {
-			alarmSetMode = true;
-//			HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_SET);
-			break;
-		}
+		HAL_TIM_Base_Stop(timerDelay);
+		timerDelay->Instance->CNT = 0;						// Reset timer base
+		HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+	//	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 
+		do {
+
+		} while(__HAL_TIM_GET_COUNTER(timerDelay) < (65535));
 	}
 
-	// Go through debounce once again
-	HAL_TIM_Base_Stop(timerDelay);
-	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+	// If button is still pressed, we are in alarm set mode.
+	if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET) {
+		alarmSetMode = true;
+	}
 
-	do {
-
-	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 4));
+//	/*
+//	 * Wait for switch debounce
+//	 */
+//
+//	// First wait for button to deactivate again
+//	while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_SET);
+//
+//	// Go through debounce
+//	HAL_TIM_Base_Stop(timerDelay);
+//	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+//	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+//
+//	do {
+//
+//	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 8));
+//
+//
+//	/*
+//	 *  Poll for 1 second to see if the alarm set button is pressed again
+//	 */
+//	HAL_TIM_Base_Stop(timerDelay);
+//	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+//	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+//
+//	while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536)) {
+//
+//		if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET) {
+//			alarmSetMode = true;
+////			HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_SET);
+//			break;
+//		}
+//
+//	}
+//
+//	// Go through debounce once again
+//	HAL_TIM_Base_Stop(timerDelay);
+//	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+//	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+//
+//	do {
+//
+//	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 4));
 
 	/*
 	 * Then, if we are in alarm set mode, go through the
 	 * alarm set process until the button is pressed again
 	 */
 
+//	// Wait for alarm set button to be reset again
+//	do {
+//
+//	} while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET);
+
+	// Reset Timer
 	HAL_TIM_Base_Stop(timerDelay);
+	timerDelay->Instance->CNT = 0;
 	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+	uint16_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
+
+	bool alarmSetButtonReset = false;
 
 	if(alarmSetMode) {
 
 		bool displayBlink = false;
 
 		do {											// while the alarm set button is not held down, blink display.
+
+			// Check to make sure the user has released the set button from the initial hold
+			if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_SET) {
+				alarmSetButtonReset = true;
+			}
 
 			updateAndDisplayAlarm();
 
@@ -1030,7 +1062,8 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 			}
 
-		}while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_RESET);
+		}while((HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_RESET)
+				|| !alarmSetButtonReset);
 
 //		HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_RESET);
 
