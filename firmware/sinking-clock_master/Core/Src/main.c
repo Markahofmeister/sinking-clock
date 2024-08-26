@@ -892,7 +892,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	if((htim == timerSnooze) && (secondSnooze == true)) {
 
-		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
+//		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 		userAlarmBeep();
 
@@ -1216,7 +1216,11 @@ void currHourInc(void) {
 void alarmMinuteInc(void) {
 
 	if(userAlarmTime.Minutes >= 59) {
-		alarmHourInc();
+		/*
+		 * The below function call is the old version in which
+		 * the hour will increment when the minutes roll over.
+		 */
+		//alarmHourInc();
 		userAlarmTime.Minutes = 0;
 	}
 	else if(userAlarmTime.Minutes < 59) {
@@ -1235,10 +1239,14 @@ void currMinuteInc(void) {
 
 	getRTCTime(&hrtc, &currTime, &currDate);
 
-	// If current time is going to rollover,
-	// increment the hour and reset the minute.
 	if(currTime.Minutes >= 59) {
-		currHourInc();
+
+		/*
+		 * The below function call is the old version in which
+		 * the hour will increment when the minutes roll over.
+		 */
+		// currHourInc();
+
 		currTime.Minutes = 0;
 	}
 	else if(currTime.Minutes < 59) {
@@ -1253,6 +1261,7 @@ void currMinuteInc(void) {
 	currTime.SecondFraction = 0;
 
 }
+
 
 void dispError(void) {
 
@@ -1281,6 +1290,7 @@ void dispError(void) {
 
 }
 
+
 void updateRTCBackupReg(void) {
 
 	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmHourBackupReg, userAlarmTime.Hours);
@@ -1288,6 +1298,7 @@ void updateRTCBackupReg(void) {
 	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmTFBackupReg, userAlarmTime.TimeFormat);
 
 }
+
 /* USER CODE END 4 */
 
 /**
