@@ -803,11 +803,13 @@ void userAlarmBeep() {
 		}
 
 
-		HAL_StatusTypeDef halRet = capTouch_readChannels(&capTouch);
-		if(halRet != HAL_OK)
-			dispError();
+		capTouch_readChannels(&capTouch);
+//		HAL_StatusTypeDef halRet = capTouch_readChannels(&capTouch);
+//		if(halRet != HAL_OK)
+//			dispError();
 
-	} while(capTouch.keyStat == 0x00);
+	} while(capTouch.keyStat == 0x00 &&
+			(HAL_GPIO_ReadPin(alarmEnableButtonPort, alarmEnableButtonPin) != GPIO_PIN_RESET));
 
 	/*
 	 * Stop blinking, turn off buzzer, set 50% duty cycle, update time
