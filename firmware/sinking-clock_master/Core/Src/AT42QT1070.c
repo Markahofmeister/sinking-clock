@@ -29,7 +29,9 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, TIM_HandleTypeD
 	HAL_GPIO_WritePin(*capTouch->resetPort, capTouch->resetPin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(*capTouch->resetPort, capTouch->resetPin, GPIO_PIN_RESET);
 
-	// Delay for 500 ms using hardware timer
+	/*
+	 *  Delay for 500 ms using hardware timer
+	 */
 	HAL_TIM_Base_Stop(capTouch->delayTimer);
 	HAL_TIM_Base_Start(capTouch->delayTimer);							// Begin timer counting
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(capTouch->delayTimer);	// Get initial timer value to compare to
@@ -168,6 +170,7 @@ HAL_StatusTypeDef capTouch_enableKeys(QT1070 *capTouch, uint8_t dataBuff) {
 								&(avgRegs[0]), 1, HAL_MAX_DELAY);
 	if(halRet != HAL_OK)
 		return halRet;
+
 	halRet = HAL_I2C_Master_Receive(capTouch->hi2c, DEVICE_ADDRESS, avgRet, 7, HAL_MAX_DELAY);
 	if(halRet != HAL_OK)
 		return halRet;

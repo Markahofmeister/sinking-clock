@@ -56,13 +56,25 @@ TIM_HandleTypeDef htim16;
 
 /* USER CODE BEGIN PV */
 
+/*
+ * Timer to be used for PWMing display
+ */
 TIM_HandleTypeDef *timerPWM = &htim2;
+
+/*
+ * Timer to be used for non-blocking delays
+ */
 TIM_HandleTypeDef *timerDelay = &htim14;
+
+/*
+ * Timer to be used for long 10-minute snooze
+ */
 TIM_HandleTypeDef *timerSnooze = &htim16;
 
+/*
+ * RCR value for long 10-minute snooze
+ */
 const uint32_t timerSnooze_RCR = 100;
-
-
 
 /*
  * State bools
@@ -167,9 +179,14 @@ void currMinuteInc(void);
 void userAlarmBeep(void);
 
 /*
- * Displays Error on clock
+ * Displays non-critical error on debug LED and continues functionality
  */
-void dispError();
+void dispFault();
+
+/*
+ * Displays Critical Error on clock and halts all functionality
+ */
+void dispFailure();
 
 /*
  * Updates RTC Backup Registers with user alarm time
@@ -218,15 +235,23 @@ int main(void)
   MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
 
+  // HAL Status handle for error-checking
+  HAL_StatusTypeDef halRet = HAL_OK;
+
   // Set Smooth Calibration Value
-
-  HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
+  halRet = HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
     							RTC_SMOOTHCALIB_PLUSPULSES_RESET, rtcCalVal);
-
-  uint8_t initRet = 0;
+  if(halRet != HAL_OK) {
+	  // Failure to talk to RTC is a hard failure
+	  dispFailure();
+  }
 
   // Init the internal RTC alarm time to track the current time
-  initRTCInternalAlarm(&hrtc, &currTime, &currDate);
+  halRet = initRTCInternalAlarm(&hrtc, &currTime, &currDate);
+  if(halRet != HAL_OK) {
+  	  // Failure to initialize RTC alarm is a hard failure
+  	  dispFailure();
+    }
 
   // Initialize all GPIOs to be used with 7 segment display
     sevSeg_Init(shiftDataPin, shiftDataClockPin, shiftStoreClockPin,
@@ -234,17 +259,40 @@ int main(void)
 				GPIOPortArray, timerDelay, timerPWM, tim_PWM_CHANNEL);
 
 
-	HAL_StatusTypeDef halRet = updateAndDisplayTime();
+	halRet = updateAndDisplayTime();
+	if(halRet != HAL_OK) {
+	  // Failure to display current time is a hard failure
+	  dispFailure();
+	}
 
     /*
      * Initialize capacitive touch sensor
      */
 
+	// Used to separate return initializations into critical and non-critical errors.
+	uint8_t initRet = 0;
+
     initRet = capTouch_Init(&capTouch, &hi2c1, timerDelay,
     						&capTouchResetPort, capTouchResetPin, capTouchChannels);
+    if( (initRet == 1) || (initRet == 3) || (initRet == 4)) {
 
-    if(initRet != 0) {
-    	dispError();
+    	/* Critical Errors:
+    	 * 1 = Failure to read correct device ID
+    	 * 2 = Failure to read Keys
+    	 * 3 = Failure to enable keys
+    	 */
+    	dispFailure();
+    }
+    else if (initRet == 2) {
+    	/*
+    	 * Non-critical Errors:
+    	 * 2 = Failure to Recalibrate
+    	 */
+    	dispFault();
+    }
+    else if(initRet == 0) {
+    	// initRet = 0 = all is well
+    	__NOP();
     }
 
     // Max. out averaging factor
@@ -252,14 +300,16 @@ int main(void)
     halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
 
     if(halRet != HAL_OK) {
-    	dispError();
+    	// This is sensitivity-setting and a non-critical error
+    	dispFault();
     }
 
     // Set detection integration factors
     uint8_t detIntFactors_New[7] = {DIFact, DIFact, DIFact, DIFact, DIFact, DIFact, DIFact};
     halRet = capTouch_SetDetectionIntegrator(&capTouch, detIntFactors_New);
     if(halRet != HAL_OK) {
-    	dispError();
+    	// This is sensitivity-setting and a non-critical error
+		dispFault();
     }
 
     userAlarmToggle = false;			//Default to off
@@ -271,7 +321,6 @@ int main(void)
      *
      * Else, initialize to whatever is stored in backup registers.
      */
-//    j
 
     if((uint8_t)HAL_RTCEx_BKUPRead(&hrtc, bootstrapBackupReg) == 0) {
 
@@ -709,6 +758,9 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
+/*
+ * Pulls updated time from RTC and send new time to user display
+ */
 HAL_StatusTypeDef updateAndDisplayTime(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
@@ -720,6 +772,11 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 
 }
 
+/*
+ * Sends current user alarm time to user display
+ * This doesn't pull from the RTC because the RTC alarm is not being used for that
+ */
+
 HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
@@ -730,9 +787,14 @@ HAL_StatusTypeDef updateAndDisplayAlarm(void) {
 
 }
 
+/*
+ * Interrupt callback function for RTC interrupt kickback
+ * Occurs every minute increment
+ *
+ * Pulls alarm time from RTC, increments and sets new alarm time, and updates time.
+ * Sets off user alarm if the alarm is enabled.
+ */
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
-
-	  //printf("Enter current time minute increment interrupt\n\r");
 
 	  RTC_AlarmTypeDef sAlarm = {0};
 	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
@@ -740,17 +802,12 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 	  if(sAlarm.AlarmTime.Minutes>58) {
 		sAlarm.AlarmTime.Minutes=0;
-		//printf("Reset alarm time\n\r");
 	  } else {
 		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
-		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
-//			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
-		}
+		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
 
 	  updateAndDisplayTime();
-
-	  //printf("Current time: %u : %u : %u\n\r", currTime.Hours, currTime.Minutes, currTime.Seconds);
 
 	  // If alarm is enabled and current time matches user alarm time, set off the alarm.
 	  if(userAlarmToggle && userAlarmTime.Hours == currTime.Hours
@@ -761,6 +818,17 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 
 }
 
+/*
+ * If user alarm is enabled and the RTC time equals the user alarm time, this function is entered.
+ *
+ * This function blinks the display LEDs and toggles the beeper until the user
+ * disables this beeping through cap. touch or the alarm enable button.
+ *
+ * Functionality depends on whether or not this is the first or second snooze.
+ * 		First Snooze: 10-minute timer is started and alarm
+ * 		              is beeped again at the end of this 10 minutes.
+ * 		Second Snooze: No timer is started and silencing the alarm silences it for good.
+ */
 void userAlarmBeep() {
 
 	if (secondSnooze) { 		//If the user has already snoozed once,
@@ -840,6 +908,12 @@ void userAlarmBeep() {
 	}
 }
 
+/*
+ * General Falling-Edge EXTI Callback function
+ *
+ * Internal conditional determines which function to call
+ * based on which button was pressed.
+ */
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 	HAL_StatusTypeDef halRet;					// Flag for printing interrupt status
@@ -890,11 +964,15 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
 
 }
 
+/*
+ * Used for second snooze functionality
+ *
+ * This is entered at the end of a 10-minute snooze, at
+ * which point the timer kicks back an interrupt.
+ */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 	if((htim == timerSnooze) && (secondSnooze == true)) {
-
-//		HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
 
 		userAlarmBeep();
 
@@ -902,6 +980,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 }
 
+/*
+ * Toggles through user time display brightness settings
+ */
 HAL_StatusTypeDef displayButtonISR(void) {
 
 	//printf("Entered display toggle ISR\n\r");
@@ -922,6 +1003,9 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 }
 
+/*
+ * Toggles user alarm enable bool and alarm enable LED.
+ */
 HAL_StatusTypeDef alarmEnableISR(void) {
 
 	//printf("Entered alarm toggle ISR\n\r");
@@ -932,16 +1016,11 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_SET);			// Turn on alarm LED
 		userAlarmToggle = true;								// Toggle internal flag to true
 
-		//printf("User alarm set to: %u:%u:%u.\n\r", userAlarmTime.Hours,
-								//userAlarmTime.Minutes, userAlarmTime.Seconds);
-
 	}
 	else if (userAlarmToggle) {				// If alarm is enabled, disable it.
 
 		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_RESET);			// Turn off alarm LED
 		userAlarmToggle = false;							// Toggle internal flag to false
-
-		//printf("User alarm disabled.\n\r");
 	}
 	else {
 		__NOP();							//Code should never reach here.
@@ -954,6 +1033,12 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 }
 
+/*
+ * Delays for 3 seconds, checks if alarm set button is still pressed.
+ * If it is, allow user to set the new alarm time
+ * and blink display to indicate this
+ *
+ */
 HAL_StatusTypeDef alarmSetISR(void) {
 
 	HAL_StatusTypeDef halRet = HAL_OK;
@@ -981,58 +1066,11 @@ HAL_StatusTypeDef alarmSetISR(void) {
 		alarmSetMode = true;
 	}
 
-//	/*
-//	 * Wait for switch debounce
-//	 */
-//
-//	// First wait for button to deactivate again
-//	while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_SET);
-//
-//	// Go through debounce
-//	HAL_TIM_Base_Stop(timerDelay);
-//	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-//	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
-//
-//	do {
-//
-//	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 8));
-//
-//
-//	/*
-//	 *  Poll for 1 second to see if the alarm set button is pressed again
-//	 */
-//	HAL_TIM_Base_Stop(timerDelay);
-//	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-//	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
-//
-//	while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536)) {
-//
-//		if(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET) {
-//			alarmSetMode = true;
-////			HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_SET);
-//			break;
-//		}
-//
-//	}
-//
-//	// Go through debounce once again
-//	HAL_TIM_Base_Stop(timerDelay);
-//	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
-//	timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
-//
-//	do {
-//
-//	}while(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal <= (65536 / 4));
-
 	/*
 	 * Then, if we are in alarm set mode, go through the
 	 * alarm set process until the button is pressed again
 	 */
 
-//	// Wait for alarm set button to be reset again
-//	do {
-//
-//	} while(HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) == GPIO_PIN_RESET);
 
 	// Reset Timer
 	HAL_TIM_Base_Stop(timerDelay);
@@ -1067,8 +1105,6 @@ HAL_StatusTypeDef alarmSetISR(void) {
 		}while((HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_RESET)
 				|| !alarmSetButtonReset);
 
-//		HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_RESET);
-
 		sevSeg_setIntensity(sevSeg_intensityDuty[1]);			// Turn display back to 50% intensity
 
 		HAL_TIM_Base_Stop(timerDelay);
@@ -1085,6 +1121,9 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 }
 
+/*
+ * Increment either user alarm hour value or RTC hour value
+ */
 HAL_StatusTypeDef hourSetISR(void) {
 
 
@@ -1114,6 +1153,9 @@ HAL_StatusTypeDef hourSetISR(void) {
 
 }
 
+/*
+ * Increment either user alarm minute value or RTC minute value
+ */
 HAL_StatusTypeDef minuteSetISR(void) {
 
 
@@ -1143,9 +1185,7 @@ HAL_StatusTypeDef minuteSetISR(void) {
 		} else {
 			sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 		}
-		while(HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
-			HAL_GPIO_TogglePin(debugLEDPort, debugLEDPin);
-		}
+		while(HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
 
 
 		updateAndDisplayTime();
@@ -1160,6 +1200,9 @@ HAL_StatusTypeDef minuteSetISR(void) {
 	return halRet;
 }
 
+/*
+ * Increment user alarm time hour
+ */
 void alarmHourInc(void) {
 
 	if(userAlarmTime.Hours >= 12) {
@@ -1186,6 +1229,9 @@ void alarmHourInc(void) {
 
 }
 
+/*
+ * Increment current time hour
+ */
 void currHourInc(void) {
 
 	getRTCTime(&hrtc, &currTime, &currDate);
@@ -1215,6 +1261,9 @@ void currHourInc(void) {
 
 }
 
+/*
+ * Increment User alarm time minute
+ */
 void alarmMinuteInc(void) {
 
 	if(userAlarmTime.Minutes >= 59) {
@@ -1237,6 +1286,9 @@ void alarmMinuteInc(void) {
 
 }
 
+/*
+ * Increment current time minute
+ */
 void currMinuteInc(void) {
 
 	getRTCTime(&hrtc, &currTime, &currDate);
@@ -1264,8 +1316,17 @@ void currMinuteInc(void) {
 
 }
 
+/*
+ * Displays a non-critical fault to indicate reduced functionality
+ */
+void dispFault(void) {
+	HAL_GPIO_WritePin(debugLEDPort, debugLEDPin, GPIO_PIN_SET);
+}
 
-void dispError(void) {
+/*
+ * Displays a critical failure and ceases all operations
+ */
+void dispFailure(void) {
 
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 500 ms)
@@ -1292,7 +1353,9 @@ void dispError(void) {
 
 }
 
-
+/*
+ * Updates RTC backup register with user alarm time to be later pulled from in the case of a power outage
+ */
 void updateRTCBackupReg(void) {
 
 	HAL_RTCEx_BKUPWrite(&hrtc, userAlarmHourBackupReg, userAlarmTime.Hours);

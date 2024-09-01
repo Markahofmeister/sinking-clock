@@ -35,7 +35,7 @@
  *
  * @ret none
  */
-void initRTCInternalAlarm(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate);
+HAL_StatusTypeDef initRTCInternalAlarm(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate);
 
 /*
  * Gets updated RTC time and stores in access object pointers
