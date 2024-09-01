@@ -22,10 +22,21 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#ifndef SEVSEG_SHIFT_H_
 #include "sevSeg_shift.h"
+#endif
+
+#ifndef ALARM_H_
 #include "alarm.h"
+#endif
+
+#ifndef SINKINGCLOCKVARS_H_
 #include "sinkingClockVars.h"
+#endif
+
+#ifndef AT42QT1070_H_
 #include "AT42QT1070.h"
+#endif
 
 /* USER CODE END Includes */
 
