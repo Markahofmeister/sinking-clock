@@ -39,36 +39,82 @@ uint8_t capTouch_Init(QT1070 *capTouch, I2C_HandleTypeDef *hi2c, TIM_HandleTypeD
 	//Hang in dead loop until 500 ms
 	while(__HAL_TIM_GET_COUNTER(capTouch->delayTimer) - timerVal <= (65535 / 2)){ }
 
+    // Determines the number of times to try each initialization step
+	uint8_t numTries = 3;
+
 	// Verify device ID
-	uint8_t deviceIDRet = 0x00;
-	halRet = capTouch_ReadDeviceID(capTouch, &deviceIDRet);
+		uint8_t deviceIDRet = 0x00;
 
-	if(deviceIDRet != DEVICE_ID || halRet != HAL_OK) {
-		return 1;
-	}
+		while(numTries != 0) {
+			halRet = capTouch_ReadDeviceID(capTouch, &deviceIDRet);
 
-	capTouch->deviceID = deviceIDRet;
+			if (halRet == HAL_OK)
+				break;
+
+			numTries--;
+		}
+		if(deviceIDRet != DEVICE_ID || numTries == 0) {
+			return 1;
+		}
+
+		capTouch->deviceID = deviceIDRet;
+
+		numTries = 3;
 
 	// Force Device Recalibration
-	halRet = capTouch_Recalibrate(capTouch);
-	if(halRet != HAL_OK) {
-		return 2;
-	}
+		while(numTries != 0) {
+			halRet = capTouch_Recalibrate(capTouch);
 
-	// Wait until calibration sequence completes
-	while(capTouch_checkCal(capTouch)) {}
+			// Wait until calibration sequence completes
+			while(capTouch_checkCal(capTouch)) {}
+
+			if (halRet == HAL_OK)
+				break;
+
+			numTries--;
+
+		}
+		if(numTries == 0) {
+			return 2;
+		}
+
+		numTries = 3;
 
 	// Get initial reading of channels
-	halRet = capTouch_readChannels(capTouch);
-	if(halRet != HAL_OK) {
-		return 3;
-	}
+		while(numTries != 0) {
 
-	halRet = capTouch_enableKeys(capTouch, keyEnFlags);
-	if(halRet != HAL_OK) {
-		return 4;
-	}
-	capTouch->keys = keyEnFlags;
+			halRet = capTouch_readChannels(capTouch);
+
+			if (halRet == HAL_OK)
+				break;
+
+			numTries--;
+
+		}
+		if(numTries == 0) {
+			return 3;
+		}
+
+		numTries = 3;
+
+	// Enable keys based on passed initialization byte
+		while(numTries != 0) {
+
+			halRet = capTouch_enableKeys(capTouch, keyEnFlags);
+
+			if (halRet == HAL_OK)
+				break;
+
+			numTries--;
+
+		}
+		if(numTries == 0) {
+			return 4;
+		}
+
+		capTouch->keys = keyEnFlags;
+
+		numTries = 3;
 
 	return 0;
 

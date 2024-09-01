@@ -118,7 +118,7 @@ GPIO_TypeDef *debugLEDPort = GPIOA;
 
 
 // RTC Calibration Value
-uint32_t rtcCalVal = 0x0144;
+uint32_t rtcCalVal = 0x012E;
 
 
 /*

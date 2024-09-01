@@ -5,7 +5,9 @@
  *      Author: marka
  */
 
+#ifndef SEVSEG_SHIFT_H_
 #include "../Inc/sevSeg_shift.h"
+#endif
 
 /*
  * Digit 0 = LSB (ones place of minutes)
