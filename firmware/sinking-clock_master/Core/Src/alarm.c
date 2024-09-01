@@ -8,7 +8,9 @@
 #include "../Inc/alarm.h"
 
 
-void initRTCInternalAlarm(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
+HAL_StatusTypeDef initRTCInternalAlarm(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RTC_DateTypeDef *currDate) {
+
+	HAL_StatusTypeDef halRet = HAL_OK;
 
 	RTC_AlarmTypeDef internalAlarm_init = {0};
 	internalAlarm_init.AlarmTime.Hours = currTime->Hours;
@@ -26,11 +28,13 @@ void initRTCInternalAlarm(RTC_HandleTypeDef *hrtc, RTC_TimeTypeDef *currTime, RT
 	internalAlarm_init.AlarmDateWeekDay = 0x1;
 	internalAlarm_init.Alarm = internalAlarm;
 
-	HAL_RTC_SetAlarm_IT(hrtc, &internalAlarm_init, RTCTimeFormat);
+	halRet = HAL_RTC_SetAlarm_IT(hrtc, &internalAlarm_init, RTCTimeFormat);
+	if(halRet != HAL_OK)
+		return halRet;
 
 	RTC_AlarmTypeDef internalAlarm_initTest;
-	HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTCTimeFormat);
-
+	halRet = HAL_RTC_GetAlarm(hrtc, &internalAlarm_initTest, internalAlarm, RTCTimeFormat);
+	return halRet;
 
 }
 

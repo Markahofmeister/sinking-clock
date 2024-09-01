@@ -59,7 +59,7 @@ uint8_t capTouchChannels = 0b00001111;
  * Specifies averaging values for each cap. touch IC channel
  * This value will be right-shifted twice and must be a power of 2
  */
-uint8_t AVGFact = 32;
+uint8_t AVGFact = 16;
 
 // Specifies detection integration values for each cap. touch IC channel
 uint8_t DIFact = 0x04;
@@ -118,7 +118,7 @@ GPIO_TypeDef *debugLEDPort = GPIOA;
 
 
 // RTC Calibration Value
-uint32_t rtcCalVal = 0x0144;
+uint32_t rtcCalVal = 0x012E;
 
 
 /*
