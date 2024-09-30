@@ -306,7 +306,7 @@ int main(void)
     	__NOP();
     }
 
-    // Max. out averaging factor
+    // Set averaging factor
     uint8_t avgFactors_New[7] = {AVGFact, AVGFact, AVGFact, AVGFact, 0, 0, 0};
     halRet = capTouch_SetAveragingFactor(&capTouch, avgFactors_New);
 
@@ -896,7 +896,9 @@ void userAlarmBeep() {
 	HAL_TIM_Base_Stop(timerDelay);
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
 	updateAndDisplayTime();				// Update to current time and display
-	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Toggle 0% to 50% duty cycle
+
+	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Set to 50% duty cycle
+	displayToggle = 2;								// Set to 2 for future display button ISRs
 
 	// If this is the first snooze,
 	if(!secondSnooze) {
