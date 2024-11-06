@@ -85,7 +85,8 @@ TIM_HandleTypeDef *timerSnooze = &htim16;
 /*
  * RCR value for long 10-minute snooze
  */
-const uint32_t timerSnooze_RCR = 100;
+const uint32_t timerSnooze_RCR = 1;
+uint8_t snoozeCounter = 0;
 
 /*
  * State bools
@@ -665,7 +666,7 @@ static void MX_TIM16_Init(void)
   htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim16.Init.Period = 65535;
   htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim16.Init.RepetitionCounter = timerSnooze_RCR;
+  htim16.Init.RepetitionCounter = 0;
   htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
   {
@@ -675,10 +676,10 @@ static void MX_TIM16_Init(void)
 
   // Clear SR interrupts
   __HAL_TIM_CLEAR_IT(timerSnooze, TIM_IT_UPDATE);
-
-  // Re-write RCR with 10
-	timerSnooze->Instance->RCR &= 0xFF00;
-	timerSnooze->Instance->RCR |= timerSnooze_RCR;
+//
+//  // Re-write RCR with 10
+//	timerSnooze->Instance->RCR &= 0xFF00;
+//	timerSnooze->Instance->RCR |= timerSnooze_RCR;
 
 
   /* USER CODE END TIM16_Init 2 */
@@ -854,9 +855,9 @@ void userAlarmBeep() {
 			// Reset interrupt status register
 			timerSnooze->Instance->SR &= 0xFFFC;
 
-			// Re-write RCR with 10
-			timerSnooze->Instance->RCR &= 0xFF00;
-			timerSnooze->Instance->RCR |= timerSnooze_RCR;
+//			// Re-write RCR with 10
+//			timerSnooze->Instance->RCR &= 0xFF00;
+//			timerSnooze->Instance->RCR |= timerSnooze_RCR;
 
 		}
 
@@ -883,9 +884,6 @@ void userAlarmBeep() {
 
 
 		capTouch_readChannels(&capTouch);
-//		HAL_StatusTypeDef halRet = capTouch_readChannels(&capTouch);
-//		if(halRet != HAL_OK)
-//			dispError();
 
 	} while(capTouch.keyStat == 0x00 &&
 			(HAL_GPIO_ReadPin(alarmEnableButtonPort, alarmEnableButtonPin) != GPIO_PIN_RESET));
@@ -910,6 +908,8 @@ void userAlarmBeep() {
 		secondSnooze = true;
 
 	} else {
+
+		snoozeCounter = 0;
 
 		// Reset flag
 		/*
@@ -985,7 +985,9 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
-	if((htim == timerSnooze) && (secondSnooze == true)) {
+	snoozeCounter++;
+
+	if((htim == timerSnooze) && (secondSnooze == true) && (snoozeCounter == timerSnooze_RCR)) {
 
 		userAlarmBeep();
 
