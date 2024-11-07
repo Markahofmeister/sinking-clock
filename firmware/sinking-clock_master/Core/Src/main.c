@@ -85,7 +85,7 @@ TIM_HandleTypeDef *timerSnooze = &htim16;
 /*
  * RCR value for long 10-minute snooze
  */
-const uint32_t timerSnooze_RCR = 1;
+const uint32_t timerSnooze_RCR = 3;
 uint8_t snoozeCounter = 0;
 
 /*
@@ -270,6 +270,8 @@ int main(void)
 				shiftOutputEnablePin, shiftMCLRPin,
 				GPIOPortArray, timerDelay, timerPWM, tim_PWM_CHANNEL);
 
+    // Set to max brightness
+    sevSeg_setIntensity(sevSeg_intensityDuty[2]);
 
 	halRet = updateAndDisplayTime();
 	if(halRet != HAL_OK) {
@@ -817,7 +819,10 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  } else {
 		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
 	  }
-		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
+		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
+
+
+		}
 
 	  updateAndDisplayTime();
 
@@ -1036,6 +1041,7 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_RESET);			// Turn off alarm LED
 		userAlarmToggle = false;							// Toggle internal flag to false
+
 	}
 	else {
 		__NOP();							//Code should never reach here.
@@ -1096,6 +1102,8 @@ HAL_StatusTypeDef alarmSetISR(void) {
 	bool alarmSetButtonReset = false;
 
 	if(alarmSetMode) {
+
+		secondSnooze = false;
 
 		bool displayBlink = false;
 
