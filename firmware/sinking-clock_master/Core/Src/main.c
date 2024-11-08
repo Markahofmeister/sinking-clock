@@ -85,7 +85,7 @@ TIM_HandleTypeDef *timerSnooze = &htim16;
 /*
  * RCR value for long 10-minute snooze
  */
-const uint32_t timerSnooze_RCR = 3;
+const uint32_t timerSnooze_RCR = 100;
 uint8_t snoozeCounter = 0;
 
 /*
@@ -357,6 +357,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 
 
   }
@@ -817,11 +818,12 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc) {
 	  RTC_AlarmTypeDef sAlarm = {0};
 	  HAL_RTC_GetAlarm(hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
 
+	  getRTCTime(hrtc, &currTime, &currDate);
 
-	  if(sAlarm.AlarmTime.Minutes>58) {
-		sAlarm.AlarmTime.Minutes=0;
+	  if(currTime.Minutes > 58) {
+		sAlarm.AlarmTime.Minutes = 0;
 	  } else {
-		sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+		sAlarm.AlarmTime.Minutes = currTime.Minutes + 1;
 	  }
 		while(HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){
 
@@ -945,6 +947,7 @@ void userAlarmBeep() {
 		secondSnooze = false;
 
 	}
+
 }
 
 /*
@@ -1244,11 +1247,12 @@ HAL_StatusTypeDef minuteSetISR(void) {
 		RTC_AlarmTypeDef sAlarm = {0};
 		HAL_RTC_GetAlarm(&hrtc, &sAlarm, internalAlarm, RTCTimeFormat);
 
-		if(sAlarm.AlarmTime.Minutes>58) {
-			sAlarm.AlarmTime.Minutes=0;
-			//printf("Reset alarm time\n\r");
+		getRTCTime(&hrtc, &currTime, &currDate);
+
+		if(currTime.Minutes > 58) {
+			sAlarm.AlarmTime.Minutes = 0;
 		} else {
-			sAlarm.AlarmTime.Minutes=sAlarm.AlarmTime.Minutes+1;
+			sAlarm.AlarmTime.Minutes = currTime.Minutes + 1;
 		}
 		while(HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, FORMAT_BIN)!=HAL_OK){}
 
