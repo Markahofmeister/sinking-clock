@@ -871,13 +871,24 @@ void userAlarmBeep() {
 	uint32_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 	bool displayBlink = false;
 
+	/*
+	 * Determine whether to toggle high or low brightness
+	 */
+	uint8_t intenSet;
+	if(displayToggle == 0) { 				// If the user has full brightness enabled, toggle full btightness
+		intenSet = 2;
+	}
+	else {									// Else, toggle low brightness
+		intenSet = 1;
+	}
+
 	do {						// Beep buzzer and blink display until snooze button is pressed
 
 		updateAndDisplayTime();				// Update to current time and display
 
 		if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65535 / 2)) {		// Use hardware timer to blink/beep display
 
-			sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink]);	// Toggle 0% to 50% duty cycle
+			sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink * intenSet]);	// Toggle on/off
 
 			HAL_GPIO_TogglePin(buzzerPort, buzzerPin);					// Toggle Buzzer
 
@@ -900,8 +911,13 @@ void userAlarmBeep() {
 	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
 	updateAndDisplayTime();				// Update to current time and display
 
-	sevSeg_setIntensity(sevSeg_intensityDuty[1]);	// Set to 50% duty cycle
-	displayToggle = 2;								// Set to 2 for future display button ISRs
+	sevSeg_setIntensity(sevSeg_intensityDuty[intenSet]);	// Turn display back on
+	if(intenSet == 2) {
+		displayToggle = 0;
+	}
+	else {
+		displayToggle = 2;
+	}
 
 	// If this is the first snooze,
 	if(!secondSnooze) {
@@ -1049,6 +1065,7 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 
 	// Reset snooze time
 	secondSnooze = false;
+	snoozeCounter = 0;
 
 	return halRet;
 
@@ -1103,9 +1120,22 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 	if(alarmSetMode) {
 
+		// If we were in second snooze mode, kill it.
 		secondSnooze = false;
+		snoozeCounter = 0;
 
 		bool displayBlink = false;
+
+		/*
+		 * Determine whether to toggle high or low brightness
+		 */
+		uint8_t intenSet;
+		if(displayToggle == 0) { 				// If the user has full brightness enabled, toggle full btightness
+			intenSet = 2;
+		}
+		else {									// Else, toggle low brightness
+			intenSet = 1;
+		}
 
 		do {											// while the alarm set button is not held down, blink display.
 
@@ -1118,7 +1148,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 
 			if(__HAL_TIM_GET_COUNTER(timerDelay) - timerVal >= (65536 / 2)) {
 
-				sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink]);		// Initialize to whatever duty cycle
+				sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink * intenSet]);		// Initialize to whatever duty cycle
 
 				timerVal = __HAL_TIM_GET_COUNTER(timerDelay);
 				displayBlink = !displayBlink;
@@ -1128,7 +1158,14 @@ HAL_StatusTypeDef alarmSetISR(void) {
 		}while((HAL_GPIO_ReadPin(alarmSetButtonPort, alarmSetButtonPin) != GPIO_PIN_RESET)
 				|| !alarmSetButtonReset);
 
-		sevSeg_setIntensity(sevSeg_intensityDuty[1]);			// Turn display back to 50% intensity
+		sevSeg_setIntensity(sevSeg_intensityDuty[intenSet]);			// Turn display back on
+		if(intenSet == 2) {
+			displayToggle = 0;
+		}
+		else {
+			displayToggle = 2;
+		}
+
 
 		HAL_TIM_Base_Stop(timerDelay);
 
