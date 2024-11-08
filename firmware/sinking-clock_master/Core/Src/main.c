@@ -676,6 +676,10 @@ static void MX_TIM16_Init(void)
   }
   /* USER CODE BEGIN TIM16_Init 2 */
 
+  // Decrease interrupt priority
+  HAL_NVIC_SetPriority(TIM16_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(TIM16_IRQn);
+
   // Clear SR interrupts
   __HAL_TIM_CLEAR_IT(timerSnooze, TIM_IT_UPDATE);
 //
