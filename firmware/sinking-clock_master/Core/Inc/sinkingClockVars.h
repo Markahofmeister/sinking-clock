@@ -144,6 +144,11 @@ uint32_t userAlarmMinuteBackupReg = RTC_BKP_DR1;
 uint32_t userAlarmTFBackupReg = RTC_BKP_DR2;
 uint32_t bootstrapBackupReg = RTC_BKP_DR3;
 
+/*
+ * RCR value for long 10-minute snooze
+ */
+const uint32_t timerSnooze_RCR = 100;
+
 
 
 #endif /* INC_SINKINGCLOCKVARS_H_ */

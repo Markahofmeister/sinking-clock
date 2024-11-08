@@ -83,9 +83,8 @@ TIM_HandleTypeDef *timerDelay = &htim14;
 TIM_HandleTypeDef *timerSnooze = &htim16;
 
 /*
- * RCR value for long 10-minute snooze
+ * Counts up to timerSnooze_RCR for long snooze delay
  */
-const uint32_t timerSnooze_RCR = 100;
 uint8_t snoozeCounter = 0;
 
 /*
