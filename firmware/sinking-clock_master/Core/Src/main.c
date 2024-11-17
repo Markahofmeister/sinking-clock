@@ -1070,9 +1070,15 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 		__NOP();							//Code should never reach here.
 	}
 
-	// Reset snooze time
+	/*
+	 * Reset snooze time
+	 */
 	secondSnooze = false;
 	snoozeCounter = 0;
+
+	HAL_TIM_Base_Stop_IT(timerSnooze);					// Stop snooze timer in case it is going
+	timerSnooze->Instance->CNT &= 0xFFFF0000;
+	timerSnooze->Instance->SR &= 0xFFFC;
 
 	return halRet;
 
