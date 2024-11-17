@@ -357,7 +357,7 @@ int main(void)
   while (1)
   {
 
-
+userAlarmBeep();			//DEBUG
 
   }
     /* USER CODE END WHILE */
