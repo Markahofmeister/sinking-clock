@@ -61,8 +61,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define DEBUG_LED_Pin GPIO_PIN_0
 #define DEBUG_LED_GPIO_Port GPIOA
-#define BUZZER_OUT_Pin GPIO_PIN_8
-#define BUZZER_OUT_GPIO_Port GPIOA
 #define SHIFT_DATA_IN_Pin GPIO_PIN_9
 #define SHIFT_DATA_IN_GPIO_Port GPIOA
 #define SHIFT_OUTPUT_EN_PWM_Pin GPIO_PIN_6
