@@ -122,9 +122,10 @@ uint32_t rtcCalVal = 0x0139;
 
 
 /*
- * ST Peripheral Handles
+ * Timer Channels
  */
 uint32_t tim_PWM_CHANNEL = TIM_CHANNEL_3;
+uint32_t tim_BUZZER_CHANNEL = TIM_CHANNEL_1;
 
 /*
  * RTC access objects

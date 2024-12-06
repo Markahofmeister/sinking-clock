@@ -84,6 +84,13 @@ TIM_HandleTypeDef *timerDelay = &htim14;
 TIM_HandleTypeDef *timerSnooze = &htim16;
 
 /*
+ * Timer to be used for Buzzer PWM
+ */
+TIM_HandleTypeDef *timerBuzzer = &htim1;
+
+
+
+/*
  * Counts up to timerSnooze_RCR for long snooze delay
  */
 uint8_t snoozeCounter = 0;
@@ -360,18 +367,6 @@ int main(void)
   while (1)
   {
 
-	  htim1.Instance->PSC = 65535-1;
-
-	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 50);
-	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-
-	  HAL_Delay(500);
-
-	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
-	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-
-	  HAL_Delay(500);
-
 
   }
     /* USER CODE END WHILE */
@@ -601,7 +596,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 800-1;
+  htim1.Init.Prescaler = 40000-1;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 100-1;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -981,7 +976,16 @@ void userAlarmBeep() {
 
 			sevSeg_setIntensity(sevSeg_intensityDuty[displayBlink * intenSet]);	// Toggle on/off
 
-			HAL_GPIO_TogglePin(buzzerPort, buzzerPin);					// Toggle Buzzer
+			if(!displayBlink) {
+				__HAL_TIM_SET_COMPARE(timerBuzzer, tim_BUZZER_CHANNEL, 50);
+				HAL_TIM_PWM_Start(timerBuzzer, tim_BUZZER_CHANNEL);
+			}
+			else {
+				__HAL_TIM_SET_COMPARE(timerBuzzer, tim_BUZZER_CHANNEL, 0);
+				HAL_TIM_PWM_Start(timerBuzzer, tim_BUZZER_CHANNEL);
+			}
+
+
 
 			timerVal = __HAL_TIM_GET_COUNTER(timerDelay);				// Update timer value
 
@@ -999,7 +1003,7 @@ void userAlarmBeep() {
 	 * Stop blinking, turn off buzzer, set 50% duty cycle, update time
 	 */
 	HAL_TIM_Base_Stop(timerDelay);
-	HAL_GPIO_WritePin(buzzerPort, buzzerPin, GPIO_PIN_RESET);
+
 	updateAndDisplayTime();				// Update to current time and display
 
 	sevSeg_setIntensity(sevSeg_intensityDuty[intenSet]);	// Turn display back on
@@ -1012,6 +1016,9 @@ void userAlarmBeep() {
 
 	// If this is the first snooze,
 	if(!secondSnooze) {
+
+		__HAL_TIM_SET_COMPARE(timerBuzzer, tim_BUZZER_CHANNEL, 0);
+		HAL_TIM_PWM_Start(timerBuzzer, tim_BUZZER_CHANNEL);
 
 		// Start the snooze timer to trigger an interrupt after 10 minutes
 		HAL_TIM_Base_Start_IT(timerSnooze);
