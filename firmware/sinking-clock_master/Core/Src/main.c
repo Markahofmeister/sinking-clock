@@ -981,8 +981,7 @@ void userAlarmBeep() {
 				HAL_TIM_PWM_Start(timerBuzzer, tim_BUZZER_CHANNEL);
 			}
 			else {
-				__HAL_TIM_SET_COMPARE(timerBuzzer, tim_BUZZER_CHANNEL, 0);
-				HAL_TIM_PWM_Start(timerBuzzer, tim_BUZZER_CHANNEL);
+				HAL_TIM_PWM_Stop(timerBuzzer, tim_BUZZER_CHANNEL);
 			}
 
 
