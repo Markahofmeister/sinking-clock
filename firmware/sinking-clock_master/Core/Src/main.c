@@ -1004,6 +1004,8 @@ void userAlarmBeep() {
 	 */
 	HAL_TIM_Base_Stop(timerDelay);
 
+	HAL_TIM_PWM_Stop(timerBuzzer, tim_BUZZER_CHANNEL);
+
 	updateAndDisplayTime();				// Update to current time and display
 
 	sevSeg_setIntensity(sevSeg_intensityDuty[intenSet]);	// Turn display back on
