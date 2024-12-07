@@ -367,6 +367,8 @@ int main(void)
   while (1)
   {
 
+	  userAlarmBeep();
+	  HAL_Delay(1000);
 
   }
     /* USER CODE END WHILE */
@@ -864,6 +866,8 @@ HAL_StatusTypeDef updateAndDisplayTime(void) {
 	HAL_StatusTypeDef halRet = HAL_OK;
 
 	getRTCTime(&hrtc, &currTime, &currDate);
+	 currTime.Hours = 18;
+  currTime.Minutes = 88;
 	sevSeg_updateDigits(&currTime);
 
 	return halRet;
