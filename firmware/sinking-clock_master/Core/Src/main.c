@@ -1018,8 +1018,7 @@ void userAlarmBeep() {
 	// If this is the first snooze,
 	if(!secondSnooze) {
 
-		__HAL_TIM_SET_COMPARE(timerBuzzer, tim_BUZZER_CHANNEL, 0);
-		HAL_TIM_PWM_Start(timerBuzzer, tim_BUZZER_CHANNEL);
+		HAL_TIM_PWM_Stop(timerBuzzer, tim_BUZZER_CHANNEL);
 
 		// Start the snooze timer to trigger an interrupt after 10 minutes
 		HAL_TIM_Base_Start_IT(timerSnooze);
@@ -1229,6 +1228,11 @@ HAL_StatusTypeDef alarmSetISR(void) {
 		// If we were in second snooze mode, kill it.
 		secondSnooze = false;
 		snoozeCounter = 0;
+
+		// Stop snooze timer in case it is going
+		HAL_TIM_Base_Stop_IT(timerSnooze);
+		timerSnooze->Instance->CNT &= 0xFFFF0000;
+		timerSnooze->Instance->SR &= 0xFFFC;
 
 		bool displayBlink = false;
 
