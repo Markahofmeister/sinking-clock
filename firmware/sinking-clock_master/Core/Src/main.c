@@ -65,6 +65,7 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim14;
 TIM_HandleTypeDef htim16;
+TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN PV */
 
@@ -84,6 +85,11 @@ TIM_HandleTypeDef *timerDelay = &htim14;
 TIM_HandleTypeDef *timerSnooze = &htim16;
 
 /*
+ * Timer to be used to software-PWM alarm LED
+ */
+TIM_HandleTypeDef *timerAlarmLED_PWM = &htim17;
+
+/*
  * Timer to be used for Buzzer PWM
  */
 TIM_HandleTypeDef *timerBuzzer = &htim1;
@@ -94,6 +100,12 @@ TIM_HandleTypeDef *timerBuzzer = &htim1;
  * Counts up to timerSnooze_RCR for long snooze delay
  */
 uint8_t snoozeCounter = 0;
+
+/*
+ * Keeps track of alarm LED software PWM count
+ * 0-100
+ */
+uint8_t alarmLED_PWM_Counter = 0;
 
 /*
  * State bools
@@ -114,6 +126,11 @@ bool secondSnooze = false;
  */
 QT1070 capTouch;
 
+/*
+ * For PWMing alarm Enable LED
+ */
+uint8_t threshold = sevSeg_intensityDuty[2];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -125,6 +142,7 @@ static void MX_TIM14_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM16_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM17_Init(void);
 /* USER CODE BEGIN PFP */
 
 /*
@@ -254,10 +272,14 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM16_Init();
   MX_TIM1_Init();
+  MX_TIM17_Init();
   /* USER CODE BEGIN 2 */
 
   // HAL Status handle for error-checking
   HAL_StatusTypeDef halRet = HAL_OK;
+
+  // Start alarm LED software PWM
+  HAL_TIM_Base_Start_IT(timerAlarmLED_PWM);
 
   // Set Smooth Calibration Value
   halRet = HAL_RTCEx_SetSmoothCalib(&hrtc, RTC_SMOOTHCALIB_PERIOD_8SEC,
@@ -490,7 +512,7 @@ static void MX_RTC_Init(void)
 
   /* USER CODE END RTC_Init 0 */
 
-  RTC_TimeTypeDef sTime = {0};
+//  RTC_TimeTypeDef sTime = {0};
   RTC_DateTypeDef sDate = {0};
   RTC_AlarmTypeDef sAlarm = {0};
 
@@ -520,17 +542,17 @@ static void MX_RTC_Init(void)
 
   /** Initialize RTC and set the Time and Date
   */
-  sTime.Hours = 0x1;
-  sTime.Minutes = 0x0;
-  sTime.Seconds = 0x0;
-  sTime.SubSeconds = 0x0;
-  sTime.TimeFormat = RTC_HOURFORMAT12_AM;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
+//  sTime.Hours = 0x1;
+//  sTime.Minutes = 0x0;
+//  sTime.Seconds = 0x0;
+//  sTime.SubSeconds = 0x0;
+//  sTime.TimeFormat = RTC_HOURFORMAT12_AM;
+//  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+//  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+//  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
   sDate.WeekDay = RTC_WEEKDAY_MONDAY;
   sDate.Month = RTC_MONTH_JANUARY;
   sDate.Date = 0x1;
@@ -773,6 +795,38 @@ static void MX_TIM16_Init(void)
 }
 
 /**
+  * @brief TIM17 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM17_Init(void)
+{
+
+  /* USER CODE BEGIN TIM17_Init 0 */
+
+  /* USER CODE END TIM17_Init 0 */
+
+  /* USER CODE BEGIN TIM17_Init 1 */
+
+  /* USER CODE END TIM17_Init 1 */
+  htim17.Instance = TIM17;
+  htim17.Init.Prescaler = 21;
+  htim17.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim17.Init.Period = 100-1;
+  htim17.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim17.Init.RepetitionCounter = 0;
+  htim17.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim17) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM17_Init 2 */
+
+  /* USER CODE END TIM17_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -821,14 +875,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(SHIFT_STORE_CLK_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : MINUTE_SET_BUTTON_Pin */
-  GPIO_InitStruct.Pin = MINUTE_SET_BUTTON_Pin;
+  /*Configure GPIO pin : ALARM_SET_BUTTON_Pin */
+  GPIO_InitStruct.Pin = ALARM_SET_BUTTON_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(MINUTE_SET_BUTTON_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(ALARM_SET_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : HOUR_SET_BUTTON_Pin ALARM_SET_BUTTON_Pin ALARM_EN_BUTTON_Pin DISPLAY_BUTTON_Pin */
-  GPIO_InitStruct.Pin = HOUR_SET_BUTTON_Pin|ALARM_SET_BUTTON_Pin|ALARM_EN_BUTTON_Pin|DISPLAY_BUTTON_Pin;
+  /*Configure GPIO pins : HOUR_SET_BUTTON_Pin MINUTE_SET_BUTTON_Pin ALARM_EN_BUTTON_Pin DISPLAY_BUTTON_Pin */
+  GPIO_InitStruct.Pin = HOUR_SET_BUTTON_Pin|MINUTE_SET_BUTTON_Pin|ALARM_EN_BUTTON_Pin|DISPLAY_BUTTON_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
@@ -841,13 +895,13 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(CTOUCH_RST_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 1, 0);
   HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 1, 0);
+  HAL_NVIC_SetPriority(EXTI4_15_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
@@ -961,7 +1015,7 @@ void userAlarmBeep() {
 	 * Determine whether to toggle high or low brightness
 	 */
 	uint8_t intenSet;
-	if(displayToggle == 0) { 				// If the user has full brightness enabled, toggle full btightness
+	if(displayToggle == 0) { 				// If the user has full brightness enabled, toggle full brightness
 		intenSet = 2;
 	}
 	else {									// Else, toggle low brightness
@@ -1105,11 +1159,39 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
  */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
-	snoozeCounter++;
 
-	if((htim == timerSnooze) && (secondSnooze == true) && (snoozeCounter == timerSnooze_RCR)) {
 
-		userAlarmBeep();
+	if(htim == timerSnooze) {
+
+		snoozeCounter++;
+
+		if((secondSnooze == true) && (snoozeCounter == timerSnooze_RCR)) {
+			userAlarmBeep();
+		}
+
+	}
+	else if(htim == timerAlarmLED_PWM) {
+
+		alarmLED_PWM_Counter++;
+		if(alarmLED_PWM_Counter == 100)
+		{
+			alarmLED_PWM_Counter = 0;
+		}
+
+		if(!userAlarmToggle) {	// If user alarm not enabled, turn off LED
+			HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_RESET);
+		}
+		else {					// If the user alarm is enabled, PWM it
+
+
+			if(alarmLED_PWM_Counter >= threshold) {
+				HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_SET);
+			}
+			else {
+				HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_RESET);
+			}
+
+		}
 
 	}
 
@@ -1129,9 +1211,27 @@ HAL_StatusTypeDef displayButtonISR(void) {
 
 	if(displayToggle >= 2) {			// Increment display toggle or reset back down to 0;
 		displayToggle = 0;
-//		HAL_GPIO_WritePin(GPIOB, PMLED, GPIO_PIN_RESET);		// If display is off, turn off AM/PM LED
 	} else {
 		displayToggle++;
+	}
+
+	// For alarm enable LED
+	switch(displayToggle) {
+
+		case 0:			// Full brightness
+			threshold = sevSeg_intensityDuty[2];
+		break;
+		case 1:			// No Brightness
+			threshold = sevSeg_intensityDuty[0];
+		break;
+		case 2:			// low Brightness
+			threshold = sevSeg_intensityDuty[1];
+		break;
+
+		default:
+			__NOP();
+		break;
+
 	}
 
 	return halRet;				// Return HAL status
@@ -1146,21 +1246,7 @@ HAL_StatusTypeDef alarmEnableISR(void) {
 	//printf("Entered alarm toggle ISR\n\r");
 	HAL_StatusTypeDef halRet = HAL_OK;
 
-	if(!userAlarmToggle) {					// If alarm is disabled, enable it.
-
-		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_SET);			// Turn on alarm LED
-		userAlarmToggle = true;								// Toggle internal flag to true
-
-	}
-	else if (userAlarmToggle) {				// If alarm is enabled, disable it.
-
-		HAL_GPIO_WritePin(alarmLEDPort, alarmLEDPin, GPIO_PIN_RESET);			// Turn off alarm LED
-		userAlarmToggle = false;							// Toggle internal flag to false
-
-	}
-	else {
-		__NOP();							//Code should never reach here.
-	}
+	userAlarmToggle = !userAlarmToggle;
 
 	/*
 	 * Reset snooze time
@@ -1218,7 +1304,7 @@ HAL_StatusTypeDef alarmSetISR(void) {
 	// Reset Timer
 	HAL_TIM_Base_Stop(timerDelay);
 	timerDelay->Instance->CNT = 0;
-	HAL_TIM_Base_Start(timerDelay);						// Begin timer 16 counting (to 1 s)
+	HAL_TIM_Base_Start(timerDelay);
 	uint16_t timerVal = __HAL_TIM_GET_COUNTER(timerDelay);	// Get initial timer value to compare to
 
 	bool alarmSetButtonReset = false;

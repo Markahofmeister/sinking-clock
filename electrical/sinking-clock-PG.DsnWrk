@@ -1,0 +1,8 @@
+[ProjectGroup]
+Version=1.0
+[Project1]
+ProjectPath=sinking-clock_Brain-PCB\sinking-clock_Brain-PCB.PrjPcb
+[Project2]
+ProjectPath=sinking-clock_LED-PCB\sinking-clock_LED-PCB.PrjPcb
+[Project3]
+ProjectPath=sinking-clock_Flex-PCB\sinking-clock_Flex-PCB.PrjPcb
