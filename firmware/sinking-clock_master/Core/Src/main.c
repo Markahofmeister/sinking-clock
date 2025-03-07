@@ -1221,8 +1221,8 @@ HAL_StatusTypeDef displayButtonISR(void) {
 		case 0:			// Full brightness
 			threshold = sevSeg_intensityDuty[2];
 		break;
-		case 1:			// No Brightness
-			threshold = sevSeg_intensityDuty[0];
+		case 1:			// No Brightness. But keep it low brightness.
+			threshold = sevSeg_intensityDuty[1];
 		break;
 		case 2:			// low Brightness
 			threshold = sevSeg_intensityDuty[1];

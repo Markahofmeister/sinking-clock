@@ -4308,9 +4308,9 @@ HAL_StatusTypeDef displayButtonISR(void) {
  80019ec:	701a      	strb	r2, [r3, #0]
 		break;
  80019ee:	e009      	b.n	8001a04 <displayButtonISR+0x6c>
-		case 1:			// No Brightness
-			threshold = sevSeg_intensityDuty[0];
- 80019f0:	2264      	movs	r2, #100	@ 0x64
+		case 1:			// No Brightness. But keep it low brightness.
+			threshold = sevSeg_intensityDuty[1];
+ 80019f0:	225a      	movs	r2, #90	@ 0x5a
  80019f2:	4b09      	ldr	r3, [pc, #36]	@ (8001a18 <displayButtonISR+0x80>)
  80019f4:	701a      	strb	r2, [r3, #0]
 		break;
