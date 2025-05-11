@@ -1,36 +1,36 @@
 Board Information Report
 Filename     : C:\Lab\sinking-clock\electrical\sinking-clock_LED-PCB\sinking-clock_LED-PCB.PcbDoc
-Date         : 10/30/2024
-Time         : 8:33:09 AM
+Date         : 5/11/2025
+Time         : 1:30:31 PM
 Time Elapsed : 00:00:01
 
 General
-    Board Size, 152.0284mmx83mm
-    Components on board, 151
+    Board Size, 5984.252milsx3267.717mils
+    Components on board, 143
 count : 2
 
 Routing Information
     Routing completion, 100.00%
-    Connections, 302
-    Connections routed, 302
+    Connections, 292
+    Connections routed, 292
     Connections remaining, 0
 count : 4
 
 Layer, Arcs, Pads, Vias, Tracks, Texts, Fills, Regions, ComponentBodies
-    Top Layer, 0, 116, 0, 287, 0, 0, 151, 0
-    Bottom Layer, 0, 382, 0, 873, 0, 0, 263, 0
-    Mechanical 1, 0, 0, 0, 4, 0, 0, 0, 112
+    Top Layer, 0, 116, 0, 312, 0, 0, 136, 0
+    Bottom Layer, 2, 366, 0, 898, 0, 0, 259, 0
+    Mechanical 1, 0, 0, 0, 4, 0, 0, 0, 104
     Outline, 1, 0, 0, 5, 0, 0, 0, 0
     Digit Outlines, 0, 0, 0, 128, 0, 0, 0, 0
-    Mechanical 13, 94, 0, 0, 888, 0, 0, 0, 39
-    Mechanical 15, 0, 0, 0, 568, 0, 0, 0, 0
+    Mechanical 13, 94, 0, 0, 856, 0, 0, 0, 39
+    Mechanical 15, 0, 0, 0, 536, 0, 0, 0, 0
     Fab Instructions, 0, 0, 0, 24, 4, 0, 0, 0
-    Multi-Layer, 0, 0, 173, 0, 0, 0, 1, 0
+    Multi-Layer, 0, 1, 180, 0, 0, 0, 1, 0
     Top Paste, 0, 0, 0, 0, 0, 0, 0, 0
     Top Overlay, 2, 0, 0, 167, 114, 0, 0, 0
     Top Solder, 0, 0, 0, 0, 0, 0, 0, 0
     Bottom Solder, 0, 0, 0, 0, 0, 0, 0, 0
-    Bottom Overlay, 46, 0, 0, 203, 207, 0, 0, 0
+    Bottom Overlay, 46, 0, 0, 200, 191, 0, 0, 0
     Bottom Paste, 0, 0, 0, 0, 0, 0, 0, 0
     Drill Guide, 0, 0, 0, 0, 0, 0, 0, 0
     Keep-Out Layer, 0, 0, 0, 0, 0, 0, 0, 0
@@ -38,22 +38,24 @@ Layer, Arcs, Pads, Vias, Tracks, Texts, Fills, Regions, ComponentBodies
 count : 18
 
 Drill Pairs, Vias
-    Top Layer - Bottom Layer, 173
+    Top Layer - Bottom Layer, 180
 count : 1
 
 Layer, Sq.In., Sq.MM., Percent of layer
-    Top Layer, 15.286, 9861.858, 94%
-    Bottom Layer, 13.757, 8875.489, 84%
+    Top Layer, 14.631, 9439.514, 90%
+    Bottom Layer, 12.629, 8147.542, 78%
 count : 2
 
 Non-Plated Hole Size, Pads, Vias
-    0mm, 70, 0
-count : 1
+    0mils, 70, 0
+    102.362mils, 1, 0
+count : 2
 
 Plated Hole Size, Pads, Vias
-    0mm, 428, 0
-    0.2794mm, 0, 173
-count : 2
+    0mils, 412, 0
+    10mils, 0, 1
+    11mils, 0, 179
+count : 3
 
 Non-Plated Slot Size / Length, Pads
 count : 0
@@ -68,119 +70,132 @@ Plated Square Hole Size, Pads
 count : 0
 
 Top Layer Annular Ring Size, Count
-    0.2794mm, 173
-count : 1
+    0mils, 1
+    11mils, 179
+    14mils, 1
+count : 3
 
 Mid Layer Annular Ring Size, Count
-    0.2794mm, 173
-count : 1
+    0mils, 1
+    11mils, 179
+    14mils, 1
+count : 3
 
 Bottom Layer Annular Ring Size, Count
-    0.2794mm, 173
-count : 1
+    0mils, 1
+    11mils, 179
+    14mils, 1
+count : 3
 
 Pad Solder Mask, CountTop Solder MaskBottom Solder Mask
-    0mm, 2, 2
-    0.06mm, 64, 64
-    0.07mm, 0, 64
-    0.1016mm, 432, 368
+    0mils, 2, 2
+    2.362mils, 64, 64
+    2.756mils, 0, 64
+    4mils, 417, 353
 count : 4
 
 Pad Paste Mask, Count
-    0mm, 498
+    0mils, 483
 count : 1
 
 Pad Pwr/Gnd Expansion, Count
-    0.508mm, 498
+    20mils, 483
 count : 1
 
 Pad Relief Conductor Width, Count
-    0.254mm, 498
+    10mils, 483
 count : 1
 
 Pad Relief Air Gap, Count
-    0.254mm, 498
+    10mils, 483
 count : 1
 
 Pad Relief Entries, Count
-    4, 498
+    4, 483
 count : 1
 
 Via Solder Mask, Count
-    -0.5588mm, 173
-count : 1
+    -24mils, 1
+    -22mils, 179
+count : 2
 
 Via Pwr/Gnd Expansion, Count
-    0.508mm, 173
+    20mils, 180
 count : 1
 
 Track Width, Count
-    0mm, 280
-    0.05mm, 544
-    0.1mm, 102
-    0.127mm, 803
-    0.1524mm, 53
-    0.2mm, 20
-    0.25mm, 536
-    0.254mm, 196
-    0.3mm, 5
-    0.3048mm, 13
-    0.305mm, 6
-    0.406mm, 18
-    0.4064mm, 563
-    0.5mm, 8
-count : 14
+    0mils, 280
+    1.969mils, 512
+    3.937mils, 102
+    5mils, 768
+    6mils, 53
+    7.874mils, 20
+    9.842mils, 89
+    9.843mils, 514
+    10mils, 210
+    11.811mils, 5
+    15.984mils, 16
+    16mils, 553
+    19.685mils, 8
+count : 13
 
 Arc Line Width, Count
-    0mm, 4
-    0.1mm, 78
-    0.1524mm, 4
-    0.2mm, 52
-    0.254mm, 4
-    0.3mm, 1
-count : 6
+    0mils, 4
+    3.937mils, 78
+    6mils, 4
+    7.874mils, 52
+    10mils, 5
+    11.811mils, 1
+    16mils, 1
+count : 7
 
 Arc Radius, Count
-    0.025mm, 4
-    0.05mm, 12
-    0.1mm, 52
-    0.125mm, 64
-    0.3048mm, 8
-    1mm, 3
-count : 6
+    0.984mils, 4
+    1.969mils, 12
+    3.937mils, 52
+    4.921mils, 64
+    10mils, 1
+    12mils, 8
+    16mils, 1
+    19.685mils, 1
+    39.37mils, 2
+count : 9
 
 Arc Degrees, Count
+    0, 1
+    30, 1
     90, 1
     162, 2
     180, 80
     346, 4
     360, 56
-count : 5
+count : 7
 
 Text Height, Count
-    0.75mm, 9
-    1mm, 22
-    1.016mm, 119
-    1.524mm, 155
-    1.75mm, 1
-    2mm, 1
-    2.032mm, 3
-    2.5mm, 9
-    3.048mm, 3
-    3.75mm, 1
-    4.5mm, 2
-count : 11
+    29.528mils, 9
+    39.37mils, 19
+    40mils, 114
+    60mils, 147
+    68.898mils, 1
+    78.74mils, 1
+    80mils, 3
+    90.551mils, 1
+    98.425mils, 8
+    120mils, 3
+    147.638mils, 1
+    177.165mils, 2
+count : 12
 
 Text Width, Count
-    0.1524mm, 3
-    0.2mm, 2
-    0.254mm, 320
+    6mils, 3
+    7.874mils, 2
+    10mils, 304
 count : 3
 
 Net Track Width, Count
-    0.1524mm, 151
+    6mils, 145
 count : 1
 
 Net Via Size, Count
-    0.5588mm, 151
+    22mils, 145
 count : 1
